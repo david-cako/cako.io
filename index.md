@@ -3,9 +3,6 @@
     list-style: none;
     font-size: 24px;
   }
-  #post-index > li > a {
-     color: #000;
-  }
 </style>
 
 <ul id="post-index" class="posts">
