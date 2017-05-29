@@ -1,5 +1,5 @@
 # cako.io
-Static assets and posts from David Cako's personal blog - https://cako.io
+**Static assets and posts from David Cako's personal blog - https://cako.io**
 
 Assets are found in the master branch, while the mirrored blog is accessible at https://david-cako.github.io/cako.io/
 
