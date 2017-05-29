@@ -3,7 +3,7 @@
     list-style: none;
     font-size: 24px;
   }
-  #post-index > li {
+  #post-index > li > a {
      color: #000;
   }
 </style>
