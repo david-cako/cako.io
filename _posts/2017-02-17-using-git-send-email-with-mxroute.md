@@ -5,7 +5,7 @@ date: "2017-02-17 23:21:53"
 
 # Using git send-email with MXroute
 
-<sup>2017-02-17 23:21:53</sup>
+<sup>2017-02-17</sup>
 
 MXroute does not seem to play nice with a lot of the command line utilities that I have tried using with it!  The best solution that I have found is using Google's mail servers to send mail using a separate identity.
 

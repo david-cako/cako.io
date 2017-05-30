@@ -5,7 +5,7 @@ date: "2017-02-11 23:54:32"
 
 # Understanding Rust
 
-<sup>2017-02-11 23:54:32</sup>
+<sup>2017-02-11</sup>
 
 The Rust programming language is very unique in that it *forces* the developer to write memory-safe, type-safe, and thread-safe code.  This article aims to help users from any programming background understand the paradigms it puts forth and apply them effectively.
 

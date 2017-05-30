@@ -5,7 +5,7 @@ date: "2017-02-17 22:49:48"
 
 # Easily add https to nginx on Ubuntu
 
-<sup>2017-02-17 22:49:48</sup>
+<sup>2017-02-17</sup>
 
 Let's Encrypt is a Linux Foundation supported project that offers free (gratis) SSL certificates, and supports an easy to use automated tool, "certbot", for installing them.
 
