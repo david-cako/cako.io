@@ -2,6 +2,7 @@
 title: "Exporting foobar2000 playlists (with FLACs!) to iTunes"
 date: "2017-03-10 06:45:58"
 ---
+## Exporting foobar2000 playlists (with FLACs!) to iTunes
 
 I spend an inordinate amount of time on music management, and have lately undertaken the task of automating a lot of it.
 
