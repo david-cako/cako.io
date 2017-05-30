@@ -3,6 +3,10 @@ title: "Multithreaded Rust"
 date: "2017-05-28 06:10:22"
 ---
 
+# Multithreaded Rust
+
+<sup>2017-05-28 06:10:22</sup>
+
 Memory safety is one of the most pressing concerns in writing multithreaded applications.  Most programming languages will provide you with the tools necessary to avoid data races, however also the freedom to wrongly implement them. Consistent with Rust's theme of guarantees, **safety across threads is a guarantee.**
 
 Rust seems like a very natural language to implement a multithreaded application in.  All shared data must either be borrowed immutably, deep copied, or *exclusively* borrowed mutably.

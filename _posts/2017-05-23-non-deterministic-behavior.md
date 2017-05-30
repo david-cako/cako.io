@@ -3,6 +3,10 @@ title: "Non-deterministic behavior"
 date: "2017-05-23 15:42:11"
 ---
 
+# Non-deterministic behavior
+
+<sup>2017-05-23 15:42:11</sup>
+
 I watched a video of Linus Torvalds a while back where he talked about how he thinks the reason software is so appealing to him is the absolute deterministic behavior that comes with it, and ever since then I can't stop thinking about it.
 
 I've really come to realize that the one and only thing that ties together every single one of my fears is non-deterministic behavior.
