@@ -1,0 +1,19 @@
+{{!< default}}
+
+<main id="content" class="content" role="main" style="margin-top:12%;">
+    {{> "nav"}}
+
+{{! This is the post loop - each post will be output using this markup }}
+{{#get "posts" limit="all" include="author,tags" filter="tags:guides"}}
+{{#foreach posts}}
+<article class="{{post_class}}">
+    <header class="post-header" style="margin-bottom:10px !important;">
+        <h4 class="post-title"><a href="{{url}}">{{{title}}}</a></h4>
+    </header>
+    <section class="post-excerpt">
+        {{meta_description}}
+    </section>
+</article>
+{{/foreach}}
+{{/get}}
+</main>

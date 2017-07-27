@@ -1,0 +1,133 @@
+
+.crematica-nav {
+    position:absolute; top: 60px; left: 75px;
+}
+
+.crematica-nav h1 {
+    padding: 0.1em 0 0 0.2em;
+    border-left: 50px solid #d60000;
+}
+
+.crematica-nav h2 {
+    margin: -0.2em 0 0 0;
+    padding-top: 0 !important;
+}
+
+.crematica-nav h1 {
+    font-family: -apple-system, BlinkMacSystemFont, 
+        "Helvetica Neue", "Helvetica", "Roboto",
+        "Arial", "sans-serif";
+}
+
+.crematica-nav h1 > a {
+    text-decoration: none;
+}
+
+.crematica-nav h2 {
+    font-family: -apple-system, BlinkMacSystemFont, 
+        "Helvetica Neue", "Helvetica", "Roboto",
+        "Arial", "sans-serif";
+    letter-spacing: -1px;
+}
+
+.crematica-nav h2 > a {
+    text-decoration: none;
+}
+
+.index-img {
+    display: block;
+    max-width:710px;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+}
+	
+@media (min-width: 1875px) {
+    .crematica-nav h1 {
+        font-size:120px;
+        letter-spacing: -7px;
+    }
+    .crematica-nav h2 {
+        font-size:50px;
+        letter-spacing: -2px;
+    }
+    #content {
+        margin-top: 250px;
+    }
+}
+
+@media (min-width: 1600px) and (max-width: 1874px) {
+    .crematica-nav {
+            left: 75px;
+    }
+    .crematica-nav h1 {
+            width: 100%;
+            font-size:100px;
+            letter-spacing:-5px;
+    }
+   .index-img {max-height:600px;}
+    #content {
+        margin-top: 13%;
+    }
+}
+
+@media (min-width: 1275px) and (max-width: 1599px) {
+    .crematica-nav {
+            left: 25px;
+    }
+    .crematica-nav h1 {
+            width: 100%;
+            font-size:100px;
+            letter-spacing:-5px;
+    }
+    .index-img {max-height:500px;}
+    #content {
+        margin-top: 210px;
+    }
+    #center-div > .post {
+        margin-left: 400px;
+    }
+}
+
+@media (max-width: 1274px) {
+    .crematica-nav {
+            position: static !important;
+            margin: auto;
+            width: 80%;
+            max-width: 710px;
+            padding-bottom: 40px;
+    }
+    .crematica-nav h1 {
+            font-size:100px;
+            letter-spacing:-4px;
+    }
+    .crematica-nav h2 {
+            font-size:50px;
+    }
+    .index-img {
+            display:block;
+            width:75% !important;
+            margin: 0 auto !important;
+    }
+    #content {
+        margin-top: 8%;
+    }
+}
+
+@media (min-width: 1275px) {
+    #center-div {
+       margin-left:75px;
+    }
+}
+
+@media (max-width: 500px) {
+    .crematica-nav {
+        margin-left: 16px;
+    }
+}
+
+#center-div {
+    max-width: 1800px;
+}
+
+
