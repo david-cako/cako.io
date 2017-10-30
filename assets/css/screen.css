@@ -31,6 +31,14 @@
     display: inline-block;
     margin: 0 0 0 0;
 }
+.twitter-mention-button:not(.twitter-mention-button-rendered) {
+    background-color: #1b95e0;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    padding: 5px 10px;
+    font-size: 13px;
+}
 
 article, aside, details,
 figcaption, figure,
