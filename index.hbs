@@ -1,14 +1,33 @@
 {{!< default}}
-{{! The tag above means - insert everything in this file into the {body} of the default.hbs template }}
+{{!-- The tag above means: insert everything in this file
+into the {body} of the default.hbs template --}}
 
-{{! The big featured header }}
-
-{{! The main content area on the homepage }}
-<main id="content" class="content" role="main">
-    {{> "nav"}}
-    <div id="center-div">
-        {{! The tag below includes the post loop - partials/loop.hbs }}
-        {{> "loop"}}
+{{!-- The big featured header, it uses blog cover image as a BG if available --}}
+<header id="cako-header">
+    <div id="cako-header-inner">
+        <div id="triangle"></div>
+        <h1 id="cako-header-text">
+            <span id="last-name-c">C</span>
+            <span id="last-name-a">A</span>
+            <span id="last-name-k">K</span>
+            <span id="last-name-o">O</span>
+            <span id="header-io">.IO</span>
+        </h1>
     </div>
+</header>
 
+{{!-- The main content area --}}
+<main id="site-main" class="site-main outer" role="main">
+    <div class="inner">
+
+        <div id="cako-post-feed">
+            {{#foreach posts}}
+
+                {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
+                {{> "post-card"}}
+
+            {{/foreach}}
+        </div>
+
+    </div>
 </main>
