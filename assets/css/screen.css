@@ -28,6 +28,10 @@ production stylesheet in assets/built/screen.css
 /* ---------------------------------------------------------- */
 @import "global.css";
 
+blockquote a {
+    font-size: 0.5em;
+}
+
 #triangle {
     border: solid #fff 1px;
     width: 100vw;
@@ -37,7 +41,6 @@ production stylesheet in assets/built/screen.css
     top: 1vw;
     transform: rotate(60deg);
     -webkit-transform: rotate(60deg);
-    overflow: hidden;
 }
 
 pre {
@@ -92,10 +95,16 @@ code.hljs {
 #cako-site-nav-text {
     font-family: "Lato", -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 300;
+    font-size: 50px;
     color: #fff;
     display: inline-block;  
     letter-spacing: -5px;  
     margin-top: 50px;
+}
+
+#cako-header-inner {
+    position: relative;
+    overflow-x: hidden;
 }
 
 #cako-header-text {
@@ -429,10 +438,10 @@ The knock-on effect of this is ugly browser-scroll bars at the bottom, so 80px o
 }
 
 @media (max-width: 700px) {
-    .site-header {
+    /*.site-header {
         padding-right: 0;
         padding-left: 0;
-    }
+    }*/
     .site-nav-left {
         margin-right: 0;
         padding-left: 4vw;
@@ -756,9 +765,9 @@ The first (most recent) post in the list is styled to be bigger than the others 
     text-align: center;
 }
 @media (max-width: 500px) {
-    .post-full-header {
+    /*.post-full-header {
         padding: 14vw 3vw 10vw;
-    }
+    }*/
 }
 
 .post-full-meta {
@@ -1134,9 +1143,9 @@ Usage (In Ghost editor):
         margin-bottom: 4vw;
         height: 350px;
     }
-    .post-full-content {
+    /*.post-full-content {
         padding: 0;
-    }
+    }*/
     .post-full-content:before,
     .post-full-content:after {
         display: none;
