@@ -204,6 +204,11 @@ body {
     padding: 0 4vw;
 }
 
+@media (max-width: 900px) {
+    .site-main.outer {
+        padding: 0 1vw;
+    }
+}
 /* Centered content container blocks */
 .inner {
     margin: 0 auto;
@@ -1060,7 +1065,7 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h2 {
-    margin: 0.5em 0 0.2em 0;
+    margin: 0.5em 0 0.5em 0;
     font-size: 3.6rem;
     font-weight: 700;
 }
