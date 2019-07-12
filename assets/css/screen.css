@@ -32,13 +32,13 @@ blockquote a {
     font-size: 0.5em;
 }
 
-#twitter-outer {
+#email-address-outer {
     text-align: right;
     margin-top: 1em;
 }
 
-#twitter-button {
-    color: #1da1f2;
+#email-address {
+    color: rgb(10,132,255);
     border: 1px solid;
     padding: 4px 20px;
     border-radius: 15px;
@@ -48,9 +48,9 @@ blockquote a {
     box-shadow: none;
 }
 
-#twitter-button:hover {
+#email-address:hover {
     color: #fff;
-    background-color: #1da1f2;
+    background-color: rgb(10,132,255);
 }
 
 #triangle {
