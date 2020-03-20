@@ -82,7 +82,12 @@ code.hljs {
 
 #cako-post-feed {
     background-color: #fff;
-    padding: 3em;
+    padding: 70px 100px 70px;
+}
+@media (max-width: 1170px) {
+    #cako-post-feed {
+        padding: 7vw;
+    }
 }
 
 .cako-post:not(:nth-of-type(1)) {
