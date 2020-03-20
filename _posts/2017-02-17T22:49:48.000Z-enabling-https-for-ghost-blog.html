@@ -1,0 +1,40 @@
+---
+title: "Easily add https to nginx on Ubuntu"
+date: "2017-02-17T22:49:48.000Z"
+---
+
+# Easily add https to nginx on Ubuntu
+
+<sup>2017-02-17T22:49:48.000Z</sup>
+
+<!--kg-card-begin: markdown--><p>Let's Encrypt is a Linux Foundation supported project that offers free (gratis) SSL certificates, and supports an easy to use automated tool, &quot;certbot&quot;, for installing them.</p>
+<h3 id="installingcertbot">Installing certbot</h3>
+<p>First, add the certbot repository to your machine:</p>
+<pre><code class="language-bash">$ sudo add-apt-repository ppa:certbot/certbot
+</code></pre>
+<p>Then, fetch the package index from the newly added repository:</p>
+<pre><code class="language-bash">$ sudo apt update
+</code></pre>
+<p>Finally, install certbot:</p>
+<pre><code class="language-bash">$ sudo apt install python-certbot-nginx
+</code></pre>
+<h3 id="usingcertbot">Using certbot</h3>
+<p>Certbot is an incredibly easy to use and automated configuration utility that automatically sets up your <code>sites-enabled</code> conf file(s) to accept SSL requests.</p>
+<p>Start the certbot utility with</p>
+<pre><code class="language-bash">$ sudo certbot --nginx
+</code></pre>
+<p>It will ask you for your email and some other information to associate you with the certificate.</p>
+<p>Certbot will then look at your existing configuration files and ask you which domains you want to enable SSL/HTTPS for.</p>
+<p>Finally, certbot will ask you whether you want &quot;HTTPS access should be required or optional&quot;.</p>
+<pre><code class="language-bash">Please choose whether HTTPS access is required or optional.
+--------------------------------------------------------------
+1: Easy - Allow both HTTP and HTTPS access to these sites
+2: Secure - Make all requests redirect to secure HTTPS access
+--------------------------------------------------------------
+</code></pre>
+<p>Choosing option 2, &quot;secure&quot;, means that if users input the regular http url (for instance, <code>http://cako.io</code>, or just <code>cako.io</code>), nginx will automatically redirect their request to https.  This is up to you, but unless you have specific reasons not to, this seems like the way to go.</p>
+<p>Certbot should automatically restart nginx for you, if not:</p>
+<pre><code class="language-bash">$ sudo systemctl restart nginx
+</code></pre>
+<p>Try it out!  All requests should now be redirected to https, and you should see &quot;secure&quot; in your URL bar.</p>
+<!--kg-card-end: markdown-->

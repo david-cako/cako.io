@@ -1,0 +1,122 @@
+---
+title: "Understanding Rust"
+date: "2017-02-11T23:54:32.000Z"
+---
+
+# Understanding Rust
+
+<sup>2017-02-11T23:54:32.000Z</sup>
+
+<!--kg-card-begin: markdown--><p>The Rust programming language is very unique in that it <em>forces</em> the developer to write memory-safe, type-safe, and thread-safe code.  This article aims to help users from any programming background understand the paradigms it puts forth and apply them effectively.</p>
+<p>There are 4 principles you need to keep in mind when programming with Rust:</p>
+<ul>
+<li>Any variable which is not passed by reference is destroyed when passed into a function (it will no longer be accessible in the enclosing scope!)</li>
+<li>A variable may instead be passed by reference, or &quot;borrowed&quot;, which will keep the original variable intact</li>
+<li>Either one mutable reference (<code>&amp;mut foo</code>) or infinite immutable references (<code>&amp;foo</code>) to a variable may exist at any given point in time</li>
+<li>Any type may disregard rule 1 entirely by implementing the <a href="https://doc.rust-lang.org/std/marker/trait.Copy.html"><code>Copy</code></a> trait (most primitive types do this!)</li>
+</ul>
+<h3 id="ownership">Ownership</h3>
+<p>Rust's concept of ownership means that any variable which is passed into a containing scope is no longer accessible in the enclosing scope.</p>
+<pre><code>let a = Person {};
+
+do_something(a); 
+assert_eq!(a, Person {}); // false, a's ownership was transferred
+</code></pre>
+<h3 id="whataretraits">What are <code>trait</code>s?</h3>
+<p>Rust is a functional programming language, and there are many useful design patterns that come with it.  One of which is the concept of &quot;traits&quot;.  Traits are similar to &quot;interfaces&quot; and &quot;protocols&quot; in languages like Go and Swift.</p>
+<p>In Rust, much like in C, structs are your primary source of object-oriented behavior.</p>
+<p>Where in an OO language you are working with classes and methods:</p>
+<pre><code>class Person():
+    age = 0;
+    def birthday(self):
+        self.age += 1
+        return age
+</code></pre>
+<p>In Rust you are working with <code>struct</code>s and <code>impl</code>s:</p>
+<pre><code>struct Person {
+    age: u8,
+}
+
+impl Person {
+    fn birthday(&amp;self) -&gt; u8 {
+        self.age += 1;
+        self.age
+    }
+}
+</code></pre>
+<p><code>trait</code>s are simply <code>impl</code>s that may be implemented differently on multiple types, allowing for types that provide generic functionality.  In this example, we can see the difference between implementing <code>Age</code> on our existing <code>Person</code> struct, and a new <code>Car</code> struct with a <code>model_year</code> field.</p>
+<pre><code>const CURRENT_YEAR: u16 = 2017;
+
+struct Car {
+    model_year: u16,
+}
+
+struct Person {
+    year_of_birth: u16,
+}
+
+trait Age {
+    fn age(&amp;self) -&gt; u8;
+}
+
+impl Age for Car {
+    fn age(&amp;self) -&gt; u8 {
+        CURRENT_YEAR - self.model_year
+    }
+}
+
+impl Age for Person {
+    fn age(&amp;self) -&gt; u8 {
+        CURRENT_YEAR - self.year_of_birth
+    }
+}
+</code></pre>
+<h3 id="borrowingandcopying">Borrowing and <code>Copy</code>ing</h3>
+<p>The built-in <code>Copy</code> trait may be implemented on your type as an alternative to the default <code>move</code> behavior.  When implemented, the type is now passed by value, and the original variable binding is retained.</p>
+<p>This example demonstrates the difference between a type that implements <code>Copy</code> and one which doesn't:</p>
+<pre><code>let a = 5;
+let b = Person{ age: 28 };
+
+do_something_to(a);
+do_something_to(b);
+
+assert_eq!(a, 5);  // true
+
+assert_eq!(b.age, 28); 
+// will not compile, b's ownership was transferred, 
+// and it is no longer accessible in the enclosing scope
+</code></pre>
+<p>This behavior is usually mitigated by passing a variable by reference:</p>
+<pre><code>let b = Person{ age: 28 };
+
+do_something_to(&amp;mut b);
+
+assert_eq!(b.age, 28); 
+// true, b was borrowed as a mutable reference, 
+// with ownership staying in the enclosing scope
+</code></pre>
+<p>But may also be mitigated by implementing <code>Copy</code> for your type:</p>
+<pre><code>#[derive(Copy, Clone)]
+struct Car {
+    ...
+}
+</code></pre>
+<h2 id="lifetimes">Lifetimes</h2>
+<p>Lifetimes are easiest to think about as tags.  The letter you see is nothing more than a unique name for how long certain variables must exist.</p>
+<p>The important thing to remember in understanding lifetimes is that <strong>they are usually elided by the compiler.</strong>  In fact, any time you <em>dont</em> explicitly declare a lifetime, it is being elided by the compiler.  This is helpful to think about because lifetimes are nothing more than explicit notation that helps the compiler understand which variables depend on the existence of other variables.</p>
+<p>For example, in the following function, the compiler cannot infer which variables must continue to exist after the function exits.</p>
+<pre><code>fn do_stuff(foo: &amp;i32, bar: &amp;i32) -&gt; &amp;i32 {...}
+</code></pre>
+<p>Here, we make it clear to the compiler that the return value of <code>do_stuff</code> relies on the continued existence of <code>foo</code> (at least as long as the return value lives -- <em>the return value's lifetime</em>):</p>
+<pre><code>fn do_stuff&lt;'a&gt;(foo: &amp;'a i32, bar: &amp;i32) -&gt; &amp;'a i32 {...}
+</code></pre>
+<p>Lifetimes are important because the only way to return a reference from a function is by taking a reference as input and acting on it.  A reference created inside a function would be destroyed when the function exits.</p>
+<p>Lifetimes also ensure that structs do not outlive their members:</p>
+<pre><code>struct Album&lt;'a&gt; {
+    artist: &amp;'a str,
+    tracks: Vec&lt;String&gt;,
+    year: u16,
+}
+</code></pre>
+<p>Here, the lifetime <code>'a</code> guarantees that any instance of <code>Album</code> will not outlive the string slice that <code>Album.artist</code> points to.  Remember that <code>&amp;str</code>s are unowned references (in the case of structs, to data owned by an enclosing scope), whereas <code>tracks</code> is a vector of <code>String</code>s, which are actually owned by the struct.</p>
+<!--kg-card-end: markdown-->

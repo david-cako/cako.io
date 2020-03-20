@@ -1,0 +1,83 @@
+---
+title: "Multithreaded Rust"
+date: "2017-05-28T06:10:22.000Z"
+---
+
+# Multithreaded Rust
+
+<sup>2017-05-28T06:10:22.000Z</sup>
+
+<!--kg-card-begin: markdown--><p>Memory safety is one of the most pressing concerns in writing multithreaded applications.  Most programming languages will provide you with the tools necessary to avoid data races, however also the freedom to wrongly implement them. Consistent with Rust's theme of guarantees, <strong>safety across threads is a guarantee.</strong></p>
+<p>Rust seems like a very natural language to implement a multithreaded application in.  All shared data must either be borrowed immutably, deep copied, or <em>exclusively</em> (by a single thread/scope) borrowed mutably.</p>
+<p>The main synchronization primitives in Rust are as follows:</p>
+<ul>
+<li>
+<p>An <a href="https://doc.rust-lang.org/std/sync/struct.Arc.html"><code>Arc</code></a> is a container which may be shared across threads and contains an immutable value of an arbitrary type (can also be used mutably if used with <a href="https://doc.rust-lang.org/std/sync/atomic/">atomic types</a>).</p>
+</li>
+<li>
+<p>A <a href="https://doc.rust-lang.org/std/sync/struct.Mutex.html"><code>Mutex</code></a> is a container which functions mostly like a traditional mutex, however <em>contains</em> a mutable value of an arbitrary type, rather than requiring the user to enforce safety independently.  A mutex is automatically released when it goes out of scope, playing nicely into the existing borrow model.</p>
+</li>
+<li>
+<p>A <a href="https://doc.rust-lang.org/std/sync/struct.RwLock.html"><code>RwLock</code></a> is a container that functions like a mutex, however it can at any time either have any number of readers, or <em>only</em> a single writer.</p>
+</li>
+<li>
+<p><a href="https://doc.rust-lang.org/std/sync/mpsc/"><code>Channel</code></a>s allow for message-passing between threads.</p>
+</li>
+</ul>
+<h2 id="creatingthreads">Creating threads</h2>
+<p>Threads are created with <a href="https://doc.rust-lang.org/std/thread/"><code>thread::spawn()</code></a></p>
+<pre><code>thread::spawn(move || {
+    do_something(foo)
+});
+</code></pre>
+<p><code>thread::spawn()</code> accepts a closure, and executes the contents of it in a new thread.  You will generally be passing a <code>move</code> closure, which tells Rust that we want the closure, and by extension the thread, to take ownership of any variables passed into it.  This is important, as a thread can exist for any arbitrary length of time, and there would be no way to guarantee that variables created in the enclosing scope will continue to exist.  This is an example of a common use-after-free scenario that Rust, by design, simply does not allow you to do.</p>
+<h2 id="designpatterns">Design patterns</h2>
+<p>If you are familiar with threaded programming in other languages, Rust's interpretation will feel familiar.</p>
+<p>Commonly you will want to create many threads at once, and then wait for all of them to complete.</p>
+<p>This can be achieved by keeping a pool of <code>thread</code> s:</p>
+<pre><code>use std::thread;
+
+let mut threads = vec![];
+ 
+for i in 0..10 {
+    threads.push(thread::spawn(move || {
+        do_something(foo);
+    }));
+}
+
+for thread in threads.into_iter()  {
+    let thread = thread.join().unwrap();
+    println!(&quot;thread return value: {}&quot;, thread);
+}
+ 
+</code></pre>
+<p>Sharing data between threads requires that you choose a thread-safe container for it.  A <code>Mutex</code>, <code>Arc</code>, or <code>RwLock</code> may be used depending on your needs.</p>
+<p>You may also want to use channels for directional communication.</p>
+<p><code>channel</code> s are used for allowing threads to continuously and asynchronously push data to a consumer.</p>
+<pre><code>use std::thread;
+use std::sync::mpsc::channel;
+
+let (tx, rx) = channel();
+for i in 0..10 {
+    let tx = tx.clone();
+    thread::spawn(move|| {
+        // pass the channel tx in as a buffer to write to
+        do_something(foo, tx);
+    });
+}
+
+for _ in 0..10 {
+    let ret = rx.recv().unwrap();
+
+    println!(&quot;something has been done!: {}&quot;, ret);
+}
+</code></pre>
+<p><a href="https://doc.rust-lang.org/std/sync/struct.Barrier.html"><code>Barrier</code></a>s are an interesting synchronization primitive, allowing threads to all rendezvous at a particular point in their work.  This allows for more asynchronicity and autonomy of each thread than having to spawn threads in multiple waves each time work is completed.</p>
+<p>A barrier is initialized with a <code>usize</code> value determining how many <code>wait()</code>ers are needed to &quot;break it down&quot;.</p>
+<pre><code>use std::sync::Barrier;
+
+let barrier = Barrier::new(8);
+</code></pre>
+<p>This barrier can then be cloned and passed into 8 different threads.  When the threads reach the point that they must wait for the other threads, they each call <code>wait()</code> on the barrier, which will block until it is called for the 8th time.</p>
+<p><a href="https://doc.rust-lang.org/std/sync/struct.Condvar.html"><code>Condvar</code></a>s are useful as a low-cost alternative to <code>channel</code>s for when you are looking for behavior more similar to Go's channel-synchronization pattern.  <code>Condvar</code>s allow threads to wait for a signal that may be sent to one or all wait-ers.</p>
+<!--kg-card-end: markdown-->

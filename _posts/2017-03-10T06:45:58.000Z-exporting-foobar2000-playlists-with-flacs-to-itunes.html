@@ -1,0 +1,33 @@
+---
+title: "Exporting foobar2000 playlists (with FLACs!) to iTunes"
+date: "2017-03-10T06:45:58.000Z"
+---
+
+# Exporting foobar2000 playlists (with FLACs!) to iTunes
+
+<sup>2017-03-10T06:45:58.000Z</sup>
+
+<!--kg-card-begin: markdown--><p>I spend an inordinate amount of time on music management, and have lately undertaken the task of automating a lot of it.</p>
+<p><a href="https://github.com/david-cako/flac-phobic">flac-phobic</a> is a program that I wrote that aims to fully automate the process of maintaining your music library in both foobar2000 and iTunes.</p>
+<p>It functions kind of like a linker.  It encodes all FLAC files as mp3, and spits out a playlist containing all of the original mp3s in-place, as well as all of the newly encoded mp3s.</p>
+<p>The idea here is that I can continue managing my music in foobar2000 on my Windows machine, while also automatically having a lossy version of this playlist sync with my iPhone and macs.</p>
+<p>It's fairly easy to use.</p>
+<p><code>git clone</code> or download the repository as a zip, install it with</p>
+<pre><code>pip3 install flac_phobic
+</code></pre>
+<p>(either <code>pip3</code>, or <code>pip</code> -- make sure you're using python3)</p>
+<p>and run it:</p>
+<pre><code>flac_phobic [input playlist] [output directory]
+</code></pre>
+<p>You can also set defaults that are used when invoked with no arguments:</p>
+<pre><code>flac_phobic
+</code></pre>
+<p>Finally, you just delete the <strong>contents</strong> of the previous version of the playlist in iTunes and drag and drop the new .m3u into it.  It's important that you don't delete the playlist itself, because that seems to trigger a full re-sync of all the files.</p>
+<p>It also outputs a file called <code>rsync_manifest.txt</code> that may be used as input to</p>
+<pre><code>rsync -avP --files-from=playlist.m3u
+</code></pre>
+<p>and</p>
+<pre><code>tar -czvf flac_phobic.tar.gz -T playlist.m3u
+</code></pre>
+<p>This is incredibly useful for remotely syncing this playlist with other computers.</p>
+<!--kg-card-end: markdown-->

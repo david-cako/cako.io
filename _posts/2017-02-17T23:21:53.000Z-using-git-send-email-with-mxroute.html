@@ -1,0 +1,27 @@
+---
+title: "Using git send-email with MXroute"
+date: "2017-02-17T23:21:53.000Z"
+---
+
+# Using git send-email with MXroute
+
+<sup>2017-02-17T23:21:53.000Z</sup>
+
+<!--kg-card-begin: markdown--><p>MXroute does not seem to play nice with a lot of the command line utilities that I have tried using with it!  The best solution that I have found is using Google's mail servers to send mail using a separate identity.</p>
+<p>If you attempt to send email through Google's servers using a different &quot;From&quot; address than the one you are authenticating with, Google will override it.  This behavior can be changed by adding your MXroute address to Gmail as a new send-as address.</p>
+<p>From the classic Gmail interface (not Inbox), click the gear on the top right and open &quot;Settings&quot;.  Navigate to &quot;Accounts and Import&quot;, and add your MXroute address using MXroute's login information.</p>
+<p>You will need to create an app-specific password for your Gmail account.  This will give you a password to use in your <code>.gitconfig</code> that isn't your actual password, and circumvents 2-factor authentication if you have it enabled.</p>
+<p>Go to your <a href="https://myaccount.google.com/">Google Account settings</a>, click &quot;Sign in and security&quot;, and create a new app password.</p>
+<p>Now, open your <code>~/.gitconfig</code> file and add the following fields:</p>
+<pre><code class="language-html">[sendemail]
+    smtpEncryption = tls
+    smtpServer = smtp.gmail.com
+    smtpUser = &lt;YOUR_GMAIL_ADDRESS&gt;
+    smtpPass = &lt;YOUR_APP_PASSWORD&gt;
+    smtpServerPort = 587
+</code></pre>
+<p>git will automatically use your name and email configuration saved globally or per-repository.  Alternatively, you can add the following to the <code>[sendemail]</code> section to force a specific <code>From:</code> header:</p>
+<pre><code class="language-html">    from = &lt;Your Name&gt; name@domain.com
+</code></pre>
+<p>Test out a git send-email!  You should now be sending patches using your provided identity.</p>
+<!--kg-card-end: markdown-->
