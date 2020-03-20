@@ -1,6 +1,6 @@
 {
-    "name": "casper",
-    "description": "The default personal blogging theme for Ghost. Beautiful, minimal and responsive.",
+    "name": "cako-io-ghost",
+    "description": "cako.io theme for ghost",
     "demo": "https://demo.ghost.io",
     "version": "2.2.0",
     "engines": {
@@ -28,8 +28,7 @@
         ]
     },
     "keywords": [
-        "ghost",
-        "theme"
+        "ghost-theme"
     ],
     "repository": {
         "type": "git",
