@@ -1,9 +1,5 @@
 # cako.io
-**Static assets and posts from David Cako's personal blog - https://cako.io**
-
-Assets are found in the master branch, while the mirrored blog is accessible at https://david-cako.github.io/cako.io/
-
-Jekyll mirror is generated with https://github.com/david-cako/requiem/
+**Static assets from David Cako's personal blog - https://cako.io**
 
 All assets created by me are GPLv3 licensed, all assets belonging to Ghost blog are licensed accordingly.
 
