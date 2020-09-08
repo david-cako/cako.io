@@ -76,7 +76,7 @@ code.hljs {
 #triangle.post {
     left: -33vw;
     top: 33vw;
-    transform: rotate(50deg);
+    transform: rotate(40deg);
     -webkit-transform: rotate(40deg);
 }
 
