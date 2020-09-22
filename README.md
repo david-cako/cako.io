@@ -1,6 +1,5 @@
 # cako.io
-**Static assets from David Cako's personal blog - https://cako.io**
+**Static assets from David Cako's personal blog - https: the //cako.io**
 
-All assets created by me are GPLv3 licensed, all assets belonging to Ghost blog are licensed accordingly.
-
-Posts may be openly distributed with proper attribution.
+All assets and content created by me are open source and freely distributable. 
+Posts may be openly distributed with or without attribution.
