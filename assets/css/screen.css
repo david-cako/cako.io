@@ -1181,7 +1181,6 @@ Usage (In Ghost editor):
 /* Some grouped styles for smaller viewports */
 @media (max-width: 500px) {
     .post-full-meta {
-        font-size: 1.2rem;
         line-height: 1.3em;
     }
     .post-full-image {
