@@ -82,7 +82,7 @@ code.hljs {
 
 #cako-post-feed {
     background-color: #fff;
-    padding: 70px;
+    padding: 50px 60px;
 }
 @media (max-width: 1170px) {
     #cako-post-feed {
@@ -119,46 +119,59 @@ code.hljs {
     text-decoration: none;
 }
 
-#cako-site-nav-text {
-    font-family: "Lato", -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 300;
-    font-size: 50px;
+#cako-site-nav-link {
+    display: inline-block
+}
+
+#cako-site-nav-link:hover {
+    text-decoration: none
+}
+
+#cako-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 0.5em;
+}
+
+#david-cako-link {
     color: #fff;
-    display: inline-block;  
-    letter-spacing: -5px;  
-    margin-top: 50px;
+    text-align: right;
+}
+
+#david-cako-link a:hover {
+    text-decoration: none;
 }
 
 #cako-header-text {
     font-family: "Lato", -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 150pt;
-    letter-spacing: -15pt;
-    font-weight: 100;
+    font-size: 50px;
+    letter-spacing: -6px;
+    font-weight: 300;
     color: #fff;
     text-align: center;
-    margin-top: 0.5em;
+    margin: 0.8em 0 0.5em -0.1em;
+    line-height: 70%;
+    display: inline-block;
 }
 
 @media (max-width: 900px) {
-    #cako-header-text {
-        font-size: 75pt;
-        letter-spacing: -5pt;
-    }
     .cako-post {
         font-size: 14px;
     }
 }
 
 #last-name-c {
-    color: #105586;
+    color: #1142D6; 
 }
 
 #last-name-a {
-    color: #DDA40D;
+    color: #FFBD16;
 }
 
 #last-name-k {
     color: #00BF3B;
+    padding-left: 3px;
 }
 
 #last-name-o {
@@ -218,7 +231,7 @@ body {
 /* Centered content container blocks */
 .inner {
     margin: 0 auto;
-    max-width: 1040px;
+    max-width: 950px;
     width: 100%;
 }
 
@@ -249,8 +262,6 @@ body {
 
 .site-header {
     position: relative;
-    padding-top: 12px;
-    padding-bottom: 12px;
     color: #fff;
     background: color(var(--darkgrey) l(-5%)) no-repeat center center;
     background-size: cover;
@@ -789,7 +800,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 .post-full-header {
     margin: 0 auto;
-    padding: 2vw 3vw 3vw;
+    padding: 0 0 1.5em;
     max-width: 1040px;
     text-align: center;
 }
@@ -814,7 +825,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-title {
-    margin: 0;
+    margin: -0.1em 0 0 0;
     color: #fff;
     letter-spacing: 1px;
 }
@@ -849,13 +860,12 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content {
     position: relative;
     margin: 0 auto;
-    padding: 70px;
+    padding: 50px 60px;
     min-height: 230px;
     font-size: 2.2rem;
     line-height: 1.6em;
     background: #fff;
     border-radius: 5px;
-    max-width: 920px;
     font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     font-weight: 300;
 }

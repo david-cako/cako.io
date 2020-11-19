@@ -4,23 +4,19 @@ into the {body} of the default.hbs template --}}
 <meta name="google-site-verification" content="CZuJBVbmjQdYaKUXQ6pDcDQ1Y9dH13s1oeZmN_AZpu4" />
 
 {{!-- The big featured header, it uses blog cover image as a BG if available --}}
-<header id="cako-header">
-    <div id="cako-header-inner">
-        <div id="triangle"></div>
-        <h1 id="cako-header-text">
-            <span id="last-name-c">C</span>
-            <span id="last-name-a">A</span>
-            <span id="last-name-k">K</span>
-            <span id="last-name-o">O</span>
-            <span id="header-io">.IO</span>
-        </h1>
-    </div>
-</header>
-
 {{!-- The main content area --}}
 <main id="site-main" class="site-main outer" role="main">
     <div class="inner" style="position: relative">
-        <div style="position: absolute; right: 0; top: -30px; color: #fff;"><a href="https://davidcako.com">DAVID CAKO</a></div>
+        <header id="cako-header">
+            <h1 id="cako-header-text">
+                <span id="last-name-c">C</span>
+                <span id="last-name-a">A</span>
+                </br>
+                <span id="last-name-k">K</span>
+                <span id="last-name-o">O</span>
+            </h1>
+            <div id="david-cako-link"><a href="https://davidcako.com">DAVID CAKO</a></div>
+        </header>
         <div id="cako-post-feed">
             {{#foreach posts}}
 
