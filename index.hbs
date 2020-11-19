@@ -6,18 +6,17 @@ into the {body} of the default.hbs template --}}
 {{!-- The big featured header, it uses blog cover image as a BG if available --}}
 {{!-- The main content area --}}
 <main id="site-main" class="site-main outer" role="main">
-    <div class="inner" style="position: relative">
-        <header id="cako-header">
-            <h1 id="cako-header-text">
-                <span id="last-name-c">C</span>
-                <span id="last-name-a">A</span>
-                </br>
-                <span id="last-name-k">K</span>
-                <span id="last-name-o">O</span>
-            </h1>
-            <div id="david-cako-link"><a href="https://davidcako.com">DAVID CAKO</a></div>
-        </header>
-        <div id="cako-post-feed">
+    <header id="cako-header">
+        <h1 id="cako-header-text">
+            <span id="last-name-c">C</span>
+            <span id="last-name-a">A</span>
+            </br>
+            <span id="last-name-k">K</span>
+            <span id="last-name-o">O</span>
+        </h1>
+    </header>
+     <div class="inner" style="position: relative">
+       <div id="cako-post-feed">
             {{#foreach posts}}
 
                 {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
