@@ -81,7 +81,10 @@ code.hljs {
 }
 
 #cako-post-feed {
-    padding: 50px 0;
+    padding: 45px;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    margin-top: 2em;
 }
 
 @media (max-width: 500px) {
