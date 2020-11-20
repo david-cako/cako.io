@@ -89,7 +89,8 @@ code.hljs {
 
 @media (max-width: 500px) {
     #cako-post-feed {
-        padding: 30px;
+        padding: 0;
+        border: none;
     }
 }
 
@@ -235,7 +236,7 @@ body {
 
 @media (max-width: 900px) {
     .site-main.outer {
-        padding: 0 2vw;
+        padding: 0 0vw;
     }
 }
 /* Centered content container blocks */
@@ -890,8 +891,10 @@ The first (most recent) post in the list is styled to be bigger than the others 
 @media (max-width: 800px) {
     .post-full-content {
         padding: 7vw;
+        border-radius: 0;
     }
 }
+
 @media (max-width: 800px) {
     .post-full-content {
         font-size: 1.9rem;
