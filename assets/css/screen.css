@@ -65,7 +65,13 @@ blockquote a {
 }
 
 pre {
+    font-size: 0.7em;
+    line-height: 1.3em;
     margin-bottom: 1.7em !important;
+}
+
+sup:target {
+    background-color: #ff17a6;
 }
 
 code {
