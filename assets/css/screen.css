@@ -80,17 +80,31 @@ code.hljs {
     -webkit-transform: rotate(40deg);
 }
 
+#cako-intro {
+    margin: 2em 3em 1em;
+    color: #fff;
+}
+
+#cako-intro a:hover {
+    color: #ff17a6
+}
+
+#cako-post-feed-outer {
+    margin-top: 4em;
+}
+
 #cako-post-feed {
     padding: 45px;
     border: 1px solid #fff;
     border-radius: 5px;
-    margin-top: 2em;
 }
 
 @media (max-width: 500px) {
+    #cako-intro {
+        margin: 1em 1.5em;
+    }
     #cako-post-feed {
-        padding: 0;
-        border: none;
+        padding: 30px 25px;
     }
 }
 
@@ -234,11 +248,6 @@ body {
     padding: 0 2vw;
 }
 
-@media (max-width: 900px) {
-    .site-main.outer {
-        padding: 0 0vw;
-    }
-}
 /* Centered content container blocks */
 .inner {
     margin: 0 auto;
@@ -811,14 +820,9 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 .post-full-header {
     margin: 0 auto;
-    padding: 1em 0 1.5em;
+    padding: 1.5em 0 1.7em;
     max-width: 1040px;
     text-align: center;
-}
-@media (max-width: 500px) {
-    /*.post-full-header {
-        padding: 14vw 3vw 10vw;
-    }*/
 }
 
 .post-full-meta {
@@ -837,14 +841,14 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 .post-full-title {
     margin: -0.1em 0 0 0;
-    font-size: 4rem;
+    font-size: 3.5rem;
     color: #fff;
     font-weight: 500;
 }
 
 @media (max-width: 500px) {
     .post-full-title {
-        font-size: 3.5rem;
+        font-size: 3rem;
     }
 }
 
@@ -888,10 +892,9 @@ The first (most recent) post in the list is styled to be bigger than the others 
     font-weight: 300;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 500px) {
     .post-full-content {
-        padding: 7vw;
-        border-radius: 0;
+        padding: 25px;
     }
 }
 
