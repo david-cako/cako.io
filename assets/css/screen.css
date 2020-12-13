@@ -85,6 +85,10 @@ code.hljs {
     color: #fff;
 }
 
+#cako-intro a {
+    text-decoration: underline;
+}
+
 #cako-intro a:hover {
     color: #ff17a6
 }
