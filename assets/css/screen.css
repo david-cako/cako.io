@@ -79,8 +79,8 @@ code {
 }
 
 code.hljs {
-    padding: 1em !important;
-    border-radius: 5px !important;
+    padding: 1em;
+    border-radius: 5px;
 }
 
 #triangle.post {
@@ -898,7 +898,6 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content {
     position: relative;
     margin: 0 auto;
-    padding: 45px;
     min-height: 230px;
     font-size: 2.2rem;
     line-height: 1.6em;
@@ -906,6 +905,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     border-radius: 5px;
     font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     font-weight: 300;
+    padding: 45px 0;
 }
 
 @media (max-width: 500px) {
@@ -951,6 +951,19 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .no-image .post-full-content:before,
 .no-image .post-full-content:after {
     display: none;
+}
+
+.post-full-content > * {
+    padding: 0 45px;
+}
+
+@media (max-width: 650px) {
+    .post-full-content > pre {
+        padding: 0;
+    }
+    .post-full-content code {
+        border-radius: 0;
+    }
 }
 
 .post-full-content h1,
