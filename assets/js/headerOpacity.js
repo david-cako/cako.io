@@ -1,5 +1,7 @@
 (() => {
   const cakoHeader = document.getElementById('cako-header-text');
+  const cakoHeaderMaxScroll = 50;
+  
   let lastOpacity = 1;
 
   const updateHeaderOpacity = () => {
@@ -7,10 +9,10 @@
       return;
     }
 
-    const newOpacity = window.scrollY > 50 
+    const newOpacity = window.scrollY > cakoHeaderMaxScroll 
       ? 0 
-      : 1 - (window.scrollY/50);
-      
+      : 1 - (window.scrollY/cakoHeaderMaxScroll);
+
     cakoHeader.style.opacity = newOpacity;
     lastOpacity = newOpacity; 
   }
