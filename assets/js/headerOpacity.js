@@ -7,7 +7,10 @@
       return;
     }
 
-    const newOpacity = 1 - (window.scrollY/50)
+    const newOpacity = window.scrollY > 50 
+      ? 0 
+      : 1 - (window.scrollY/50);
+      
     cakoHeader.style.opacity = newOpacity;
     lastOpacity = newOpacity; 
   }
