@@ -163,11 +163,12 @@ code.hljs {
 }
 
 #cako-site-nav-link {
-    display: inline-block
+    display: inline-block;
+    padding-right: 8px;
 }
 
 #cako-site-nav-link:hover {
-    text-decoration: none
+    text-decoration: none;
 }
 
 #cako-header {
@@ -189,7 +190,7 @@ code.hljs {
 #cako-header-text {
     font-family: "Lato", -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 35px;
-    letter-spacing: -4px;
+    letter-spacing: -5px;
     font-weight: 300;
     color: #fff;
     text-align: center;
@@ -206,6 +207,7 @@ code.hljs {
 
 #last-name-c {
     color: #658CFF; 
+    letter-spacing: -4px;
 }
 
 #last-name-a {
