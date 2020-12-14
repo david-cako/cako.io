@@ -115,6 +115,9 @@ code.hljs {
 }
 
 @media (max-width: 650px) {
+    #cako-intro {
+        text-align: center;
+    }
     #cako-post-feed {
         padding: 30px 25px;
     }
