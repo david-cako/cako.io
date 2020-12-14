@@ -3,18 +3,12 @@
 into the {body} of the default.hbs template --}}
 <meta name="google-site-verification" content="CZuJBVbmjQdYaKUXQ6pDcDQ1Y9dH13s1oeZmN_AZpu4" />
 
+<header class="site-header outer">
+    {{> "site-nav"}}
+</header>
 {{!-- The big featured header, it uses blog cover image as a BG if available --}}
 {{!-- The main content area --}}
 <main id="site-main" class="site-main outer" role="main">
-    <header id="cako-header">
-        <h1 id="cako-header-text">
-            <span id="last-name-c">C</span>
-            <span id="last-name-a">A</span>
-            </br>
-            <span id="last-name-k">K</span>
-            <span id="last-name-o">O</span>
-        </h1>
-    </header>
      <div class="inner" style="position: relative">
        <div id="cako-post-feed-outer">
            <div id="cako-intro">A blog and software consultancy by <a id="name-link" href="https://davidcako.com">David Cako</a></div>

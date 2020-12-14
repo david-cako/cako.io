@@ -104,7 +104,8 @@ code.hljs {
 }
 
 #cako-post-feed-outer {
-    margin-top: 4em;
+    margin-top: 88px;
+    padding-top: 4em;
 }
 
 #cako-post-feed {
@@ -167,10 +168,10 @@ code.hljs {
 }
 
 #cako-header {
+    position: fixed;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 0.2em;
 }
 
 #david-cako-link {
@@ -295,10 +296,11 @@ body {
 /* ---------------------------------------------------------- */
 
 .site-header {
-    position: relative;
+    position: fixed;
     color: #fff;
     background: color(var(--darkgrey) l(-5%)) no-repeat center center;
     background-size: cover;
+    z-index: 3000;
 }
 
 .site-header-content {
@@ -833,7 +835,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    margin: 0 auto;
+    margin: 104px auto 0;
     padding: 1.5em 0 1.7em;
     max-width: 1040px;
     text-align: center;
