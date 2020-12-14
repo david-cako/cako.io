@@ -3,10 +3,7 @@ const updateHeaderOpacity = () => {
 }
 
 window.addEventListener('scroll', () => {
-  if (window.scrollY>100) {
-    return;
-  }
   updateHeaderOpacity();
 });
 
-updateHeaderOpacity();
+document.addEventListener('DOMContentLoaded', updateHeaderOpacity);
