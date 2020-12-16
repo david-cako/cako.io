@@ -110,6 +110,7 @@ code.hljs {
 
 #cako-post-feed {
     padding: 45px;
+    background-color: #000;
     border: 1px solid #fff;
     border-radius: 5px;
 }
@@ -305,7 +306,6 @@ body {
     color: #fff;
     background: color(var(--darkgrey) l(-5%)) no-repeat center center;
     background-size: cover;
-    z-index: 3000;
 }
 
 .site-header-content {
