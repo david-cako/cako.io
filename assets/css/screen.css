@@ -903,7 +903,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     position: relative;
     margin: 0 auto;
     min-height: 230px;
-    font-size: 2.2rem;
+    font-size: 2rem;
     line-height: 1.6em;
     background: #fff;
     border-radius: 5px;
@@ -1136,7 +1136,7 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h2 {
-    margin: 1.2em 0 0.5em 0;
+    margin: 0.9em 0 0.3em 0;
     font-size: 3.6rem;
     font-weight: 700;
 }
