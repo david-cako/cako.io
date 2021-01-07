@@ -40,10 +40,10 @@ blockquote a {
 #email-address {
     color: rgb(10,132,255);
     border: 1px solid;
-    padding: 4px 20px;
+    padding: 4px 18px;
     border-radius: 15px;
     display: inline-block;
-    font-size: 0.75em;
+    font-size: 0.8em;
     text-decoration: none;
     box-shadow: none;
 }
