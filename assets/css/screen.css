@@ -108,7 +108,7 @@ code.hljs {
 }
 
 #cako-post-feed {
-    padding: 45px;
+    padding: 35px 30px;
     background-color: #000;
     border: 1px solid #fff;
     border-radius: 5px;
@@ -116,10 +116,10 @@ code.hljs {
 
 @media (max-width: 650px) {
     #cako-intro {
-        text-align: center;
+        margin: 2em 1em 0.8em;
     }
     #cako-post-feed {
-        padding: 30px 25px;
+        padding: 25px 20px;
     }
     #cako-post-feed-outer {
         margin-top: 4em;
@@ -189,8 +189,8 @@ code.hljs {
 
 #cako-header-text {
     font-family: "Lato", -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 35px;
-    letter-spacing: -5px;
+    font-size: 28px;
+    letter-spacing: -4.2px;
     font-weight: 300;
     color: #fff;
     text-align: center;
@@ -207,7 +207,6 @@ code.hljs {
 
 #last-name-c {
     color: #658CFF; 
-    letter-spacing: -4px;
 }
 
 #last-name-a {
@@ -216,7 +215,6 @@ code.hljs {
 
 #last-name-k {
     color: #00BF3B;
-    padding-left: 2px;
 }
 
 #last-name-o {
@@ -840,7 +838,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    padding: 1.5em 0 1.7em;
+    padding: 1.5em 0;
     max-width: 1040px;
     text-align: center;
 }
@@ -909,21 +907,14 @@ The first (most recent) post in the list is styled to be bigger than the others 
     border-radius: 5px;
     font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     font-weight: 300;
-    padding: 45px 0;
+    padding: 35px 0;
 }
 
 @media (max-width: 650px) {
     .post-full-content {
-        padding: 25px 0;
+        padding: 15px 0;
     }
 }
-
-@media (max-width: 800px) {
-    .post-full-content {
-        font-size: 1.9rem;
-    }
-}
-
 .post-full-content:before {
     content: "";
     position: absolute;
@@ -958,12 +949,18 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-content > * {
-    padding: 0 45px;
+    padding: 0 40px;
+}
+
+@media (max-width: 800px) {
+    .post-full-content > * {
+        padding: 0 30px;
+    }
 }
 
 @media (max-width: 650px) {
     .post-full-content > * {
-        padding: 0 25px;
+        padding: 0 20px;
     }
     .post-full-content > pre {
         padding: 0;
@@ -1006,6 +1003,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content a {
     color: #000;
     box-shadow: var(--blue) 0 -1px 0 inset;
+    word-wrap: break-word;
 }
 
 .post-full-content a:hover {
