@@ -134,7 +134,7 @@ code.hljs {
     margin-top: 2.5em;
 }
 
-@media (max-width: 650px) {
+@media (max-width: 500px) {
     .cako-post:not(:nth-of-type(1)) {
         margin-top: 2.2em;
     } 
@@ -916,6 +916,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 @media (max-width: 650px) {
     .post-full-content {
+        font-size: 1.9rem;
         padding: 20px 0;
     }
 }
