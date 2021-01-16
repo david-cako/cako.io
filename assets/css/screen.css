@@ -152,18 +152,9 @@ code.hljs {
     font-weight: 400;
     font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-    color: #658CFF;
+    color:#56f9e9;
 }
 
-.cako-post:nth-of-type(3n) .cako-post-date {
-    color: #00BF3B;
-}
-.cako-post:nth-of-type(2n) .cako-post-date {
-    color: #FFBD16;
-}
-.cako-post:nth-of-type(4n) .cako-post-date {
-    color: #ff17a6;
-}
 .cako-post-link {
     display: inline-block;    
 }
@@ -859,7 +850,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-meta-date {
-    color: #FFBD16;
+    color: #56f9e9;
 }
 
 .post-full-title {
