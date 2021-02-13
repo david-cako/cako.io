@@ -141,6 +141,8 @@ code.hljs {
 }
 
 .cako-post-title {
+    display: inline-block;
+    position: relative;
     margin-bottom: 0.2em;
     font-size: 1.75em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
@@ -156,11 +158,16 @@ code.hljs {
 }
 
 .cako-post-link {
-    display: inline-block;    
+    display: inline-block;
+    position: relative; 
 }
 
 .cako-post-link:hover {
     text-decoration: none;
+}
+
+.cako-post-link .spinner {
+    margin-left: 18px;
 }
 
 #cako-site-nav-link {
@@ -858,6 +865,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     font-size: 3.5rem;
     color: #fff;
     font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
 }
 
 @media (max-width: 650px) {
@@ -1032,7 +1040,9 @@ The first (most recent) post in the list is styled to be bigger than the others 
 @media (max-width: 1040px) {
     .post-full-content img,
     .post-full-content video {
-        width: 100%;
+        max-width:100%;
+        width:100%;
+        height:auto;
     }
 }
 

@@ -52,5 +52,6 @@
     },
     "config": {
         "posts_per_page": 999
-    }
+    },
+    "dependencies": {}
 }
