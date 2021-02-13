@@ -43,5 +43,5 @@ function onPostClicked(e) {
     e.addEventListener('click', onPostClicked);
   }
 
-  setInterval(removeSpinners, 200);
+  setInterval(removeSpinners, 400);
 })();
