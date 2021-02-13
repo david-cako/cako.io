@@ -21,8 +21,6 @@ const spinnerOpts = {
   position: 'absolute', // Element positioning
 };
 
-let spinnerResetInterval;
-
 function removeSpinners() {
   const elements = document.getElementsByClassName('spinner');
 
@@ -33,8 +31,6 @@ function removeSpinners() {
 
 function onPostClicked(e) {
   removeSpinners();
-
-  clearInterval(spinnerResetInterval);
 
   const spinner = new Spinner(spinnerOpts).spin();
   e.currentTarget.querySelector('.cako-post-title').appendChild(spinner.el);
@@ -47,5 +43,5 @@ function onPostClicked(e) {
     e.addEventListener('click', onPostClicked);
   }
 
-  setInterval(removeSpinners, 500);
+  setInterval(removeSpinners, 400);
 })();
