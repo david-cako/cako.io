@@ -1041,7 +1041,6 @@ The first (most recent) post in the list is styled to be bigger than the others 
     .post-full-content img,
     .post-full-content video {
         max-width:100%;
-        width:100%;
         height:auto;
     }
 }
