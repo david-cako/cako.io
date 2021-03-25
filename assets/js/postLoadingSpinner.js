@@ -43,7 +43,7 @@ function onPostClicked(e) {
   // set an interval here that will continue after browser-back
   // to remove the spinner
   SPIN_CLEAR_INTERVAL = setInterval(() => {
-    if (Date.now() - SPIN_BEGIN > 400) {
+    if (Date.now() - SPIN_BEGIN > 1000) {
       removeSpinners();
       clearInterval(SPIN_CLEAR_INTERVAL);
     }
