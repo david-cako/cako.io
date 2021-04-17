@@ -132,7 +132,7 @@ code.hljs {
 }
 
 .cako-post:not(:nth-of-type(1)) {
-    margin-top: 2.2em;
+    margin-top: 2.4em;
 }
 
 @media (max-width: 650px) {
@@ -173,11 +173,11 @@ code.hljs {
 
 #cako-site-nav-link {
     display: inline-block;
-    padding: 4px 3.5px 0 0;
+    padding: 3.5px 3.5px 4.5px 0px;
     background: #000;
     border-radius: 7px;
-    width: 39px;
-    height: 45.5px;
+    min-width: 38px;
+    min-height: 45px;
     box-sizing: border-box;
 }
 
@@ -221,7 +221,6 @@ code.hljs {
 
 #last-name-c {
     color: #658CFF; 
-    font-size: 1.01em;
 }
 
 #last-name-a {
@@ -235,7 +234,7 @@ code.hljs {
 
 #last-name-o {
     color: #D60000;
-    font-size: 1.03em;
+    font-size: 1.02em;
 }
 
 #header-io {
@@ -855,7 +854,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    padding: 1.5em 0 1.2em;
+    padding: 1.85em 0 1.2em;
     max-width: 1040px;
     text-align: center;
 }
@@ -968,7 +967,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-content > * {
-    padding: 0 35px;
+    padding: 0 30px;
 }
 
 @media (max-width: 650px) {
