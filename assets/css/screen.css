@@ -108,10 +108,10 @@ code.hljs {
 }
 
 #cako-post-feed {
-    padding: 35px 30px;
-    background-color: #000;
+    padding: 30px 25px;
+    background-color: #fff;
     border: 1px solid #fff;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 @media (max-width: 650px) {
@@ -132,12 +132,12 @@ code.hljs {
 }
 
 .cako-post:not(:nth-of-type(1)) {
-    margin-top: 2.5em;
+    margin-top: 2.2em;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 650px) {
     .cako-post:not(:nth-of-type(1)) {
-        margin-top: 2.2em;
+        margin-top: 2em;
     } 
 }
 
@@ -148,14 +148,14 @@ code.hljs {
     font-size: 1.75em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
     font-weight: 500;
-    color: #fff;
+    color: #000;
 }
 
 .cako-post-date {
     font-weight: 400;
     font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-    color:#56f9e9;
+    color:#003ef9;
 }
 
 .cako-post-link {
@@ -173,11 +173,22 @@ code.hljs {
 
 #cako-site-nav-link {
     display: inline-block;
-    padding-right: 3px;
+    padding: 4px 3.5px 0 0;
+    background: #000;
+    border-radius: 7px;
+    width: 39px;
+    height: 45.5px;
+    box-sizing: border-box;
 }
 
 #cako-site-nav-link:hover {
     text-decoration: none;
+    border: 1px solid #fff;
+    background: transparent;
+}
+
+#cako-site-nav-link:hover > span {
+    color: #fff !important;
 }
 
 #cako-header {
@@ -198,7 +209,7 @@ code.hljs {
 
 #cako-header-text {
     font-family: "Lato", -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 28px;
+    font-size: 24px;
     letter-spacing: -2px;
     font-weight: 300;
     color: #fff;
@@ -233,7 +244,7 @@ code.hljs {
 
 body {
     overflow: hidden;
-    background-color: #000;
+    background-color: #02442e;
     position: relative;
 }
 
@@ -264,13 +275,13 @@ body {
 
 .site-main {
     z-index: 100;
-    top: 104px;
+    top: 90px;
 }
 
 /* Full width page blocks */
 .outer {
     position: relative;
-    padding: 0 2vw 104px;
+    padding: 0 2vw 90px;
 }
 
 /* Centered content container blocks */
@@ -844,7 +855,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    padding: 1.5em 0;
+    padding: 1.5em 0 1.2em;
     max-width: 1040px;
     text-align: center;
 }
@@ -860,7 +871,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-meta-date {
-    color: #56f9e9;
+    color: #fff;
 }
 
 .post-full-title {
@@ -911,10 +922,10 @@ The first (most recent) post in the list is styled to be bigger than the others 
     font-size: 2rem;
     line-height: 1.6em;
     background: #fff;
-    border-radius: 5px;
+    border-radius: 10px;
     font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     font-weight: 300;
-    padding: 35px 0;
+    padding: 25px 0;
 }
 
 @media (max-width: 650px) {
@@ -957,13 +968,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-content > * {
-    padding: 0 40px;
-}
-
-@media (max-width: 800px) {
-    .post-full-content > * {
-        padding: 0 30px;
-    }
+    padding: 0 35px;
 }
 
 @media (max-width: 650px) {
@@ -1133,7 +1138,7 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h1 {
-    margin: 1.2em 0 0.2em 0;
+    margin: 1em 0 0.2em 0;
     font-size: 4.6rem;
     font-weight: 700;
 }
@@ -2273,7 +2278,7 @@ Usage (In Ghost editor):
     padding-top: 10px;
     padding-bottom: 60px;
     color: #fff;
-    background: color(var(--darkgrey) l(-15%));
+    z-index: 3000;
 }
 
 .site-footer-content {
@@ -2281,17 +2286,7 @@ Usage (In Ghost editor):
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    color: rgba(255,255,255,0.7);
     font-size: 1.3rem;
-}
-
-.site-footer-content a {
-    color: rgba(255,255,255,0.7);
-}
-
-.site-footer-content a:hover {
-    color: rgba(255,255,255,1);
-    text-decoration: none;
 }
 
 .site-footer-nav {
