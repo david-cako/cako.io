@@ -2280,6 +2280,10 @@ Usage (In Ghost editor):
     z-index: 3000;
 }
 
+.site-footer a {
+    color: #fff;
+}
+
 .site-footer-content {
     display: flex;
     flex-wrap: wrap;
