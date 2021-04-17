@@ -335,7 +335,17 @@ ul,
 ol,
 dl,
 blockquote {
-    margin: 0 0 0.9em 0;
+    margin: 0 0 0.8em 0;
+}
+
+@media (max-width: 650px) {
+    p,
+    ul,
+    ol,
+    dl,
+    blockquote {
+        margin: 0 0 0.7em 0;
+    }
 }
 
 ol,
