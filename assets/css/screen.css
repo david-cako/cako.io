@@ -112,6 +112,7 @@ code.hljs {
     background-color: #fff;
     border: 1px solid #fff;
     border-radius: 10px;
+    box-shadow: 0 1px 15px rgba(0,0,0,0.3)
 }
 
 @media (max-width: 650px) {
@@ -155,7 +156,7 @@ code.hljs {
     font-weight: 400;
     font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-    color:#003ef9;
+    color: #0069d9;
 }
 
 .cako-post-link {
@@ -243,7 +244,7 @@ code.hljs {
 
 body {
     overflow: hidden;
-    background-color: #02442e;
+    background-color: #3e6ea8;
     position: relative;
 }
 
@@ -925,6 +926,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     font-weight: 300;
     padding: 25px 0;
+    box-shadow: 0 1px 15px rgba(0,0,0,0.3)
 }
 
 @media (max-width: 650px) {
