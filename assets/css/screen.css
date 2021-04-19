@@ -855,7 +855,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    padding: 1.85em 0 1.2em;
+    padding: 2em 0 1.2em;
     max-width: 1040px;
     text-align: center;
 }
