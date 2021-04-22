@@ -35,7 +35,7 @@ blockquote a {
 #email-address {
     color: #007cff;
     border: 1px solid;
-    padding: 0.5em 1.2em;
+    padding: 0.45em 1.2em;
     border-radius: 1.1em;
     display: inline-block;
     font-size: 1.2em;
@@ -86,7 +86,7 @@ code.hljs {
 }
 
 #cako-intro {
-    margin: 2em 0 1em;
+    margin: 2em 0 0.5em;
 }
 
 #cako-intro a {
@@ -98,9 +98,8 @@ code.hljs {
 }
 
 #cako-post-feed-outer {
-    margin-top: 4.7em;
+    margin-top: 3.5em;
     padding: 0 20px;
-    max-width: 80vw;
 }
 
 #cako-post-feed {
@@ -193,7 +192,7 @@ code.hljs {
     font-weight: 300;
     color: #fff;
     text-align: center;
-    margin: 0.8em 0 20px 0.5em;
+    margin: 0.8em 0 20px 20px;
     line-height: 75%;
     display: inline-block;
 }
@@ -898,7 +897,6 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content {
     position: relative;
     margin: 0 auto;
-    min-height: 230px;
     font-size: 2rem;
     line-height: 1.6em;
     background: #fff;
@@ -954,6 +952,9 @@ The first (most recent) post in the list is styled to be bigger than the others 
 @media (max-width: 650px) {
     .post-full-content > pre {
         padding: 0;
+    }
+    .post-full-content > * {
+        padding: 0 20px;
     }
     .post-full-content code {
         border-radius: 0;
@@ -2270,6 +2271,7 @@ Usage (In Ghost editor):
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
     font-size: 1.3rem;
     padding: 10px 20px 30px;
 }
