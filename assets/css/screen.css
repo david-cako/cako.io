@@ -32,25 +32,20 @@ blockquote a {
     font-size: 0.5em;
 }
 
-#email-address-outer {
-    text-align: right;
-    margin-top: 1em;
-}
-
 #email-address {
-    color: rgb(10,132,255);
+    color: #007cff;
     border: 1px solid;
-    padding: 4px 18px;
-    border-radius: 15px;
+    padding: 0.5em 1.2em;
+    border-radius: 1.1em;
     display: inline-block;
-    font-size: 0.8em;
+    font-size: 1.2em;
     text-decoration: none;
     box-shadow: none;
 }
 
 #email-address:hover {
     color: #fff;
-    background-color: rgb(10,132,255);
+    background-color: #007cff;
 }
 
 #triangle {
@@ -91,8 +86,7 @@ code.hljs {
 }
 
 #cako-intro {
-    margin: 2em 1em 1em;
-    color: #fff;
+    margin: 2em 0 1em;
 }
 
 #cako-intro a {
@@ -105,27 +99,17 @@ code.hljs {
 
 #cako-post-feed-outer {
     margin-top: 4.7em;
+    padding: 0 20px;
+    max-width: 80vw;
 }
 
 #cako-post-feed {
-    padding: 30px 25px;
+    padding: 20px 0;
     background-color: #fff;
     border: 1px solid #fff;
     border-radius: 10px;
-    box-shadow: 0 1px 15px rgba(0,0,0,0.3)
 }
 
-@media (max-width: 650px) {
-    #cako-intro {
-        margin: 2em 1em 0.8em;
-    }
-    #cako-post-feed {
-        padding: 25px 20px;
-    }
-    #cako-post-feed-outer {
-        margin-top: 4em;
-    }
-}
 
 .cako-post {
     font-size: 14px;
@@ -134,12 +118,6 @@ code.hljs {
 
 .cako-post:not(:nth-of-type(1)) {
     margin-top: 2.4em;
-}
-
-@media (max-width: 650px) {
-    .cako-post:not(:nth-of-type(1)) {
-        margin-top: 2em;
-    } 
 }
 
 .cako-post-title {
@@ -156,7 +134,7 @@ code.hljs {
     font-weight: 400;
     font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-    color: #0069d9;
+    color: #0162c8;
 }
 
 .cako-post-link {
@@ -184,12 +162,12 @@ code.hljs {
 
 #cako-site-nav-link:hover {
     text-decoration: none;
-    border: 1px solid #fff;
+    border: 1px solid #0162c8;
     background: transparent;
 }
 
 #cako-site-nav-link:hover > span {
-    color: #fff !important;
+    color: #0162c8 !important;
 }
 
 #cako-header {
@@ -215,7 +193,7 @@ code.hljs {
     font-weight: 300;
     color: #fff;
     text-align: center;
-    margin: 0.8em 0 0.3em -0.1em;
+    margin: 0.8em 0 20px 0.5em;
     line-height: 75%;
     display: inline-block;
 }
@@ -244,7 +222,6 @@ code.hljs {
 
 body {
     overflow: hidden;
-    background-color: #3e6ea8;
     position: relative;
 }
 
@@ -281,14 +258,20 @@ body {
 /* Full width page blocks */
 .outer {
     position: relative;
-    padding: 0 2vw 90px;
+    padding: 0 0 90px;
 }
 
 /* Centered content container blocks */
 .inner {
     margin: 0 auto;
-    max-width: 950px;
     width: 100%;
+    max-width: 800px;
+}
+
+@media (min-width: 900px) {
+    .index.inner {
+        max-width: 90vw;
+    }
 }
 
 /* Usage:
@@ -855,29 +838,26 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    padding: 2em 0 1.2em;
-    max-width: 1040px;
-    text-align: center;
+    padding: 3em 20px 2em;
 }
 
 .post-full-meta {
     display: flex;
-    justify-content: center;
     align-items: center;
     color: var(--midgrey);
-    font-size: 1em;
+    font-size: 1.2em;
     font-weight: 500;
     word-spacing: -0.1em;
 }
 
 .post-full-meta-date {
-    color: #fff;
+    color: #000;
 }
 
 .post-full-title {
-    margin: -0.1em 0 0 0;
+    margin: 0.1em 0;
     font-size: 3.5rem;
-    color: #fff;
+    color: #0162c8;
     font-weight: 500;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
 }
@@ -925,14 +905,13 @@ The first (most recent) post in the list is styled to be bigger than the others 
     border-radius: 10px;
     font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     font-weight: 300;
-    padding: 25px 0;
-    box-shadow: 0 1px 15px rgba(0,0,0,0.3)
+    padding: 0;
 }
 
 @media (max-width: 650px) {
     .post-full-content {
         font-size: 1.9rem;
-        padding: 20px 0;
+        padding: 0;
     }
 }
 .post-full-content:before {
@@ -969,13 +948,10 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-content > * {
-    padding: 0 30px;
+    padding: 0 20px;
 }
 
 @media (max-width: 650px) {
-    .post-full-content > * {
-        padding: 0 20px;
-    }
     .post-full-content > pre {
         padding: 0;
     }
@@ -1045,13 +1021,20 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content video {
     display: block;
     margin: 1.5em auto 0.7em auto;
+    border-radius: 8px;
 }
+
 @media (max-width: 1040px) {
     .post-full-content img,
     .post-full-content video {
         max-width:100%;
         height:auto;
     }
+}
+
+.post-full-content p:first-child img {
+    margin-top: 0;
+    box-shadow: 0 1px 10px rgba(0,0,0,0.3);
 }
 
 
@@ -2276,22 +2259,19 @@ Usage (In Ghost editor):
 
 .site-footer {
     position: relative;
-    padding-top: 10px;
-    padding-bottom: 60px;
-    color: #fff;
-    z-index: 3000;
+    padding-top: 1em;
 }
 
-.site-footer a {
-    color: #fff;
+.copyright {
+    font-weight: 300;
 }
 
 .site-footer-content {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
     font-size: 1.3rem;
+    padding: 10px 20px 30px;
 }
 
 .site-footer-nav {
@@ -2317,13 +2297,4 @@ Usage (In Ghost editor):
 
 .site-footer-nav a:first-of-type:before {
     display: none;
-}
-
-@media (max-width: 650px) {
-    .site-footer-content {
-        flex-direction: column;
-    }
-    .site-footer-nav a:first-child {
-        margin-left: 0;
-    }
 }

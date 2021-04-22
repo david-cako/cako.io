@@ -1,6 +1,6 @@
 (() => {
   const cakoHeader = document.getElementById('cako-header-text');
-  const cakoHeaderMaxScroll = 40;
+  const cakoHeaderMaxScroll = 50;
 
   let lastOpacity = 1;
 
