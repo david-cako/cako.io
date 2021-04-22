@@ -35,9 +35,9 @@ blockquote a {
 #email-address {
     color: #007cff;
     border: 1px solid;
-    padding: 0.4em 1.2em;
-    border-radius: 1.1em;
-    font-size: 1.1em;
+    padding: 0.5em 1.2em;
+    border-radius: 1em;
+    font-size: 1.2em;
     display: inline-block;
     text-decoration: none;
     box-shadow: none;
