@@ -124,12 +124,12 @@ code.hljs {
     margin-bottom: 0.2em;
     font-size: 1.75em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-    font-weight: 500;
+    font-weight: 400;
     color: #000;
 }
 
 .cako-post-date {
-    font-weight: 400;
+    font-weight: 500;
     font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
     color: #0162c8;
@@ -843,7 +843,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     display: flex;
     align-items: center;
     color: var(--midgrey);
-    font-size: 1.2em;
+    font-size: 1.1em;
     font-weight: 500;
     word-spacing: -0.1em;
 }
@@ -856,7 +856,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     margin: 0.1em 0;
     font-size: 3.5rem;
     color: #0162c8;
-    font-weight: 500;
+    font-weight: 400;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
 }
 
