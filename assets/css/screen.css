@@ -130,6 +130,7 @@ code.hljs {
 
 .cako-post-date {
     font-weight: 500;
+    word-spacing: -0.08em;
     font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
     color: #0162c8;
