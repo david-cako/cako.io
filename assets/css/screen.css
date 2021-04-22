@@ -35,10 +35,10 @@ blockquote a {
 #email-address {
     color: #007cff;
     border: 1px solid;
-    padding: 0.45em 1.2em;
+    padding: 0.4em 1.2em;
     border-radius: 1.1em;
+    font-size: 1.1em;
     display: inline-block;
-    font-size: 1.2em;
     text-decoration: none;
     box-shadow: none;
 }
@@ -99,7 +99,7 @@ code.hljs {
 
 #cako-post-feed-outer {
     margin-top: 3.5em;
-    padding: 0 20px;
+    padding: 0 15px;
 }
 
 #cako-post-feed {
@@ -192,7 +192,7 @@ code.hljs {
     font-weight: 300;
     color: #fff;
     text-align: center;
-    margin: 0.8em 0 20px 20px;
+    margin: 0.8em 0 20px 15px;
     line-height: 75%;
     display: inline-block;
 }
@@ -837,7 +837,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    padding: 3em 20px 2em;
+    padding: 3em 15px 2em;
 }
 
 .post-full-meta {
@@ -946,15 +946,12 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-content > * {
-    padding: 0 20px;
+    padding: 0 15px;
 }
 
 @media (max-width: 650px) {
     .post-full-content > pre {
         padding: 0;
-    }
-    .post-full-content > * {
-        padding: 0 20px;
     }
     .post-full-content code {
         border-radius: 0;
@@ -2273,7 +2270,7 @@ Usage (In Ghost editor):
     justify-content: space-between;
     align-items: center;
     font-size: 1.3rem;
-    padding: 10px 20px 30px;
+    padding: 10px 15px 70px;
 }
 
 .site-footer-nav {
