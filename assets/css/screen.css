@@ -104,7 +104,6 @@ code.hljs {
 
 #cako-post-feed {
     padding: 20px 0;
-    background-color: #fff;
     border-radius: 10px;
 }
 
@@ -846,7 +845,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     color: var(--midgrey);
     font-size: 1.1em;
     font-weight: 500;
-    word-spacing: -0.1em;
+    word-spacing: -0.08em;
 }
 
 .post-full-meta-date {
