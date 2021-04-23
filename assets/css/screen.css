@@ -1020,6 +1020,11 @@ The first (most recent) post in the list is styled to be bigger than the others 
     display: block;
     margin: 1.5em auto 0.7em auto;
     border-radius: 8px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.post-full-content a:hover img {
+    transform: scale(1.01);
 }
 
 @media (max-width: 1040px) {
@@ -1033,6 +1038,11 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content p:first-child img {
     margin-top: 0;
     box-shadow: 0 1px 10px rgba(0,0,0,0.3);
+}
+
+.post-full-content p:first-child a:hover img {
+    transform: scale(1.01);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.4);
 }
 
 
