@@ -1034,14 +1034,18 @@ The first (most recent) post in the list is styled to be bigger than the others 
     }
 }
 
-.post-full-content p:first-child img {
+.post-full-content p:first-child img, .post-full-content img.card {
     margin-top: 0;
     box-shadow: 0 1px 10px rgba(0,0,0,0.3);
 }
 
-.post-full-content p:first-child a:hover img {
+.post-full-content p:first-child a:hover img, .post-full-content a:hover img.card {
     transform: scale(1.01);
     box-shadow: 0 1px 12px rgba(0,0,0,0.35);
+}
+
+.post-full-content img.card {
+    padding: 0;
 }
 
 
