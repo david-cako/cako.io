@@ -843,7 +843,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     display: flex;
     align-items: center;
     color: var(--midgrey);
-    font-size: 1.1em;
+    font-size: 1.4em;
     font-weight: 500;
     word-spacing: -0.08em;
 }
@@ -856,14 +856,8 @@ The first (most recent) post in the list is styled to be bigger than the others 
     margin: 0.1em 0;
     font-size: 3.5rem;
     color: #0162c8;
-    font-weight: 500;
+    font-weight: 700;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-}
-
-@media (max-width: 650px) {
-    .post-full-title {
-        font-size: 3rem;
-    }
 }
 
 .date-divider {
