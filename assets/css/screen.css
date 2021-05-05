@@ -949,15 +949,6 @@ The first (most recent) post in the list is styled to be bigger than the others 
     padding: 0 15px;
 }
 
-@media (max-width: 650px) {
-    .post-full-content > pre {
-        padding: 0;
-    }
-    .post-full-content code {
-        border-radius: 0;
-    }
-}
-
 .post-full-content h1,
 .post-full-content h2,
 .post-full-content h3,
