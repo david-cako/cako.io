@@ -264,6 +264,8 @@ body {
     margin: 0 auto;
     width: 100%;
     max-width: 800px;
+    z-index: 100;
+    background: #fff;
 }
 
 @media (min-width: 900px) {
@@ -836,7 +838,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    padding: 3em 15px 2em;
+    margin: 3em 15px 2em;
 }
 
 .post-full-meta {
