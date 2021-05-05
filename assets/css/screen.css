@@ -1011,6 +1011,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content img,
 .post-full-content video {
     display: block;
+    width: 100%;
     margin: 1.5em auto 0.7em auto;
     border-radius: 8px;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
