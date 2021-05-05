@@ -860,6 +860,13 @@ The first (most recent) post in the list is styled to be bigger than the others 
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
 }
 
+@media (max-width: 650px) {
+    .post-full-title {
+        font-size: 3rem;
+    }
+}
+
+
 .date-divider {
     display: inline-block;
     margin: 0 6px 1px;
