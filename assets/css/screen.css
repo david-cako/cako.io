@@ -1011,7 +1011,6 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content img,
 .post-full-content video {
     display: block;
-    width: 100%;
     margin: 1.5em auto 0.7em auto;
     border-radius: 8px;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -1021,11 +1020,9 @@ The first (most recent) post in the list is styled to be bigger than the others 
     transform: scale(1.01);
 }
 
-@media (max-width: 1040px) {
-    .post-full-content img,
-    .post-full-content video {
-        max-width:100%;
-        height:auto;
+@media (max-width: 650px) {
+    .post-full-content img {
+        max-width: 100% !important;
     }
 }
 
