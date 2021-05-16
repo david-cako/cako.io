@@ -1,0 +1,45 @@
+
+body {
+    color: #fff;
+    background-color: #000;
+}
+
+.inner {
+    background: #000;
+}
+
+#cako-site-nav-link:hover {
+    border: 1px solid #27d7ff;
+}
+
+#cako-site-nav-link:hover > span {
+    color: #27d7ff !important;
+}
+
+.cako-post-title {
+    color: #fff;
+}
+
+.post-full-title {
+    color: #fff;
+}
+
+.cako-post-date {
+    color: #27d7ff;
+}
+
+.post-full-meta-date {
+    color: #27d7ff;
+}
+
+.post-full-content {
+    background: #000;
+}
+
+.post-full-content a {
+    color: #fff;
+}
+
+.post-full-content hr:after {
+    background: #fff;
+}
