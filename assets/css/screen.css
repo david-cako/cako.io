@@ -150,12 +150,13 @@ code.hljs {
 
 #cako-site-nav-link {
     display: inline-block;
-    padding: 3.5px 4px 4.5px 0px;
+    padding: 4.5px 4.5px 5.5px 0.5px;
     background: #000;
     border-radius: 7px;
     min-width: 38px;
     min-height: 45px;
     box-sizing: border-box;
+    border: 1px solid transparent;
 }
 
 #cako-site-nav-link:hover {
