@@ -1,6 +1,6 @@
 import { Spinner } from './spin.js';
 
-const LIGHT_ACCENT = "#0c76e6";
+const LIGHT_ACCENT = "#0070e6";
 const DARK_ACCENT = "#27d7ff";
 
 const LS_LIGHTS = localStorage.getItem("lights");
