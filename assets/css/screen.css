@@ -132,7 +132,7 @@ code.hljs {
     word-spacing: -0.08em;
     font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-    color: #0162c8;
+    color: #0c76e6;
 }
 
 .cako-post-link {
@@ -162,12 +162,12 @@ code.hljs {
 
 #cako-site-nav-link:hover {
     text-decoration: none;
-    border: 1px solid #0162c8;
+    border: 1px solid #0c76e6;
     background: transparent;
 }
 
 #cako-site-nav-link:hover > span {
-    color: #0162c8 !important;
+    color: #0c76e6 !important;
 }
 
 #cako-header {
