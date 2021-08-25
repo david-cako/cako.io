@@ -1006,6 +1006,13 @@ The first (most recent) post in the list is styled to be bigger than the others 
     line-height: 1.6em;
 }
 
+@media (max-width: 800px) {
+    .post-full-content ol,
+    .post-full-content ul {
+        list-style-position: inside;
+    }
+}
+
 .post-full-content li:first-child {
     margin-top: 0;
 }
