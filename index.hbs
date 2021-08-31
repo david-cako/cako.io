@@ -14,6 +14,33 @@ into the {body} of the default.hbs template --}}
        <div id="cako-post-feed-outer">
            <div id="cako-intro">A blog and software consultancy by <a id="name-link" href="https://davidcako.com">David Cako</a></div>
            <div id="cako-post-feed">
+            <div id="cako-featured">
+                <h3 id="cako-featured-header">Featured</h3>
+                <div class="cako-post">
+                    <a href="/vanilla-envelopes/" class="cako-post-link purple">
+                        <div class="cako-post-title">Vanilla Envelopes</div>
+                        <div class="cako-post-date-outer">
+                            <time class="cako-post-date" datetime="2021-08-29">29 August 2021</time>
+                        </div>
+                    </a>
+                </div>
+                <div class="cako-post">
+                    <a href="/vanilla-envelopes/" class="cako-post-link red">
+                        <div class="cako-post-title">Vanilla Envelopes</div>
+                        <div class="cako-post-date-outer">
+                            <time class="cako-post-date" datetime="2021-08-29">29 August 2021</time>
+                        </div>
+                    </a>
+                </div>
+                <div class="cako-post">
+                    <a href="/vanilla-envelopes/" class="cako-post-link yellow">
+                        <div class="cako-post-title">Vanilla Envelopes</div>
+                        <div class="cako-post-date-outer">
+                            <time class="cako-post-date" datetime="2021-08-29">29 August 2021</time>
+                        </div>
+                    </a>
+                </div>
+            </div>
                 {{#foreach posts}}
 
                     {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
