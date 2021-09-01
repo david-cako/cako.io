@@ -69,3 +69,7 @@ body {
 .post-full-content hr:after {
     background: #fff;
 }
+
+code {
+    background: rgba(255,255,255,0.15);
+}

@@ -71,6 +71,9 @@ sup:target {
 
 code {
     font-family: 'Fira Code', monospace;
+    background: rgba(0,0,0,0.1);
+    padding: 0 0.3em;
+    border-radius: 0.2em;
 }
 
 code.hljs {
