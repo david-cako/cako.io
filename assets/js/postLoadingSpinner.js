@@ -2,10 +2,11 @@ import { Spinner } from './spin.js';
 
 const LIGHT_ACCENT = "#0070e6";
 const DARK_ACCENT = "#27d7ff";
-
-const LS_LIGHTS = localStorage.getItem("lights");
-
-const ACTIVE_ACCENT = LS_LIGHTS === "off" ? DARK_ACCENT : LIGHT_ACCENT;
+const BLUE_ACCENT = "#658CFF";
+const YELLOW_ACCENT = "#f0b214";
+const RED_ACCENT = "#f92f00";
+const GREEN_ACCENT = "#00bf3b";
+const PURPLE_ACCENT = "#d300ff";
 
 const spinnerOpts = {
   lines: 13, // The number of lines to draw
@@ -18,7 +19,6 @@ const spinnerOpts = {
   rotate: 0, // The rotation offset
   animation: 'spinner-line-fade-quick', // The CSS animation name for the lines
   direction: 1, // 1: clockwise, -1: counterclockwise
-  color: ACTIVE_ACCENT, // CSS color or array of colors
   fadeColor: 'transparent', // CSS color or array of colors
   top: '12px', // Top position relative to parent
   left: '100%', // Left position relative to parent
@@ -42,7 +42,26 @@ function removeSpinners() {
 function onPostClicked(e) {
   removeSpinners();
 
-  const spinner = new Spinner(spinnerOpts).spin();
+  const LS_LIGHTS = localStorage.getItem("lights");
+  const ACTIVE_ACCENT = LS_LIGHTS === "off" ? DARK_ACCENT : LIGHT_ACCENT;
+
+  const opts = Object.assign({}, spinnerOpts);
+
+  if (e.currentTarget.classList.contains("blue")) {
+    opts.color = BLUE_ACCENT;
+  } else if (e.currentTarget.classList.contains("yellow")) {
+    opts.color = YELLOW_ACCENT;
+  } else if (e.currentTarget.classList.contains("red")) {
+    opts.color = RED_ACCENT;
+  } else if (e.currentTarget.classList.contains("green")) {
+    opts.color = GREEN_ACCENT;
+  } else if (e.currentTarget.classList.contains("purple")) {
+    opts.color = PURPLE_ACCENT;
+  } else {
+    opts.color = ACTIVE_ACCENT;
+  }
+
+  const spinner = new Spinner(opts).spin();
   e.currentTarget.querySelector('.cako-post-title').appendChild(spinner.el);
 
   SPIN_BEGIN = Date.now();

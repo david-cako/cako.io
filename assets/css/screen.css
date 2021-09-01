@@ -222,7 +222,7 @@ code.hljs {
 
 #cako-menu {
     position: fixed;
-    top: 1em;
+    top: 1.2em;
     right: 0.5em;
     z-index: 900;
     display: flex;
@@ -240,6 +240,7 @@ code.hljs {
 }
 
 #cako-menu .menu-icon {
+    transform: scaleX(0.9);
     opacity: 0.9;
     background-color: #000;
     -webkit-mask: url(/assets/menu-outline.svg) no-repeat center;
@@ -247,7 +248,7 @@ code.hljs {
     width: 2em;
     height: 2em;
     cursor: pointer;
-    padding: 0 0.2em;
+    padding: 0 0.1em;
     box-sizing: content-box;
 }
 
@@ -257,7 +258,7 @@ code.hljs {
 }
 
 #cako-menu .menu-icon:active {
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 #cako-menu-inner {
