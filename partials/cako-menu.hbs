@@ -1,0 +1,30 @@
+<div id="cako-menu">
+    <div class="menu-icon-outer">
+        <div class="menu-icon" onclick="toggleMenu()"></div>
+    </div>
+    <div id="cako-menu-inner">
+        <div class="cako-menu-item" onclick="toggleLights()">
+            <div class="bulb-icon"></div>
+            Lights
+        </div>
+    </div>
+    <script>
+        function toggleMenu() {
+            const menuInner = document.getElementById("cako-menu-inner");
+
+            if (menuInner) {
+                if (menuInner.style.display === "block") {
+                    menuInner.style.display = "none";
+                } else {
+                    menuInner.style.display = "block";
+                }
+            }
+        }
+
+        const menuItems = document.getElementsByClassName("cako-menu-item");
+
+        for (const i of menuItems) {
+            i.addEventListener("click", toggleMenu);
+        }
+    </script>
+</div>

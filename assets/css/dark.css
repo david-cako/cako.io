@@ -16,6 +16,32 @@ body {
     color: #27d7ff !important;
 }
 
+.cako-menu-item .bulb-icon {
+    background-color: #fff;
+}
+
+#cako-menu .menu-icon {
+    background: #fff;
+}
+
+#cako-menu .menu-icon-outer {
+    background: #000;
+}
+
+#cako-menu-inner {
+    background: #000;
+    border: 1px solid #fff;
+}
+
+.cako-menu-item:active, .cako-menu-item:hover {
+    color: #000;
+    background-color: #fff;
+}
+
+.cako-menu-item:active .bulb-icon, .cako-menu-item:hover .bulb-icon {
+    background-color: #000;
+}
+
 .cako-post-title {
     color: #fff;
 }
