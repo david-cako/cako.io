@@ -14,7 +14,7 @@ function toggleLights() {
         link.id = "dark-mode";
         link.type = "text/css";
         link.rel = "stylesheet";
-        link.href = "/assets/css/dark.css";
+        link.href = "/assets/css/dark.1.css";
 
         document.head.appendChild(link);
 
@@ -30,7 +30,7 @@ function toggleLights() {
         link.id = "dark-mode";
         link.type = "text/css";
         link.rel = "stylesheet";
-        link.href = "/assets/css/dark.css";
+        link.href = "/assets/css/dark.1.css";
 
         document.head.appendChild(link);
     }
