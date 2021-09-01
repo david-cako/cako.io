@@ -129,7 +129,7 @@ code.hljs {
 }
 
 .cako-post-link.yellow .cako-post-date {
-    color: rgb(240, 178, 20);
+    color: #f0b214;
 }
 
 .cako-post-link.red .cako-post-date {
@@ -137,7 +137,7 @@ code.hljs {
 }
 
 .cako-post-link.green .cako-post-date {
-    color: rgb(0, 191, 59);
+    color: #00bf3b;
 }
 
 .cako-post-link.purple .cako-post-date {
