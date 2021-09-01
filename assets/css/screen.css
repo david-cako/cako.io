@@ -122,6 +122,7 @@ code.hljs {
 
 .cako-post-title {
     display: inline-block;
+    line-height: 1em;
     position: relative;
     margin-bottom: 0.2em;
     font-size: 1.75em;
