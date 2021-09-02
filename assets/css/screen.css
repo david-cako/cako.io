@@ -106,7 +106,7 @@ code.hljs {
 }
 
 #cako-post-feed {
-    padding: 20px 0;
+    padding: 10px 0 20px;
     border-radius: 10px;
 }
 
@@ -115,7 +115,7 @@ code.hljs {
     padding: 1em;
     border-radius: 0.5em;
     max-width: 800px;
-    margin: 0 -10px;
+    margin: 0 -8px -5px;
 }
 
 #cako-featured-header {
@@ -264,7 +264,7 @@ code.hljs {
 #cako-menu {
     position: fixed;
     top: 1.2em;
-    right: 0.5em;
+    right: 0.7em;
     z-index: 900;
     display: flex;
     flex-direction: column;
