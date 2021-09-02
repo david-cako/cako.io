@@ -111,7 +111,7 @@ code.hljs {
 }
 
 #cako-featured {
-    border: 1px solid rgb(240, 178, 20);
+    border: 1px solid #e8ab11;
     padding: 1em;
     border-radius: 0.5em;
     max-width: 800px;
@@ -120,7 +120,7 @@ code.hljs {
 
 #cako-featured-header {
     margin: 0 0 1.2em;
-    color: rgb(242, 177, 13);
+    color: #e8ab11;
 }
 
 #cako-featured .cako-post:not(:nth-of-type(1)) {
@@ -132,7 +132,7 @@ code.hljs {
 }
 
 .cako-post-link.yellow .cako-post-date {
-    color: #f0b214;
+    color: #e8ab11;
 }
 
 .cako-post-link.red .cako-post-date {
