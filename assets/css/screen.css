@@ -119,7 +119,7 @@ code.hljs {
 }
 
 #cako-featured-header {
-    margin: 0 0 1em;
+    margin: 0 0 1.2em;
     color: rgb(242, 177, 13);
 }
 
@@ -186,6 +186,7 @@ code.hljs {
 
 .cako-post-link .spinner {
     margin-left: 18px;
+    margin-top: 2px;
 }
 
 #cako-site-nav-link {
