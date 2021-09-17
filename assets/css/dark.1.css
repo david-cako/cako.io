@@ -66,6 +66,10 @@ body {
     color: #fff;
 }
 
+.post-full-content img.typed {
+    filter: invert(1);
+}
+
 .post-full-content hr:after {
     background: #fff;
 }
