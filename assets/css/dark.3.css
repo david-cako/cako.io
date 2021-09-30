@@ -33,6 +33,10 @@ body {
     border: 1px solid #fff;
 }
 
+#name-link {
+    color: #fff;
+}
+
 .cako-menu-item:active, .cako-menu-item:hover {
     color: #000;
     background-color: #fff;
@@ -76,4 +80,8 @@ body {
 
 code {
     background: rgba(255,255,255,0.15);
+}
+
+.copyright a {
+    color: #fff
 }

@@ -275,6 +275,10 @@ code.hljs {
     align-items: flex-end;
 }
 
+#name-link {
+    color: #000;
+}
+
 .cako-menu-item .bulb-icon {
     background-color: #000;
     -webkit-mask: url(/assets/bulb-outline.svg) no-repeat center;
@@ -2386,6 +2390,10 @@ Usage (In Ghost editor):
 
 .copyright {
     font-weight: 300;
+}
+
+.copyright a {
+    color: #000;
 }
 
 .site-footer-content {
