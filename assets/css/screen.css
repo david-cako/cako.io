@@ -1134,6 +1134,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     margin: 1.5em auto 0.7em auto;
     border-radius: 8px;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    max-width: 100%;
 }
 
 .post-full-content a:hover img {

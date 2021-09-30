@@ -4,6 +4,18 @@ function lightsOn() {
     if (link) {
         link.remove();
     }
+
+    const tc = document.getElementById("theme-color");
+    if (tc) {
+        tc.remove();
+    }
+
+    const themeColor = document.createElement("meta");
+    themeColor.id = "theme-color";
+    themeColor.name = "theme-color";
+    themeColor.content = "#fff";
+
+    document.head.appendChild(themeColor);
 }
 
 function lightsOff() {
@@ -14,6 +26,18 @@ function lightsOff() {
     link.href = "/assets/css/dark.2.css";
 
     document.head.appendChild(link);
+
+    const tc = document.getElementById("theme-color");
+    if (tc) {
+        tc.remove();
+    }
+
+    const themeColor = document.createElement("meta");
+    themeColor.id = "theme-color";
+    themeColor.name = "theme-color";
+    themeColor.content = "#000";
+
+    document.head.appendChild(themeColor);
 }
 
 function toggleLights() {
