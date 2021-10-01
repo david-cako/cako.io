@@ -1,0 +1,42 @@
+<div class="post-nav-outer">
+    <div class="post-nav inner">
+        {{#prev_post}}
+        <a href="{{url}}" class="cako-post-link">
+            <div class="icon arrow-icon-back"></div>
+            <div class="cako-post">
+                <div class="cako-post-title">{{title}}</div>
+                <div class="cako-post-date-outer">
+                    <time class="cako-post-date" datetime="{{date format=" YYYY-MM-DD"}}">{{date format="D . M . YYYY"}}</time>
+                </div>
+            </div>
+        </a>
+        <script>
+            document.addEventListener("keydown", e => {
+                if (e.keyCode == '37') {
+                    window.location = "{{url}}";
+                }
+            });
+        </script>
+        {{/prev_post}}
+
+        {{#next_post}}
+        <a href="{{url}}" class="cako-post-link">
+            <div class="cako-post right">
+                <div class="cako-post-title">{{title}}</div>
+                <div class="cako-post-date-outer">
+                    <time class="cako-post-date" datetime="{{date format=" YYYY-MM-DD"}}">{{date format="D . M . YYYY"}}</time>
+                </div>
+            </div>
+            <div class="icon arrow-icon-forward"></div>
+        </a>
+
+        <script>
+            document.addEventListener("keydown", e => {
+                if (e.keyCode == '39') {
+                    window.location = "{{url}}";
+                }
+            });
+        </script>
+        {{/next_post}}
+    </div>
+</div>

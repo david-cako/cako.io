@@ -20,6 +20,18 @@ body {
     background-color: #fff;
 }
 
+#cako-menu-inner a {
+    color: #fff;
+}
+
+.post-nav .icon {
+    background-color: #aeaeae;
+}
+
+.post-nav .cako-post-title {
+    color: #eee;
+}
+
 #cako-menu .menu-icon {
     background: #fff;
 }
@@ -82,6 +94,10 @@ body {
 
 .post-full-content hr:after {
     background: #fff;
+}
+
+.post-nav .cako-post-link:focus .icon {
+    background-color: #27d7ff;
 }
 
 code {
