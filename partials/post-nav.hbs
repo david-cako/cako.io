@@ -13,7 +13,7 @@
         <script>
             document.addEventListener("keydown", e => {
                 // don't navigate if currently searching
-                if (e.keyCode == '37' && 
+                if (e.key == "ArrowLeft" && 
                 (!document.activeElement || !document.activeElement.classList.contains("cako-post-link"))) {
                     window.location = "{{url}}";
                 }
@@ -35,7 +35,7 @@
         <script>
             document.addEventListener("keydown", e => {
                 // don't navigate if currently searching
-                if (e.keyCode == '39' && 
+                if (e.key == "ArrowRight" && 
                 (!document.activeElement || !document.activeElement.classList.contains("cako-post-link"))) {
                     window.location = "{{url}}";
                 }

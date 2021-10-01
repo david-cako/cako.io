@@ -120,6 +120,8 @@ function clearSearch() {
 
     const clearIcon = document.getElementById("cako-search-clear");
     clearIcon.style.display = "none";
+
+    focusSearch();
 }
 
 function focusSearch() {
@@ -164,8 +166,41 @@ function onKeyDown(e) {
     e.stopPropagation();
 
     // if up or down, prevent scrolling
-    if (e.keyCode == '38' || e.keyCode == '40') {
+    if (e.key == "ArrowUp" || e.key == "ArrowDown") {
         e.preventDefault();
+    }
+
+    const searchResults = document.getElementById("cako-search-results");
+    const firstResult = searchResults.querySelector(".cako-post-link");
+
+    // if enter, attempt to navigate to first result
+    if (e.key == "Enter") {
+        if (firstResult) {
+            firstResult.click();
+            return;
+        }
+    }
+
+    // ctrl + cmd + f to open search
+    if (e.key == "f" && e.ctrlKey && e.metaKey) {
+        e.preventDefault();
+
+        if (openMenu) {
+            openMenu();
+        }
+
+        focusSearch();
+
+        return;
+    }
+
+    // escape closes menu
+    if (e.key == "Escape") {
+        if (closeMenu) {
+            closeMenu();
+        }
+
+        return;
     }
 
     if (document.activeElement &&
@@ -173,8 +208,7 @@ function onKeyDown(e) {
         // already focused on a result
         const current = document.activeElement;
 
-        if (e.keyCode == '38') {
-            // up
+        if (e.key == "ArrowUp") {
             if (current && current.parentElement
                 && current.parentElement.previousElementSibling) {
                 const prev = current.parentElement.previousElementSibling;
@@ -182,11 +216,9 @@ function onKeyDown(e) {
                 prev.children[0].focus();
             } else {
                 // currently at the top, focus back to search
-                const searchElement = document.getElementById("cako-search");
-                searchElement.focus();
+                focusSearch();
             }
-        } else if (e.keyCode == '40') {
-            // down
+        } else if (e.key == "ArrowDown") {
             if (current && current.parentElement &&
                 current.parentElement.nextElementSibling) {
                 const next = current.parentElement.nextElementSibling;
@@ -194,11 +226,8 @@ function onKeyDown(e) {
                 next.children[0].focus();
             }
         }
-    } else if (e.keyCode == '40') {
+    } else if (e.key == "ArrowDown") {
         // down pressed, no result focused yet
-        const searchResults = document.getElementById("cako-search-results");
-        const firstResult = searchResults.querySelector(".cako-post-link");
-
         if (firstResult) {
             firstResult.focus();
         }

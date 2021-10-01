@@ -44,18 +44,35 @@
 
             if (menuInner) {
                 if (menuInner.style.display === "block") {
-                    menuInner.style.display = "none";
-                    if (clearSearch) {
-                        clearSearch();
-                    }
+                    closeMenu();
                 } else {
-                    menuInner.style.display = "block";
-                    clearMenuIndicator();
-
-                    if (focusSearch) {
-                        focusSearch();
-                    }
+                    openMenu();
                 }
+            }
+        }
+
+        function openMenu() {
+            const menuInner = document.getElementById("cako-menu-inner");
+
+            menuInner.style.display = "block";
+            clearMenuIndicator();
+
+            if (focusSearch) {
+                focusSearch();
+            }
+        }
+
+        function closeMenu() {
+            const menuInner = document.getElementById("cako-menu-inner");
+
+            menuInner.style.display = "none";
+            
+            if (clearSearch) {
+                clearSearch();
+            }
+
+            if (document.activeElement) {
+                document.activeElement.blur();
             }
         }
 
