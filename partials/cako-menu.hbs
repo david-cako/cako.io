@@ -51,6 +51,10 @@
                 } else {
                     menuInner.style.display = "block";
                     clearMenuIndicator();
+
+                    if (focusSearch) {
+                        focusSearch();
+                    }
                 }
             }
         }

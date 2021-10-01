@@ -122,6 +122,12 @@ function clearSearch() {
     clearIcon.style.display = "none";
 }
 
+function focusSearch() {
+    const searchElement = document.getElementById("cako-search");
+
+    searchElement.focus();
+}
+
 async function fetchPosts() {
     const api = new GhostContentAPI({
         url: "https://cako.io",
