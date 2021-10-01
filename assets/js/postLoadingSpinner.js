@@ -39,7 +39,7 @@ function removeSpinners() {
   }
 }
 
-function onPostClicked(e) {
+window.onPostClicked = (e) => {
   removeSpinners();
 
   const LS_LIGHTS = localStorage.getItem("lights");

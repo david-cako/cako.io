@@ -70,7 +70,7 @@ function showResults(results) {
 
         searchResults.insertAdjacentHTML("beforeend",
             `<div class="cako-post">
-                <a class="cako-post-link" href="/${r.slug}/">
+                <a class="cako-post-link" href="/${r.slug}/" onclick="onPostClicked(event)">
                     <div class="cako-post-title">${r.title}</div>
                     <div class="cako-post-date-outer">
                         <time class="cako-post-date">${date} ${monthName} ${year}</time>
