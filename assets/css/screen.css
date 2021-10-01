@@ -531,7 +531,13 @@ body {
 .site-main {
     z-index: 100;
     top: 90px;
-    min-height: 99vh;
+    min-height: 90vh;
+}
+
+@media (min-width: 500px) {
+    .site-main {
+        min-height: 99vh
+    }
 }
 
 /* Full width page blocks */
@@ -2572,7 +2578,7 @@ Usage (In Ghost editor):
     justify-content: space-between;
     align-items: center;
     font-size: 1.3rem;
-    padding: 0px 15px 90px;
+    padding: 15px 15px 90px;
 }
 
 .site-footer-nav {
