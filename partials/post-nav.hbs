@@ -16,6 +16,12 @@
                 if (e.key == "ArrowLeft" && 
                 (!document.activeElement || !document.activeElement.classList.contains("cako-post-link"))) {
                     window.location = "{{url}}";
+
+                    const navLinks = document.querySelectorAll(".post-nav-link");
+
+                    if (navLinks[0]) {
+                        navLinks[0].focus();
+                    }
                 }
             });
         </script>
@@ -38,6 +44,12 @@
                 if (e.key == "ArrowRight" && 
                 (!document.activeElement || !document.activeElement.classList.contains("cako-post-link"))) {
                     window.location = "{{url}}";
+
+                    const navLinks = document.querySelectorAll(".post-nav-link");
+
+                    if (navLinks[1]) {
+                        navLinks[1].focus();
+                    }
                 }
             });
         </script>

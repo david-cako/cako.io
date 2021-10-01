@@ -300,14 +300,14 @@ code.hljs {
 }
 
 .arrow-icon-back {
-    -webkit-mask: url(/assets/arrow-forward-outline.svg) no-repeat center;
-    mask: url(/assets/arrow-forward-outline.svg) no-repeat center;
+    -webkit-mask: url(/assets/chevron-forward-outline.svg) no-repeat center;
+    mask: url(/assets/chevron-forward-outline.svg) no-repeat center;
     transform: rotate(180deg);
 }
 
 .arrow-icon-forward {
-    -webkit-mask: url(/assets/arrow-forward-outline.svg) no-repeat center;
-    mask: url(/assets/arrow-forward-outline.svg) no-repeat center;
+    -webkit-mask: url(/assets/chevron-forward-outline.svg) no-repeat center;
+    mask: url(/assets/chevron-forward-outline.svg) no-repeat center;
 }
 
 #cako-site-nav-link {
