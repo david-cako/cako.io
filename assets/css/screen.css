@@ -188,8 +188,8 @@ code.hljs {
     outline: none;
 }
 
-.cako-post-link:focus .cako-post-date {
-    border-bottom: 1px solid #27d7ff;
+#cako-search-feed .cako-post-link:focus .cako-post-date {
+    border-bottom: 1px solid #0070e6;
 }
 
 .cako-post {

@@ -166,7 +166,7 @@ function onKeyDown(e) {
     const searchFeed = document.getElementById("cako-search-feed");
 
     // if search shown and up or down pressed, prevent scrolling
-    if (searchFeed.style.display !== "none" &&
+    if (searchFeed.style.display === "block" &&
         (e.key == "ArrowUp" || e.key == "ArrowDown")) {
         e.preventDefault();
     }
