@@ -80,6 +80,11 @@ window.onPostClicked = (e) => {
   const elements = document.getElementsByClassName('cako-post-link');
 
   for (const e of elements) {
+    // don't show spinner on post-nav links
+    if (e.currentTarget.classList.contains("post-nav-link")) {
+      return;
+    }
+
     e.addEventListener('click', onPostClicked);
   }
 })();
