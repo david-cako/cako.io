@@ -16,7 +16,7 @@ body {
     color: #27d7ff !important;
 }
 
-.cako-menu-item .bulb-icon {
+#cako-menu-inner .icon {
     background-color: #fff;
 }
 
@@ -28,6 +28,10 @@ body {
     background: #000;
 }
 
+#cako-menu-indicator {
+    background: #27d7ff;
+}
+
 #cako-menu-inner {
     background: #000;
     border: 1px solid #fff;
@@ -37,12 +41,14 @@ body {
     color: #fff;
 }
 
-.cako-menu-item:active, .cako-menu-item:hover {
+#cako-menu-inner .cako-menu-item:active, 
+#cako-menu-inner .cako-menu-item:hover {
     color: #000;
     background-color: #fff;
 }
 
-.cako-menu-item:active .bulb-icon, .cako-menu-item:hover .bulb-icon {
+#cako-menu-inner .cako-menu-item:active .icon, 
+#cako-menu-inner .cako-menu-item:hover .icon {
     background-color: #000;
 }
 

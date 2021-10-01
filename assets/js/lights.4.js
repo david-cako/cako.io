@@ -23,7 +23,7 @@ function lightsOff() {
     link.id = "dark-mode";
     link.type = "text/css";
     link.rel = "stylesheet";
-    link.href = "/assets/css/dark.3.css";
+    link.href = "/assets/css/dark.4.css";
 
     document.head.appendChild(link);
 

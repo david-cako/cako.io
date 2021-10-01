@@ -105,9 +105,22 @@ code.hljs {
     padding: 0 15px;
 }
 
-#cako-post-feed {
+#cako-post-feed, #cako-search-feed {
     padding: 10px 0 20px;
     border-radius: 10px;
+}
+
+#cako-search-feed {
+    display: none;
+    margin-top: 1em;
+    padding: 0 15px;
+}
+
+#cako-search-header {
+    font-size: 2.5em;
+    font-weight: 600;
+    margin-bottom: 1.2em;
+    margin-top: 0.7em;
 }
 
 .cako-featured {
@@ -115,16 +128,27 @@ code.hljs {
     padding: 1em;
     border-radius: 0.5em;
     max-width: 800px;
+}
+
+.index .cako-featured {
     margin: 0 -8px -5px;
+}
+
+.cako-featured-date {
+    font-size: 0.8em;
+    font-weight: 400;
 }
 
 .cako-featured:not(:nth-of-type(1)) {
     margin-top: 1em;
 }
 
-#cako-featured-header {
+.cako-featured-header {
     margin: 0 0 0.8em;
     color: #e8ab11;
+    font-size: 1.9rem;
+    font-weight: 500;
+    line-height: 1.15;
 }
 
 .cako-featured .cako-post:not(:nth-of-type(1)) {
@@ -279,13 +303,45 @@ code.hljs {
     color: #000;
 }
 
-.cako-menu-item .bulb-icon {
+#cako-menu-inner .icon {
     background-color: #000;
-    -webkit-mask: url(/assets/bulb-outline.svg) no-repeat center;
-    mask: url(/assets/bulb-outline.svg) no-repeat center;
     width: 1.2em;
     height: 1.2em;
     margin-right: 0.4em;
+}
+
+.cako-menu-item:active, .cako-menu-item:hover {
+    color: #fff;
+    background-color: #000;
+}
+
+.cako-menu-item:active .icon, .cako-menu-item:hover .icon {
+    background-color: #fff;
+}
+
+.cako-menu-item .bulb-icon {
+    -webkit-mask: url(/assets/bulb-outline.svg) no-repeat center;
+    mask: url(/assets/bulb-outline.svg) no-repeat center;
+}
+
+.cako-menu-item .star-icon {
+    -webkit-mask: url(/assets/star-outline.svg) no-repeat center;
+    mask: url(/assets/star-outline.svg) no-repeat center;
+    margin-bottom: 0.1em;
+}
+
+.cako-menu-search .search-icon {
+    -webkit-mask: url(/assets/search-outline.svg) no-repeat center;
+    mask: url(/assets/search-outline.svg) no-repeat center;
+}
+
+#cako-menu-inner .cako-menu-search .search-clear-icon {
+    -webkit-mask: url(/assets/close-circle-outline.svg) no-repeat center;
+    mask: url(/assets/close-circle-outline.svg) no-repeat center;
+    margin-left: 0.1em;
+    margin-right: 0;
+    cursor: pointer;
+    display: none;
 }
 
 #cako-menu .menu-icon {
@@ -301,6 +357,25 @@ code.hljs {
     box-sizing: content-box;
 }
 
+#cako-menu-indicator {
+    width: 7px;
+    height: 7px;
+    position: absolute;
+    background: #0070e6;
+    border-radius: 10px;
+    top: 9.5px;
+    right: 35px;
+}
+
+#cako-search {
+    width: 100%;
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 #cako-menu .menu-icon-outer {
     background: #fff;
     border-radius: 0.5em;
@@ -313,7 +388,7 @@ code.hljs {
 #cako-menu-inner {
     display: none;
     background: #fff;
-    width: 8em;
+    width: 10em;
     border: 1px solid #000;
     border-radius: 0.5em;
     margin-bottom: 0.3em;
@@ -328,13 +403,10 @@ code.hljs {
     cursor: pointer;
 }
 
-.cako-menu-item:active, .cako-menu-item:hover {
-    color: #fff;
-    background-color: #000;
-}
-
-.cako-menu-item:active .bulb-icon, .cako-menu-item:hover .bulb-icon {
-    background-color: #fff;
+.cako-menu-search {
+    padding: 0.5em;
+    display: flex;
+    align-items: center;
 }
 
 body {
@@ -1105,6 +1177,14 @@ The first (most recent) post in the list is styled to be bigger than the others 
     color: #000;
     box-shadow: var(--blue) 0 -1px 0 inset;
     word-wrap: break-word;
+}
+
+.post-full-content a.cako-post-link {
+    box-shadow: none;
+}
+
+.post-full-content a.cako-post-link:hover {
+    box-shadow: none;
 }
 
 .post-full-content a:hover {

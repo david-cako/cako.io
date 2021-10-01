@@ -4,19 +4,53 @@
     </div>
     <div id="cako-menu-inner">
         <div class="cako-menu-item" onclick="toggleLights()">
-            <div class="bulb-icon"></div>
+            <div class="icon bulb-icon"></div>
             Lights
+        </div>
+        <a href="/features">
+            <div class="cako-menu-item">
+                <div class="icon star-icon"></div>
+                Features
+            </div>
+        </a>
+        <div class="cako-menu-search">
+            <div class="icon search-icon"></div>
+            <input id="cako-search" type="text" placeholder="Search" />
+            <div id="cako-search-clear" class="icon search-clear-icon"></div>
         </div>
     </div>
     <script>
+        function showMenuIndicator() {
+            const menu = document.getElementById("cako-menu");
+
+            const i = document.createElement("div");
+            i.id = "cako-menu-indicator";
+
+            menu.appendChild(i);
+        }
+
+        function clearMenuIndicator() {
+            const i = document.getElementById("cako-menu-indicator");
+
+            if (i) {
+                i.remove();
+
+                localStorage.setItem("menuIndicatorCleared", String(Date.now()));
+            }
+        }
+
         function toggleMenu() {
             const menuInner = document.getElementById("cako-menu-inner");
 
             if (menuInner) {
                 if (menuInner.style.display === "block") {
                     menuInner.style.display = "none";
+                    if (clearSearch) {
+                        clearSearch();
+                    }
                 } else {
                     menuInner.style.display = "block";
+                    clearMenuIndicator();
                 }
             }
         }
@@ -25,6 +59,13 @@
 
         for (const i of menuItems) {
             i.addEventListener("click", toggleMenu);
+        }
+
+        // show indicator for new features
+        const indicatorCleared = localStorage.getItem("menuIndicatorCleared");
+
+        if (!indicatorCleared || (Number(indicatorCleared) < 1633046530235)) {
+            showMenuIndicator();
         }
     </script>
 </div>
