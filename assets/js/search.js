@@ -158,25 +158,78 @@ async function getOrFetchPosts() {
     return posts;
 }
 
+function onKeyDown(e) {
+    // if event fired from input, this prevents arrow keys from navigating
+    // between posts
+    e.stopPropagation();
+
+    // if up or down, prevent scrolling
+    if (e.keyCode == '38' || e.keyCode == '40') {
+        e.preventDefault();
+    }
+
+    if (document.activeElement &&
+        document.activeElement.classList.contains("cako-post-link")) {
+        // already focused on a result
+        const current = document.activeElement;
+
+        if (e.keyCode == '38') {
+            // up
+            if (current && current.parentElement
+                && current.parentElement.previousElementSibling) {
+                const prev = current.parentElement.previousElementSibling;
+
+                prev.children[0].focus();
+            } else {
+                // currently at the top, focus back to search
+                const searchElement = document.getElementById("cako-search");
+                searchElement.focus();
+            }
+        } else if (e.keyCode == '40') {
+            // down
+            if (current && current.parentElement &&
+                current.parentElement.nextElementSibling) {
+                const next = current.parentElement.nextElementSibling;
+
+                next.children[0].focus();
+            }
+        }
+    } else if (e.keyCode == '40') {
+        // down pressed, no result focused yet
+        const searchResults = document.getElementById("cako-search-results");
+        const firstResult = searchResults.querySelector(".cako-post-link");
+
+        if (firstResult) {
+            firstResult.focus();
+        }
+    }
+}
+
 (async () => {
     const searchElement = document.getElementById("cako-search");
 
+    // don't perform fetch until search is focused.
+    let firstFocus = true;
+
     searchElement.addEventListener("focus", async () => {
-        const posts = await getOrFetchPosts();
+        if (firstFocus) {
+            const posts = await getOrFetchPosts();
 
-        let prev = "";
+            let prev = "";
 
-        searchElement.addEventListener("input", (e) => {
-            if (e.target.value !== prev) {
-                prev = e.target.value;
-                onSearchChange(e.target.value, posts);
-            }
-        });
+            searchElement.addEventListener("input", (e) => {
+                if (e.target.value !== prev) {
+                    prev = e.target.value;
+                    onSearchChange(e.target.value, posts);
+                }
+            });
 
-        searchElement.addEventListener("keydown", (e) => {
-            e.stopPropagation();
-        })
+            firstFocus = false;
+        }
     });
+
+    searchElement.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKeyDown);
 
     const searchClear = document.getElementById("cako-search-clear");
     searchClear.addEventListener("click", clearSearch);

@@ -184,6 +184,14 @@ code.hljs {
     color: #d300ff;
 }
 
+.cako-post-link:focus {
+    outline: none;
+}
+
+.cako-post-link:focus .cako-post-date {
+    border-bottom: 1px solid #27d7ff;
+}
+
 .cako-post {
     font-size: 14px;
     padding-right: 1.5em;
