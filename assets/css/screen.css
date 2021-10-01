@@ -125,13 +125,14 @@ code.hljs {
 
 .cako-featured {
     border: 1px solid #e8ab11;
-    padding: 1em;
+    padding: 1.5rem;
     border-radius: 0.5em;
     max-width: 800px;
+    line-height: 1.6rem;
 }
 
 .index .cako-featured {
-    margin: 0 -8px -5px;
+    margin: 0 0 -5px;
 }
 
 .cako-featured-date {
