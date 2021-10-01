@@ -35,9 +35,9 @@ blockquote a {
 #email-address {
     color: #007cff;
     border: 1px solid #007cff;
-    padding: 0.5em 1em;
+    padding: 0.4em 1em;
     border-radius: 0.8em;
-    font-size: 1.2em;
+    font-size: 1.1em;
     display: inline-block;
     text-decoration: none;
     box-shadow: none;
@@ -2566,6 +2566,7 @@ Usage (In Ghost editor):
 
 .copyright {
     font-weight: 300;
+    font-size: 0.9em;
 }
 
 .copyright a {

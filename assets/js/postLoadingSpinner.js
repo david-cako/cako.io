@@ -81,7 +81,7 @@ window.onPostClicked = (e) => {
 
   for (const e of elements) {
     // don't show spinner on post-nav links
-    if (e.currentTarget.classList.contains("post-nav-link")) {
+    if (e.classList.contains("post-nav-link")) {
       return;
     }
 
