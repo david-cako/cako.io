@@ -161,17 +161,15 @@ async function getOrFetchPosts() {
 }
 
 function onKeyDown(e) {
-    // if event fired from input, this prevents arrow keys from navigating
-    // between posts
-    e.stopPropagation();
-
-    // if up or down, prevent scrolling
-    if (e.key == "ArrowUp" || e.key == "ArrowDown") {
-        e.preventDefault();
-    }
-
     const searchResults = document.getElementById("cako-search-results");
     const firstResult = searchResults.querySelector(".cako-post-link");
+    const searchFeed = document.getElementById("cako-search-feed");
+
+    // if search shown and up or down pressed, prevent scrolling
+    if (searchFeed.style.display !== "none" &&
+        (e.key == "ArrowUp" || e.key == "ArrowDown")) {
+        e.preventDefault();
+    }
 
     // if enter, attempt to navigate to first result
     if (e.key == "Enter") {
@@ -257,7 +255,12 @@ function onKeyDown(e) {
         }
     });
 
-    searchElement.addEventListener("keydown", onKeyDown);
+    searchElement.addEventListener("keydown", (e) => {
+        // prevents arrow left/right navigation while
+        // search is focused
+        e.stopPropagation();
+        onKeyDown(e);
+    });
     document.addEventListener("keydown", onKeyDown);
 
     const searchClear = document.getElementById("cako-search-clear");
