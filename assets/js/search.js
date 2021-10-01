@@ -172,6 +172,10 @@ async function getOrFetchPosts() {
                 onSearchChange(e.target.value, posts);
             }
         });
+
+        searchElement.addEventListener("keydown", (e) => {
+            e.stopPropagation();
+        })
     });
 
     const searchClear = document.getElementById("cako-search-clear");
