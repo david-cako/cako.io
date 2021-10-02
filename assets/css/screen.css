@@ -240,7 +240,7 @@ code.hljs {
 
 .post-nav-outer {
     position: absolute;
-    bottom: 110px;
+    bottom: 120px;
     width: 100%;
 }
 
@@ -250,7 +250,7 @@ code.hljs {
 }
 
 .post-nav.inner {
-    padding: 0 12px;
+    padding: 0 1px;
 }
 
 .post-nav .cako-post {
@@ -292,11 +292,11 @@ code.hljs {
 }
 
 .post-nav .arrow-icon-back {
-    margin-right: 0.4em;
+    margin-right: 2px;
 }
 
 .post-nav .arrow-icon-forward {
-    margin-left: 0.4em;
+    margin-left: 2px;
 }
 
 .arrow-icon-back {
@@ -2587,7 +2587,7 @@ Usage (In Ghost editor):
     justify-content: space-between;
     align-items: center;
     font-size: 1.3rem;
-    padding: 15px 15px 90px;
+    padding: 15px 15px 100px;
 }
 
 .site-footer-nav {
