@@ -188,7 +188,8 @@ code.hljs {
     outline: none;
 }
 
-.cako-post-link:focus .cako-post-date {
+#cako-search-results .cako-post-link:focus .cako-post-date,
+.post-nav .cako-post-link:focus .cako-post-date {
     border-bottom: 1px solid #0070e6;
 }
 
@@ -239,8 +240,6 @@ code.hljs {
 }
 
 .post-nav-outer {
-    position: absolute;
-    bottom: 120px;
     width: 100%;
 }
 
@@ -250,7 +249,7 @@ code.hljs {
 }
 
 .post-nav.inner {
-    padding: 0 15px;
+    padding: 0 15px 20px;
 }
 
 .post-nav .cako-post {
@@ -397,7 +396,7 @@ code.hljs {
 }
 
 #cako-menu-inner .icon {
-    background-color: #777;
+    background-color: #000;
     width: 1.2em;
     height: 1.2em;
     margin-right: 0.4em;
@@ -539,13 +538,6 @@ body {
 .site-main {
     z-index: 100;
     top: 90px;
-    min-height: 90vh;
-}
-
-@media (min-width: 500px) {
-    .site-main {
-        min-height: 99vh
-    }
 }
 
 /* Full width page blocks */
@@ -2587,7 +2579,7 @@ Usage (In Ghost editor):
     justify-content: space-between;
     align-items: center;
     font-size: 1.3rem;
-    padding: 15px 15px 100px;
+    padding: 15px 15px 30px;
 }
 
 .site-footer-nav {
