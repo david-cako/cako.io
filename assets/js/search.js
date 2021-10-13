@@ -200,11 +200,11 @@ function onKeyDown(e) {
     }
 
     // ctrl + cmd + f to open search
-    if (e.key == "f" && e.ctrlKey && (e.metaKey || e.keyCode == 91)) {
+    if (e.key == "f" && (e.ctrlKey || e.metaKey) && e.shiftKey) {
         e.preventDefault();
 
-        if (openMenu) {
-            openMenu();
+        if (toggleMenu) {
+            toggleMenu();
         }
 
         focusSearch();
