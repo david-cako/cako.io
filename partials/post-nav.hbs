@@ -1,5 +1,5 @@
-<div id="post-nav-outer" class="post-nav-outer">
-    <div class="post-nav inner">
+<div class="post-nav-outer">
+    <div id="post-nav-inner" class="post-nav inner">
         {{#prev_post}}
         <a href="{{url}}" class="cako-post-link post-nav-link">
             <div class="cako-post">
@@ -11,12 +11,10 @@
         </a>
         <script>
             function navigationIsVisible() {
-                const r = document.getElementById("post-nav-outer").getBoundingClientRect();
+                const r = document.getElementById("post-nav-inner").getBoundingClientRect();
 
                 return r.top >= 0 &&
-                    r.left >= 0 &&
-                    r.bottom <= window.innerHeight &&
-                    r.right <= window.innerWidth;
+                    r.bottom <= window.innerHeight + 75;
             }
 
             document.addEventListener("keydown", e => {
