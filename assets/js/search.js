@@ -1,42 +1,60 @@
+function tokenizeQuery(query) {
+    // replace special characters with spaces
+    const newQuery = query.replace(/[`&()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ' ');
+
+    // split newQuery into words and add to tokens
+    const tokens = newQuery.split(" ").filter(t => t.length > 0);
+
+    return tokens;
+}
+
 function getMonthNames() {
     return ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
 }
 
+/** Match for title, content, and date on posts */
 async function cakoSearch(query, posts) {
+    const q = query.toLowerCase();
+    const tokens = tokenizeQuery(q);
+
     const results = [];
+
     const monthNames = getMonthNames();
 
-    const q = query.toLowerCase();
-
-    let monthMatch = monthNames.findIndex(m => m.toLowerCase().indexOf(q) !== -1);
-
-    if (monthMatch !== -1) {
-        monthMatch++;
-
-        monthMatch = String(monthMatch).padStart(2, "0");
-    }
-
     for (const p of posts) {
-        const publishDate = p.published_at.split("T")[0];
-        if (p.title.toLowerCase().indexOf(q) !== -1 ||
-            publishDate.indexOf(q) !== -1) {
+        const publishDate = new Date(p.published_at);
+        const publishDateStr = p.published_at.split("T")[0];
 
-            results.push(p);
-        } else if ((q.length > 2 || isNaN(q)) &&
-            p.html.toLowerCase().indexOf(q) !== -1) {
-            // this separate case makes it easier to search
-            // for numbers in dates/titles
-            results.push(p);
-        } else if (monthMatch !== -1 && publishDate.indexOf(`-${monthMatch}-`) !== -1) {
-            // finally, if the stirng matches a month, check the publish date
-            // with the formatted string for the month number
+        let matches = 0;
+
+        for (const t of tokens) {
+            const monthIdx = monthNames.findIndex(m => m.toLowerCase().indexOf(t) !== -1);
+            const monthStr = String(monthIdx + 1).padStart(2, "0");
+
+            if (p.title.toLowerCase().indexOf(t) !== -1) {
+                matches += 1;
+            } else if (publishDate.getFullYear() === parseInt(t)) {
+                // check for hard date ranges before using month string matches
+                matches += 1;
+            } else if (monthIdx !== -1 && publishDateStr.indexOf(`-${monthStr}-`) !== -1) {
+                // if the stirng matches a month, check the publish date
+                // with the formatted string for the month number
+                matches += 1;
+            } else if (publishDate.getDate() === parseInt(t)) {
+                matches += 1;
+            } else if (isNaN(t) && p.html.toLowerCase().indexOf(t) !== -1) {
+                // exclude numbers from html content matches
+                // this makes it easier to search for numbers in dates/titles
+                matches += 1;
+            }
+        }
+
+        if (matches >= tokens.length) {
             results.push(p);
         }
     }
-
-    console.log(results);
 
     return results;
 }
@@ -140,16 +158,18 @@ async function fetchPosts() {
     return api.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
 }
 
-// attempts to hit localStorage before fetching and caching posts
+/** attempts to hit localStorage before fetching and caching posts */
 async function getOrFetchPosts() {
     let posts;
+
+    // posts from API are cached in localStorage
     const lsPosts = localStorage.getItem("posts");
     const lsPostsDate = localStorage.getItem("postsDate");
 
     const hour = 60 * 60 * 1000;
 
     // accept local cache for up to an hour
-    if (lsPosts && lsPostsDate && (Number(lsPostsDate) > Date.now() - hour)) {
+    if (lsPosts && lsPostsDate && (Number(lsPostsDate) > (Date.now() - hour))) {
         posts = JSON.parse(lsPosts);
     } else {
         posts = await fetchPosts();
@@ -211,7 +231,9 @@ function onKeyDown(e) {
                 && current.parentElement.previousElementSibling) {
                 const prev = current.parentElement.previousElementSibling;
 
-                prev.children[0].focus();
+                if (prev.children[0]) {
+                    prev.children[0].focus();
+                }
             } else {
                 // currently at the top, focus back to search
                 focusSearch();
@@ -221,7 +243,9 @@ function onKeyDown(e) {
                 current.parentElement.nextElementSibling) {
                 const next = current.parentElement.nextElementSibling;
 
-                next.children[0].focus();
+                if (next.children[0]) {
+                    next.children[0].focus();
+                }
             }
         }
     } else if (e.key == "ArrowDown") {
@@ -256,7 +280,7 @@ function onKeyDown(e) {
     });
 
     searchElement.addEventListener("keydown", (e) => {
-        // prevents arrow left/right navigation while
+        // prevents arrow left/right post navigation while
         // search is focused
         e.stopPropagation();
         onKeyDown(e);
