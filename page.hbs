@@ -45,10 +45,10 @@ into the {body} of the default.hbs template --}}
 
 <script>
     // replaces double spaces with an en-space to fix wrapping
-    const content = document.getElementsByClassName("post-full-content");
+    const content = document.getElementsByTagName("p");
 
-    if (content[0]) {
-        content[0].innerHTML = content[0].innerHTML.replace(/ &nbsp;/g, "&ensp;")
+    for (let p of content) {
+        p.innerHTML = p.innerHTML.replace(/ &nbsp;/g, "&ensp;")
     }
 </script>
 
