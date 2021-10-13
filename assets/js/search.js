@@ -200,7 +200,7 @@ function onKeyDown(e) {
     }
 
     // ctrl + cmd + f to open search
-    if (e.key == "f" && e.ctrlKey && e.metaKey) {
+    if (e.key == "f" && e.ctrlKey && (e.metaKey || e.keyCode == 91)) {
         e.preventDefault();
 
         if (openMenu) {
