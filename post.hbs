@@ -47,3 +47,12 @@ into the {body} of the default.hbs template --}}
 </main>
 
 {{/post}}
+
+<script>
+    // replaces double spaces with an en-space to fix wrapping
+    const content = document.getElementsByClassName("post-full-content");
+
+    if (content[0]) {
+        content[0].innerHTML = content[0].innerHTML.replace(/ &nbsp;/g, "&ensp;")
+    }
+</script>

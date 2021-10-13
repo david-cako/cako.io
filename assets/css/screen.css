@@ -1224,8 +1224,8 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content {
     position: relative;
     margin: 0 auto;
-    font-size: 2rem;
-    line-height: 1.6em;
+    font-size: 1.9rem;
+    line-height: 1.5em;
     background: #fff;
     border-radius: 10px;
     font-family: -apple-system, BlinkMacSystemFont, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -1235,7 +1235,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 @media (max-width: 650px) {
     .post-full-content {
-        font-size: 1.9rem;
+        font-size: 1.8rem;
         padding: 0;
     }
 }
@@ -1562,9 +1562,6 @@ Usage (In Ghost editor):
 
 /* Some grouped styles for smaller viewports */
 @media (max-width: 500px) {
-    .post-full-meta {
-        line-height: 1.3em;
-    }
     .post-full-image {
         margin-bottom: 4vw;
         height: 350px;

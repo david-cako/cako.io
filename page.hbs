@@ -41,8 +41,16 @@ into the {body} of the default.hbs template --}}
         </div>
     </div>
 </main>
-
 {{/post}}
+
+<script>
+    // replaces double spaces with an en-space to fix wrapping
+    const content = document.getElementsByClassName("post-full-content");
+
+    if (content[0]) {
+        content[0].innerHTML = content[0].innerHTML.replace(/ &nbsp;/g, "&ensp;")
+    }
+</script>
 
 {{!-- The #contentFor helper here will send everything inside it up to the matching #block helper found in default.hbs --}}
 {{#contentFor "scripts"}}
