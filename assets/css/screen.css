@@ -168,22 +168,25 @@ code.hljs {
     padding: 0 15px;
 }
 
-#cako-post-feed, #cako-search-feed {
-    padding: 10px 0 20px;
-    border-radius: 10px;
+#cako-post-feed {
+    padding: 1em 0;
+}
+
+.index #cako-search-feed {
+    display: none;
+    padding: 0.5em 15px;
 }
 
 #cako-search-feed {
     display: none;
-    margin-top: 1em;
-    padding: 0 15px;
+    padding: 1.1em 15px;
 }
 
 #cako-search-header {
     font-size: 2.5em;
     font-weight: 600;
     margin-bottom: 1em;
-    margin-top: 0.9em;
+    margin-top: 0.8em;
 }
 
 .cako-featured {
