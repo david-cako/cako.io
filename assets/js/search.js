@@ -200,7 +200,7 @@ function onKeyDown(e) {
     }
 
     // ctrl + cmd + f to open search
-    if (e.key == "f" && (e.ctrlKey || e.metaKey) && e.shiftKey) {
+    if (e.key.toLowerCase() == "f" && (e.ctrlKey || e.metaKey) && e.shiftKey) {
         e.preventDefault();
 
         if (toggleMenu) {
