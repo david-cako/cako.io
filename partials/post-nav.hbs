@@ -1,4 +1,4 @@
-<div class="post-nav-outer">
+<div id="post-nav-outer" class="post-nav-outer">
     <div class="post-nav inner">
         {{#prev_post}}
         <a href="{{url}}" class="cako-post-link post-nav-link">
@@ -10,6 +10,15 @@
             </div>
         </a>
         <script>
+            function navigationIsVisible() {
+                const r = document.getElementById("post-nav-outer").getBoundingClientRect();
+
+                return r.top >= 0 &&
+                    r.left >= 0 &&
+                    r.bottom <= window.innerHeight &&
+                    r.right <= window.innerWidth;
+            }
+
             document.addEventListener("keydown", e => {
                 // don't navigate if currently searching
                 if (e.key == "ArrowLeft" && 
@@ -18,7 +27,7 @@
 
                     const navLinks = document.querySelectorAll(".post-nav-link");
 
-                    if (navLinks[0]) {
+                    if (navLinks[0] && navigationIsVisible()) {
                         navLinks[0].focus();
                     }
                 }
@@ -45,7 +54,7 @@
 
                     const navLinks = document.querySelectorAll(".post-nav-link");
 
-                    if (navLinks[1]) {
+                    if (navLinks[1] && navigationIsVisible()) {
                         navLinks[1].focus();
                     }
                 }
