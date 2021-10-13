@@ -1302,6 +1302,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 .post-full-content li p {
     margin: 0;
+    display: inline;
 }
 
 .post-template .post-full-content > p:first-child {
