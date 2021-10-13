@@ -1166,7 +1166,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    margin: 3em 15px 2em;
+    margin: 2.5em 15px 1.5em;
 }
 
 .post-full-meta {
