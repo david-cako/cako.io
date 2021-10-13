@@ -138,14 +138,8 @@ async function cakoSearch(query, posts) {
             const monthIdx = monthNames.findIndex(m => m.toLowerCase().indexOf(t) !== -1);
             const monthStr = String(monthIdx + 1).padStart(2, "0");
 
-            if (p.title.toLowerCase().indexOf(t) !== -1 ||
-                publishDate.indexOf(t) !== -1) {
+            if (p.title.toLowerCase().indexOf(t)) {
 
-                results.push(p);
-                break;
-            } else if (isNaN(t) && p.html.toLowerCase().indexOf(t) !== -1) {
-                // exclude numbers from html content matches
-                // this makes it easier to search for numbers in dates/titles
                 results.push(p);
                 break;
             } else if (beginDate && beginDate.valueOf() < publishDate.valueOf() &&
@@ -156,6 +150,11 @@ async function cakoSearch(query, posts) {
             } else if (monthIdx !== -1 && publishDateStr.indexOf(`-${monthStr}-`) !== -1) {
                 // finally, if the stirng matches a month, check the publish date
                 // with the formatted string for the month number
+                results.push(p);
+                break;
+            } else if (isNaN(t) && p.html.toLowerCase().indexOf(t) !== -1) {
+                // exclude numbers from html content matches
+                // this makes it easier to search for numbers in dates/titles
                 results.push(p);
                 break;
             }

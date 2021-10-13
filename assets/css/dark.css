@@ -59,9 +59,9 @@ body {
     background-color: #fff;
 }
 
-#cako-menu-inner .cako-menu-item:active .icon, 
-#cako-menu-inner .cako-menu-item:hover .icon {
-    background-color: #000;
+#cako-menu-inner .cako-menu-item:active ion-icon, 
+#cako-menu-inner .cako-menu-item:hover ion-icon {
+    color: #000;
 }
 
 .cako-post-title {
