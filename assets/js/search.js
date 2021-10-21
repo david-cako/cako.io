@@ -4,7 +4,7 @@ const GHOST_API = new GhostContentAPI({
     version: "v3"
 });
 
-let GHOST_POSTS;
+const GHOST_POSTS = GHOST_API.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
 
 function tokenizeQuery(query) {
     // replace special characters with spaces
@@ -158,14 +158,10 @@ function focusSearch() {
     searchElement.focus();
 }
 
-async function getOrFetchPosts() {
+function getOrFetchPosts() {
     // remove ls from previous version
     localStorage.removeItem("posts");
     localStorage.removeItem("postsDate");
-
-    if (!GHOST_POSTS) {
-        GHOST_POSTS = await GHOST_API.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
-    }
 
     return GHOST_POSTS;
 }
