@@ -493,7 +493,7 @@ ion-icon#cako-search-clear {
     font-size: 1.6em;
     opacity: 0.9;
     cursor: pointer;
-    padding: 0 0.1em;
+    padding: 0.05em 0.1em 0;
     box-sizing: content-box;
 }
 
@@ -519,6 +519,7 @@ ion-icon#cako-search-clear {
 #cako-menu .menu-icon-outer {
     background: #fff;
     border-radius: 0.5em;
+    line-height: 1em;
 }
 
 #cako-menu ion-icon[name="menu"]:active {
