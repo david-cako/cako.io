@@ -16,13 +16,13 @@
     <link rel="stylesheet" type="text/css" href="{{asset "css/screen.css"}}" />
     <link rel="stylesheet" type="text/css" href="{{asset "css/spin.css"}}" />
     
-    <script type="module" src="{{asset "js/ionicons/ionicons.esm.js"}}"></script>
-
     {{!-- Set dark css path from template to enable cache-busting in lights.js --}}
     <script>
         const DARK_CSS_PATH = '{{asset "css/dark.css"}}';
     </script>
     <script src="{{asset "js/lights.js"}}"></script>
+    
+    <script type="module" src="{{asset "js/ionicons/ionicons.esm.js"}}"></script>
 
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
