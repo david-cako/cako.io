@@ -519,7 +519,7 @@ ion-icon#cako-search-clear {
 #cako-menu .menu-icon-outer {
     background: #fff;
     border-radius: 0.5em;
-    line-height: 1em;
+    line-height: 0.9em;
 }
 
 #cako-menu ion-icon[name="menu"]:active {
