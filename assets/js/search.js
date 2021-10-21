@@ -1,3 +1,11 @@
+const GHOST_API = new GhostContentAPI({
+    url: "https://cako.io",
+    key: "723c108685f2d6fba50c68a511",
+    version: "v3"
+});
+
+let GHOST_POSTS;
+
 function tokenizeQuery(query) {
     // replace special characters with spaces
     const newQuery = query.replace(/[`&()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ' ');
@@ -15,7 +23,9 @@ function getMonthNames() {
 }
 
 /** Match for title, content, and date on posts */
-async function cakoSearch(query, posts) {
+async function cakoSearch(query) {
+    const posts = await getOrFetchPosts();
+
     const q = query.toLowerCase();
     const tokens = tokenizeQuery(q);
 
@@ -114,7 +124,7 @@ function hideResults() {
     }
 }
 
-async function onSearchChange(value, posts) {
+async function onSearchChange(value) {
     const clearIcon = document.getElementById("cako-search-clear");
 
     if (value.length < 1) {
@@ -125,7 +135,7 @@ async function onSearchChange(value, posts) {
 
     clearIcon.style.display = "block";
 
-    const results = await cakoSearch(value, posts);
+    const results = await cakoSearch(value);
 
     showResults(results);
 }
@@ -148,36 +158,16 @@ function focusSearch() {
     searchElement.focus();
 }
 
-async function fetchPosts() {
-    const api = new GhostContentAPI({
-        url: "https://cako.io",
-        key: "723c108685f2d6fba50c68a511",
-        version: "v3"
-    });
-
-    return api.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
-}
-
-/** attempts to hit localStorage before fetching and caching posts */
 async function getOrFetchPosts() {
-    let posts;
+    // remove ls from previous version
+    localStorage.removeItem("posts");
+    localStorage.removeItem("postsDate");
 
-    // posts from API are cached in localStorage
-    const lsPosts = localStorage.getItem("posts");
-    const lsPostsDate = localStorage.getItem("postsDate");
-
-    const hour = 60 * 60 * 1000;
-
-    // accept local cache for up to an hour
-    if (lsPosts && lsPostsDate && (Number(lsPostsDate) > (Date.now() - hour))) {
-        posts = JSON.parse(lsPosts);
-    } else {
-        posts = await fetchPosts();
-        localStorage.setItem("posts", JSON.stringify(posts));
-        localStorage.setItem("postsDate", String(Date.now()));
+    if (!GHOST_POSTS) {
+        GHOST_POSTS = await GHOST_API.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
     }
 
-    return posts;
+    return GHOST_POSTS;
 }
 
 function onKeyDown(e) {
@@ -259,24 +249,15 @@ function onKeyDown(e) {
 (async () => {
     const searchElement = document.getElementById("cako-search");
 
-    // don't perform fetch until search is focused.
-    let firstFocus = true;
-
     searchElement.addEventListener("focus", async () => {
-        if (firstFocus) {
-            const posts = await getOrFetchPosts();
+        let prev = "";
 
-            let prev = "";
-
-            searchElement.addEventListener("input", (e) => {
-                if (e.target.value !== prev) {
-                    prev = e.target.value;
-                    onSearchChange(e.target.value, posts);
-                }
-            });
-
-            firstFocus = false;
-        }
+        searchElement.addEventListener("input", (e) => {
+            if (e.target.value !== prev) {
+                prev = e.target.value;
+                onSearchChange(e.target.value);
+            }
+        });
     });
 
     searchElement.addEventListener("keydown", (e) => {
