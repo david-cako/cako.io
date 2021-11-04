@@ -541,7 +541,7 @@ ion-icon#cako-search-clear {
 }
 
 .cako-menu-item {
-    padding: 0.4em;
+    padding: 0.4em 0.5em;
     border-radius: 0.5em;
     display: flex;
     align-items: center;
@@ -549,7 +549,7 @@ ion-icon#cako-search-clear {
 }
 
 .cako-menu-search {
-    padding: 0.4em 0.4em 0.3em;
+    padding: 0.4em 0.5em 0.3em;
     display: flex;
     align-items: center;
 }
