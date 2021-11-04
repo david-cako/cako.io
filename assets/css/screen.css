@@ -493,8 +493,6 @@ ion-icon#cako-search-clear {
     font-size: 1.6em;
     opacity: 0.9;
     cursor: pointer;
-    padding: 0.05em 0.1em 0;
-    box-sizing: content-box;
 }
 
 #cako-menu-indicator {
@@ -518,34 +516,40 @@ ion-icon#cako-search-clear {
 
 #cako-menu .menu-icon-outer {
     background: #fff;
+    height: 1.7em;
+    width: 1.8em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 0.5em;
-    line-height: 0.9em;
 }
 
-#cako-menu ion-icon[name="menu"]:active {
+#cako-menu ion-icon[name="menu-outline"]:active {
     opacity: 0.6;
 }
 
 #cako-menu-inner {
     display: none;
     background: #fff;
-    width: 10em;
+    width: 11em;
     border: 1px solid #000;
-    border-radius: 0.5em;
+    border-radius: 0.7em;
     margin-bottom: 0.3em;
     margin-right: 0.3em;
     overflow: hidden;
+    padding: 0.35em 0.3em;
 }
 
 .cako-menu-item {
-    padding: 0.5em;
+    padding: 0.4em;
+    border-radius: 0.5em;
     display: flex;
     align-items: center;
     cursor: pointer;
 }
 
 .cako-menu-search {
-    padding: 0.5em;
+    padding: 0.4em 0.4em 0.3em;
     display: flex;
     align-items: center;
 }
