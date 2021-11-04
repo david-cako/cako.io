@@ -521,7 +521,7 @@ ion-icon#cako-search-clear {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 0.5em;
+    border-radius: 6px;
 }
 
 #cako-menu ion-icon[name="menu-outline"]:active {
@@ -533,7 +533,7 @@ ion-icon#cako-search-clear {
     background: #fff;
     width: 11em;
     border: 1px solid #000;
-    border-radius: 0.7em;
+    border-radius: 9px;
     margin-bottom: 0.3em;
     margin-right: 0.3em;
     overflow: hidden;
