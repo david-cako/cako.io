@@ -7,10 +7,8 @@ const GHOST_API = new GhostContentAPI({
 const GHOST_POSTS = GHOST_API.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
 
 function tokenizeQuery(query) {
-    const q = query.toLowerCase();
-
     // replace special characters with spaces
-    const newQuery = q.replace(/[`&()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ' ');
+    const newQuery = query.replace(/[`&()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ' ');
 
     // split newQuery into words and add to tokens
     const tokens = newQuery.split(" ").filter(t => t.length > 0);
@@ -18,172 +16,62 @@ function tokenizeQuery(query) {
     return tokens;
 }
 
-const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-];
-
-function getStrongMatch(matches, post) {
-    const previewLength = 20;
-
-    const titleMatches = matches.filter(m => m.in == "title");
-    const htmlMatches = matches.filter(m => m.in == "html");
-
-    if (post.title.length === titleMatches.length || titleMatches.length > 1) {
-        return { in: "title", preview: post.title };
-    }
-
-    if (htmlMatches.length > 1) {
-        const htmlWords = post.html.replace(/<(.|\n)*?>/g, " ").split(" ");
-
-        let htmlMatchIdxs = [];
-
-        for (let i = 0; i < htmlWords.length; i++) {
-            const word = htmlWords[i].toLowerCase();
-            for (const m of matches) {
-                if (m.token !== undefined && m.token.length > 1 && word.indexOf(m.token) !== -1) {
-                    if (htmlMatchIdxs.indexOf(i) === -1) {
-                        htmlMatchIdxs.push(i);
-                    }
-                }
-            }
-        }
-
-        if (htmlMatchIdxs.length < 1) {
-            return;
-        }
-
-        htmlMatchIdxs.sort((a, b) => a - b);
-
-        let maxSequential = [];
-        let sequential = [];
-        let prev;
-
-        for (const idx of htmlMatchIdxs) {
-            if (prev === undefined || idx - 1 === prev) {
-                sequential.push(idx);
-            } else {
-                if (sequential.length >= maxSequential.length) {
-                    maxSequential = sequential;
-                }
-                sequential = [idx];
-            }
-
-            prev = idx;
-        }
-
-        if (sequential.length >= maxSequential.length) {
-            maxSequential = sequential;
-        }
-
-        // get surrounding text before returning sequential html match
-        if (maxSequential.length / matches.length >= .8) {
-            const matchMin = Math.min(...maxSequential);
-            const matchMax = Math.max(...maxSequential);
-
-            let min = matchMin;
-            let max = matchMax;
-
-            while (max - min < previewLength) {
-                if (min !== 0) {
-                    min--;
-                }
-
-                if (max - min < previewLength && max < htmlWords.length) {
-                    max++;
-                }
-
-                if (min === 0 && max === htmlWords.length) {
-                    break;
-                }
-            }
-
-            const preview = htmlWords.slice(min, max + 1).join(" ");
-
-            return { in: "html", preview: preview };
-        }
-    }
+function getMonthNames() {
+    return ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
 }
 
 /** Match for title, content, and date on posts */
 async function cakoSearch(query) {
     const posts = await getOrFetchPosts();
 
-    const tokens = tokenizeQuery(query);
+    const q = query.toLowerCase();
+    const tokens = tokenizeQuery(q);
 
     const results = [];
+
+    const monthNames = getMonthNames();
 
     for (const p of posts) {
         const publishDate = new Date(p.published_at);
         const publishDateStr = p.published_at.split("T")[0];
 
-        let matches = [];
+        let matches = 0;
 
         for (const t of tokens) {
-            const monthIdx = MONTH_NAMES.findIndex(m => m.toLowerCase().indexOf(t) !== -1);
+            const monthIdx = monthNames.findIndex(m => m.toLowerCase().indexOf(t) !== -1);
             const monthStr = String(monthIdx + 1).padStart(2, "0");
 
             if (p.title.toLowerCase().indexOf(t) !== -1) {
-                matches.push({ in: "title", token: t });
+                matches += 1;
             } else if (publishDate.getFullYear() === parseInt(t)) {
                 // check for hard date ranges before using month string matches
-                matches.push({ in: "date" });
+                matches += 1;
             } else if (monthIdx !== -1 && publishDateStr.indexOf(`-${monthStr}-`) !== -1) {
-                // if the string matches a month, check the publish date
+                // if the stirng matches a month, check the publish date
                 // with the formatted string for the month number
-                matches.push({ in: "date" });
+                matches += 1;
             } else if (publishDate.getDate() === parseInt(t)) {
-                matches.push({ in: "date" });
+                matches += 1;
             } else if (isNaN(t) && p.html.toLowerCase().indexOf(t) !== -1) {
                 // exclude numbers from html content matches
                 // this makes it easier to search for numbers in dates/titles
-                matches.push({ in: "html", token: t });
+                matches += 1;
             }
         }
 
-        if (matches.length == tokens.length ||
-            matches.length > 2 && matches.length / tokens.length >= .7) {
-            const strong = getStrongMatch(matches, p);
-            results.push({ post: p, strong: strong });
+        if (matches >= tokens.length) {
+            results.push(p);
         }
     }
 
-    const sorted = results.sort((a, b) => {
-        const aLen = a.strong !== undefined ? a.strong.preview.split(" ").length : 0;
-        const bLen = b.strong !== undefined ? b.strong.preview.split(" ").length : 0;
-
-        return bLen - aLen;
-    });
-
-    return sorted;
+    return results;
 }
 
-function formatPreview(result, query) {
-    if (result.strong === undefined || result.strong.in !== "html") {
-        return ``
-    }
+function showResults(results) {
+    const monthNames = getMonthNames();
 
-    const tokens = tokenizeQuery(query);
-    const words = result.strong.preview.split(" ");
-
-    for (let i = 0; i < words.length; i++) {
-        let w = words[i];
-
-        for (const t of tokens) {
-            const tokenIdx = w.toLowerCase().indexOf(t);
-            if (tokenIdx !== -1) {
-                const before = w.slice(0, tokenIdx);
-                const match = w.slice(tokenIdx, tokenIdx + t.length);
-                const after = w.slice(tokenIdx + t.length);
-
-                words[i] = `${before}<span class="match">${match}</span>${after}`;
-            }
-        }
-    }
-
-    return `<div class="cako-post-preview">${words.join(" ")}</div>`;
-}
-
-function showResults(results, query) {
     const searchResults = document.getElementById("cako-search-results");
     searchResults.innerHTML = "";
 
@@ -200,20 +88,13 @@ function showResults(results, query) {
         postFull.style.display = "none";
     }
 
-    for (const result of results) {
-        const r = result.post;
+    for (const r of results) {
         const d = new Date(r.published_at);
 
         const date = d.getDate();
         const month = d.getMonth();
-        const monthName = MONTH_NAMES[month];
+        const monthName = monthNames[month];
         const year = d.getFullYear();
-
-        let preview = ``;
-
-        if (result.strong !== undefined && result.strong.in === "html") {
-            preview = formatPreview(result, query);
-        }
 
         searchResults.insertAdjacentHTML("beforeend",
             `<div class="cako-post">
@@ -222,8 +103,7 @@ function showResults(results, query) {
                     <div class="cako-post-date-outer">
                         <time class="cako-post-date">${date} ${monthName} ${year}</time>
                     </div>
-                    </a>
-                    ${preview}
+                </a>
             </div>`
         )
     }
@@ -257,7 +137,7 @@ async function onSearchChange(value) {
 
     const results = await cakoSearch(value);
 
-    showResults(results, value);
+    showResults(results);
 }
 
 function clearSearch() {

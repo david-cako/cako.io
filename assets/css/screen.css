@@ -51,7 +51,7 @@ production stylesheet in assets/built/screen.css
 
 @font-face {
     font-family: "Roboto";
-    src: url("/assets/fonts/Roboto-Regular") format("truetype");
+    src: url("/assets/fonts/Roboto-Regular.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
 }
@@ -174,7 +174,7 @@ code.hljs {
 
 .index #cako-search-feed {
     display: none;
-    padding: 0.5em 15px;
+    padding: 0.5em 15px 2em;
 }
 
 #cako-search-feed {
@@ -304,6 +304,15 @@ code.hljs {
 .cako-post-link .spinner {
     margin-left: 18px;
     margin-top: 2px;
+}
+
+.cako-post-preview {
+    margin-top: 0.2em;
+}
+
+.cako-post-preview span.match {
+    font-weight: 700;
+    color: #e8ab11;
 }
 
 .post-nav-outer {
@@ -471,6 +480,7 @@ code.hljs {
 
 #cako-menu-inner a {
     color: #000;
+    text-decoration: none;
 }
 
 #cako-menu-inner .cako-menu-item:active, 
@@ -479,6 +489,7 @@ code.hljs {
 .cako-menu-item:hover {
     color: #fff;
     background-color: #000;
+    transform: scale(1.02);
 }
 
 ion-icon#cako-search-clear {
@@ -546,6 +557,7 @@ ion-icon#cako-search-clear {
     display: flex;
     align-items: center;
     cursor: pointer;
+    transition: transform 0.1s ease-in-out;
 }
 
 .cako-menu-search {
