@@ -6,6 +6,24 @@ const GHOST_API = new GhostContentAPI({
 
 const GHOST_POSTS = GHOST_API.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
 
+window.clearSearch = () => {
+    const searchElement = document.getElementById("cako-search");
+    searchElement.value = "";
+
+    hideResults();
+
+    const clearIcon = document.getElementById("cako-search-clear");
+    clearIcon.style.display = "none";
+
+    focusSearch();
+}
+
+window.focusSearch = () => {
+    const searchElement = document.getElementById("cako-search");
+
+    searchElement.focus();
+}
+
 function tokenizeQuery(query) {
     const q = query.toLowerCase();
 
@@ -282,24 +300,6 @@ async function onSearchChange(value) {
     const results = await cakoSearch(value);
 
     showResults(results, value);
-}
-
-function clearSearch() {
-    const searchElement = document.getElementById("cako-search");
-    searchElement.value = "";
-
-    hideResults();
-
-    const clearIcon = document.getElementById("cako-search-clear");
-    clearIcon.style.display = "none";
-
-    focusSearch();
-}
-
-window.focusSearch = () => {
-    const searchElement = document.getElementById("cako-search");
-
-    searchElement.focus();
 }
 
 function getOrFetchPosts() {
