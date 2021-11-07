@@ -25,14 +25,29 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
 function getStrongMatch(matches, post) {
     const previewLength = 20;
 
-    const titleMatches = matches.filter(m => m.in == "title");
     const htmlMatches = matches.filter(m => m.in == "html");
 
-    if (post.title.length === titleMatches.length || titleMatches.length > 1) {
+    const titleWords = post.title.toLowerCase().split(" ");
+
+    let titleMatches = [];
+
+    for (const word of titleWords) {
+        for (const m of matches) {
+            if (m.token !== undefined
+                && word.indexOf(m.token) !== -1
+                && titleMatches.indexOf(word) === -1
+            ) {
+                titleMatches.push(word);
+                break;
+            }
+        }
+    }
+
+    if (titleMatches.length / titleWords.length >= 0.7) {
         return { in: "title", preview: post.title };
     }
 
-    if (htmlMatches.length > 1) {
+    if (htmlMatches.length > 0) {
         const htmlWords = post.html.replace(/<(.|\n)*?>/g, " ").split(" ");
 
         let htmlMatchIdxs = [];
@@ -40,10 +55,11 @@ function getStrongMatch(matches, post) {
         for (let i = 0; i < htmlWords.length; i++) {
             const word = htmlWords[i].toLowerCase();
             for (const m of matches) {
-                if (m.token !== undefined && m.token.length > 1 && word.indexOf(m.token) !== -1) {
-                    if (htmlMatchIdxs.indexOf(i) === -1) {
-                        htmlMatchIdxs.push(i);
-                    }
+                if (m.token !== undefined
+                    && word.indexOf(m.token) !== -1
+                    && htmlMatchIdxs.indexOf(i) === -1
+                ) {
+                    htmlMatchIdxs.push(i);
                 }
             }
         }
@@ -76,7 +92,7 @@ function getStrongMatch(matches, post) {
         }
 
         // get surrounding text before returning sequential html match
-        if (maxSequential.length / matches.length >= .8) {
+        if (maxSequential.length / matches.length >= 0.7) {
             const matchMin = Math.min(...maxSequential);
             const matchMax = Math.max(...maxSequential);
 
@@ -148,10 +164,18 @@ async function cakoSearch(query) {
     }
 
     const sorted = results.sort((a, b) => {
-        const aLen = a.strong !== undefined ? a.strong.preview.split(" ").length : 0;
-        const bLen = b.strong !== undefined ? b.strong.preview.split(" ").length : 0;
+        const aVal = a.strong !== undefined
+            ? a.strong.in === "title"
+                ? 99
+                : a.strong.preview.split(" ").length
+            : 0;
+        const bVal = b.strong !== undefined
+            ? b.strong.in === "title"
+                ? 99
+                : b.strong.preview.split(" ").length
+            : 0;
 
-        return bLen - aLen;
+        return bVal - aVal;
     });
 
     return sorted;
