@@ -296,7 +296,7 @@ function clearSearch() {
     focusSearch();
 }
 
-function focusSearch() {
+window.focusSearch = () => {
     const searchElement = document.getElementById("cako-search");
 
     searchElement.focus();

@@ -63,7 +63,7 @@
             menuInner.style.display = "block";
             clearMenuIndicator();
 
-            if (focusSearch) {
+            if (focusSearch !== undefined) {
                 focusSearch();
             }
         }
@@ -72,7 +72,7 @@
             const menuInner = document.getElementById("cako-menu-inner");
 
             menuInner.style.display = "none";
-            
+
             if (clearSearch) {
                 clearSearch();
             }
