@@ -40,11 +40,10 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
-function getStrongMatch(matches, post) {
+function getStrongMatch(matches, post, query) {
     const previewLength = 20;
 
     const htmlMatches = matches.filter(m => m.in == "html");
-
     const titleWords = post.title.toLowerCase().split(" ");
 
     let titleMatches = [];
@@ -61,8 +60,10 @@ function getStrongMatch(matches, post) {
         }
     }
 
-    if (titleMatches.length / titleWords.length >= 0.7) {
-        return { in: "title", preview: post.title };
+    if (titleMatches.length / titleWords.length >= 0.7
+        && query.split(" ").length <= titleWords.length
+    ) {
+        return { in: "title", preview: post.title, rank: 99 };
     }
 
     if (htmlMatches.length > 0) {
@@ -133,7 +134,7 @@ function getStrongMatch(matches, post) {
 
             const preview = htmlWords.slice(min, max + 1).join(" ");
 
-            return { in: "html", preview: preview };
+            return { in: "html", preview: preview, rank: maxSequential.length / matches.length };
         }
     }
 }
@@ -176,21 +177,17 @@ async function cakoSearch(query) {
 
         if (matches.length == tokens.length ||
             matches.length > 2 && matches.length / tokens.length >= .7) {
-            const strong = getStrongMatch(matches, p);
+            const strong = getStrongMatch(matches, p, query);
             results.push({ post: p, strong: strong });
         }
     }
 
     const sorted = results.sort((a, b) => {
         const aVal = a.strong !== undefined
-            ? a.strong.in === "title"
-                ? 99
-                : a.strong.preview.split(" ").length
+            ? a.strong.rank
             : 0;
         const bVal = b.strong !== undefined
-            ? b.strong.in === "title"
-                ? 99
-                : b.strong.preview.split(" ").length
+            ? b.strong.rank
             : 0;
 
         return bVal - aVal;
