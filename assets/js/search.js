@@ -24,14 +24,12 @@ window.focusSearch = () => {
     searchElement.focus();
 }
 
-function tokenizeQuery(query) {
-    const q = query.toLowerCase();
-
+function tokenizeString(s) {
     // replace special characters with spaces
-    const newQuery = q.replace(/[`&()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ' ');
+    const normalized = s.toLowerCase().replace(/[`&()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ' ');
 
     // split newQuery into words and add to tokens
-    const tokens = newQuery.split(" ").filter(t => t.length > 0);
+    const tokens = normalized.split(" ").filter(t => t.length > 0);
 
     return tokens;
 }
@@ -78,7 +76,7 @@ function getStrongMatch(matches, post, query) {
                     && word.indexOf(m.token) !== -1
                     && htmlMatchIdxs.indexOf(i) === -1
                 ) {
-                    htmlMatchIdxs.push(i);
+                    htmlMatchIdxs.push({ idx: i, word: word, token: m.token });
                 }
             }
         }
@@ -87,33 +85,32 @@ function getStrongMatch(matches, post, query) {
             return;
         }
 
-        htmlMatchIdxs.sort((a, b) => a - b);
+        htmlMatchIdxs.sort((a, b) => a.idx - b.idx);
 
         let maxSequential = [];
         let sequential = [];
         let prev;
 
-        for (const idx of htmlMatchIdxs) {
-            if (prev === undefined || idx - 1 === prev) {
-                sequential.push(idx);
+        for (const m of htmlMatchIdxs) {
+            if (prev === undefined || m.idx - 1 === prev.idx || m.idx === prev.idx) {
+                sequential.push(m);
             } else {
                 if (sequential.length >= maxSequential.length) {
                     maxSequential = sequential;
                 }
-                sequential = [idx];
+                sequential = [m];
             }
 
-            prev = idx;
+            prev = m;
         }
 
-        if (sequential.length >= maxSequential.length) {
-            maxSequential = sequential;
-        }
+        console.log(post.title, htmlMatchIdxs, maxSequential, matches);
 
         // get surrounding text before returning sequential html match
         if (maxSequential.length / matches.length >= 0.7) {
-            const matchMin = Math.min(...maxSequential);
-            const matchMax = Math.max(...maxSequential);
+            const matchIdxs = maxSequential.map(m => m.idx);
+            const matchMin = Math.min(...matchIdxs);
+            const matchMax = Math.max(...matchIdxs);
 
             let min = matchMin;
             let max = matchMax;
@@ -133,8 +130,13 @@ function getStrongMatch(matches, post, query) {
             }
 
             const preview = htmlWords.slice(min, max + 1).join(" ");
+            const charsMatched = maxSequential.reduce((prev, cur) => prev + cur.token.length, 0)
+            const charsInSeq = maxSequential.reduce((prev, cur) => prev + cur.word.length, 0)
 
-            return { in: "html", preview: preview, rank: maxSequential.length / matches.length };
+            return {
+                in: "html", preview: preview,
+                rank: (maxSequential.length / matches.length) + (charsMatched / charsInSeq)
+            };
         }
     }
 }
@@ -143,7 +145,7 @@ function getStrongMatch(matches, post, query) {
 async function cakoSearch(query) {
     const posts = await getOrFetchPosts();
 
-    const tokens = tokenizeQuery(query);
+    const tokens = tokenizeString(query);
 
     const results = [];
 
@@ -193,6 +195,8 @@ async function cakoSearch(query) {
         return bVal - aVal;
     });
 
+    console.log(sorted);
+
     return sorted;
 }
 
@@ -201,7 +205,7 @@ function formatPreview(result, query) {
         return ``
     }
 
-    const tokens = tokenizeQuery(query);
+    const tokens = tokenizeString(query);
     const words = result.strong.preview.split(" ");
 
     for (let i = 0; i < words.length; i++) {

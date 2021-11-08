@@ -325,7 +325,7 @@ code.hljs {
 }
 
 .post-nav.inner {
-    padding: 0 15px 30px;
+    padding: 0 15px 35px;
 }
 
 .post-nav .cako-post {
@@ -490,6 +490,7 @@ code.hljs {
     color: #fff;
     background-color: #000;
     transform: scale(1.02);
+    box-shadow: 0 1px 8px rgba(0,0,0,0.3);
 }
 
 ion-icon#cako-search-clear {
