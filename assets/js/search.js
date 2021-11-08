@@ -46,22 +46,31 @@ function getStrongMatch(matches, post, query) {
 
     let titleMatches = [];
 
-    for (const word of titleWords) {
+    for (let i = 0; i < titleWords.length; i++) {
+        const word = titleWords[i];
+
         for (const m of matches) {
             if (m.token !== undefined
+                && m.token.length > 1
                 && word.indexOf(m.token) !== -1
                 && titleMatches.indexOf(word) === -1
             ) {
-                titleMatches.push(word);
+                titleMatches.push({ idx: i, word: word, token: m.token });
                 break;
             }
         }
     }
 
-    if (titleMatches.length / titleWords.length >= 0.7
-        && query.split(" ").length <= titleWords.length
-    ) {
-        return { in: "title", preview: post.title, rank: 99 };
+    if (titleMatches.length / titleWords.length >= 0.7) {
+        const charsMatched = titleMatches.reduce((prev, cur) => prev + cur.token.length, 0)
+        const charsInSeq = titleMatches.reduce((prev, cur) => prev + cur.word.length, 0)
+
+        const wordsMatched = new Set(titleMatches.map(m => m.word)).size
+
+        return {
+            in: "title", preview: post.title,
+            rank: (wordsMatched / query.split(" ").length) + (charsMatched / charsInSeq)
+        };
     }
 
     if (htmlMatches.length > 0) {
@@ -73,6 +82,7 @@ function getStrongMatch(matches, post, query) {
             const word = htmlWords[i].toLowerCase();
             for (const m of matches) {
                 if (m.token !== undefined
+                    && m.token.length > 1
                     && word.indexOf(m.token) !== -1
                     && htmlMatchIdxs.indexOf(i) === -1
                 ) {
@@ -104,8 +114,6 @@ function getStrongMatch(matches, post, query) {
             prev = m;
         }
 
-        console.log(post.title, htmlMatchIdxs, maxSequential, matches);
-
         // get surrounding text before returning sequential html match
         if (maxSequential.length / matches.length >= 0.7) {
             const matchIdxs = maxSequential.map(m => m.idx);
@@ -130,12 +138,15 @@ function getStrongMatch(matches, post, query) {
             }
 
             const preview = htmlWords.slice(min, max + 1).join(" ");
+
             const charsMatched = maxSequential.reduce((prev, cur) => prev + cur.token.length, 0)
             const charsInSeq = maxSequential.reduce((prev, cur) => prev + cur.word.length, 0)
 
+            const wordsMatched = new Set(maxSequential.map(m => m.word)).size
+
             return {
                 in: "html", preview: preview,
-                rank: (maxSequential.length / matches.length) + (charsMatched / charsInSeq)
+                rank: (wordsMatched / query.split(" ").length) + (charsMatched / charsInSeq)
             };
         }
     }
@@ -195,8 +206,6 @@ async function cakoSearch(query) {
         return bVal - aVal;
     });
 
-    console.log(sorted);
-
     return sorted;
 }
 
@@ -205,7 +214,7 @@ function formatPreview(result, query) {
         return ``
     }
 
-    const tokens = tokenizeString(query);
+    const tokens = tokenizeString(query).sort((a, b) => a.length - b.length);
     const words = result.strong.preview.split(" ");
 
     for (let i = 0; i < words.length; i++) {
