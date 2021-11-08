@@ -65,11 +65,11 @@ function getStrongMatch(matches, post, query) {
         const charsMatched = titleMatches.reduce((prev, cur) => prev + cur.token.length, 0)
         const charsInSeq = titleMatches.reduce((prev, cur) => prev + cur.word.length, 0)
 
-        const wordsMatched = new Set(titleMatches.map(m => m.word)).size
+        const tokensMatched = new Set(titleMatches.map(m => m.token)).size
 
         return {
             in: "title", preview: post.title,
-            rank: (wordsMatched / query.split(" ").length) + (charsMatched / charsInSeq)
+            rank: (tokensMatched / query.split(" ").length) + (charsMatched / charsInSeq)
         };
     }
 
@@ -142,11 +142,11 @@ function getStrongMatch(matches, post, query) {
             const charsMatched = maxSequential.reduce((prev, cur) => prev + cur.token.length, 0)
             const charsInSeq = maxSequential.reduce((prev, cur) => prev + cur.word.length, 0)
 
-            const wordsMatched = new Set(maxSequential.map(m => m.word)).size
+            const tokensMatched = new Set(maxSequential.map(m => m.token)).size
 
             return {
                 in: "html", preview: preview,
-                rank: (wordsMatched / query.split(" ").length) + (charsMatched / charsInSeq)
+                rank: (tokensMatched / query.split(" ").length) + (charsMatched / charsInSeq)
             };
         }
     }
