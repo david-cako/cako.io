@@ -99,7 +99,7 @@ blockquote a {
     color: #007cff;
     border: 1px solid #007cff;
     padding: 0.4em 1em;
-    border-radius: 0.8em;
+    border-radius: 10px;
     font-size: 1.1em;
     display: inline-block;
     text-decoration: none;
@@ -136,7 +136,7 @@ code {
     font-family: 'Fira Code', monospace;
     background: rgba(0,0,0,0.1);
     padding: 0 0.3em;
-    border-radius: 0.2em;
+    border-radius: 5px;
 }
 
 code.hljs {
@@ -191,8 +191,8 @@ code.hljs {
 
 .cako-featured {
     border: 1px solid #e8ab11;
-    padding: 1.5rem;
-    border-radius: 0.5em;
+    padding: 1.5rem 1.5rem 1.7rem;
+    border-radius: 7px;
     max-width: 750px;
     line-height: 1.6rem;
 }
