@@ -15,7 +15,7 @@ into the {body} of the default.hbs template --}}
        <div id="cako-post-feed-outer">
            <div id="cako-intro">A blog and software consultancy by <a id="name-link" href="https://davidcako.com">David Cako</a></div>
            <div id="cako-post-feed">
-                {{!--{{> "featured"}}--}}
+                {{> "featured"}}
                 {{#foreach posts}}
                     {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
                     {{> "post-card"}}

@@ -74,7 +74,9 @@ function getStrongMatch(matches, post, query) {
     }
 
     if (htmlMatches.length > 0) {
-        const htmlWords = post.html.replace(/<(.|\n)*?>/g, " ").split(" ");
+        const htmlWords = post.html
+            ? post.html.replace(/<(.|\n)*?>/g, " ").split(" ")
+            : [];
 
         let htmlMatchIdxs = [];
 
@@ -181,7 +183,7 @@ async function cakoSearch(query) {
                 matches.push({ in: "date" });
             } else if (publishDate.getDate() === parseInt(t)) {
                 matches.push({ in: "date" });
-            } else if (isNaN(t) && p.html.toLowerCase().indexOf(t) !== -1) {
+            } else if (isNaN(t) && p.html && p.html.toLowerCase().indexOf(t) !== -1) {
                 // exclude numbers from html content matches
                 // this makes it easier to search for numbers in dates/titles
                 matches.push({ in: "html", token: t });
