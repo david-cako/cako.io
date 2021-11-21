@@ -113,3 +113,15 @@ code {
 .copyright a {
     color: #fff
 }
+
+.cako-featured {
+    border: 1px solid #e8ab11;
+}
+
+.cako-featured-header {
+    color: #e8ab11;
+}
+
+.cako-post-link.yellow .cako-post-date {
+    color: #e8ab11;
+}
