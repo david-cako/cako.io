@@ -104,7 +104,7 @@ blockquote a {
     display: inline-block;
     text-decoration: none;
     box-shadow: none;
-    transition: transform ease-in-out 0.08s;
+    transition: transform ease-in-out 0.1s;
 }
 
 #email-address:hover {
