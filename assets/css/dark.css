@@ -110,6 +110,11 @@ code {
     background: rgba(255,255,255,0.15);
 }
 
+#email-address {
+    color: #27d7ff;
+    border: 1px solid #27d7ff;
+}
+
 .copyright a {
     color: #fff
 }

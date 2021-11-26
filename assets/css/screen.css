@@ -104,11 +104,11 @@ blockquote a {
     display: inline-block;
     text-decoration: none;
     box-shadow: none;
+    transition: transform ease-in-out 0.08s;
 }
 
 #email-address:hover {
-    color: #fff;
-    background-color: #007cff;
+    transform: scale(1.04);
 }
 
 #triangle {
