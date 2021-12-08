@@ -298,6 +298,7 @@ body {
 ::selection {
     text-shadow: none;
     background: #ff17a6;
+    color: #fff;
 }
 
 hr {

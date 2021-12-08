@@ -337,6 +337,11 @@ code.hljs {
 .post-nav .cako-post-link {
     display: flex;
     align-items: center;
+    transition: transform ease-in-out 0.1s;
+}
+
+.post-nav .cako-post-link:hover {
+    transform: scale(1.04);
 }
 
 .post-nav .cako-post-link:focus .icon {
