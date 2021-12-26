@@ -98,7 +98,7 @@ blockquote a {
 #email-address {
     color: #007cff;
     border: 1px solid #007cff;
-    padding: 0.4em 1em;
+    padding: 0.4em 1em 0.35em 1em;
     border-radius: 10px;
     font-size: 1.1em;
     display: inline-block;
