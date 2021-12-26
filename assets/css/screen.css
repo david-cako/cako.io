@@ -319,9 +319,17 @@ code.hljs {
     width: 100%;
 }
 
+@media (max-width: 650px) {
+    .post-nav-outer {
+        position: absolute;
+        bottom: 0;
+    }
+}
+
 .post-nav {
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
 }
 
 .post-nav.inner {
@@ -332,6 +340,7 @@ code.hljs {
     margin: 0;
     padding: 0;
     font-size: 10px;
+    max-width: 40vw;
 }
 
 .post-nav .cako-post-link {
@@ -604,7 +613,8 @@ body {
 
 .site-main {
     z-index: 100;
-    top: 90px;
+    padding-top: 90px;
+    flex: 1;
 }
 
 /* Full width page blocks */
@@ -1382,7 +1392,8 @@ The first (most recent) post in the list is styled to be bigger than the others 
     margin: 1.5em auto 0.7em auto;
     border-radius: 8px;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
 }
 
 .post-full-content a:hover img {
