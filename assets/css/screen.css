@@ -322,7 +322,7 @@ code.hljs {
 @media (max-width: 650px) {
     .post-nav-outer {
         position: absolute;
-        bottom: 0;
+        bottom: 90px;
     }
 }
 
@@ -613,7 +613,7 @@ body {
 
 .site-main {
     z-index: 100;
-    padding-top: 90px;
+    top: 90px;
     flex: 1;
 }
 
