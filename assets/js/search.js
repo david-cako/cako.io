@@ -4,7 +4,7 @@ const GHOST_API = new GhostContentAPI({
     version: "v3"
 });
 
-const GHOST_POSTS = GHOST_API.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
+let GHOST_POSTS;
 
 window.clearSearch = () => {
     const searchElement = document.getElementById("cako-search");
@@ -319,6 +319,10 @@ function getOrFetchPosts() {
     localStorage.removeItem("posts");
     localStorage.removeItem("postsDate");
 
+    if (!GHOST_POSTS) {
+        GHOST_POSTS = GHOST_API.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
+    }
+
     return GHOST_POSTS;
 }
 
@@ -403,6 +407,8 @@ function onKeyDown(e) {
 
     searchElement.addEventListener("focus", async () => {
         let prev = "";
+
+        getOrFetchPosts();
 
         searchElement.addEventListener("input", (e) => {
             if (e.target.value !== prev) {
