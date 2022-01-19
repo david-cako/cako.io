@@ -26,7 +26,7 @@ window.focusSearch = () => {
 
 function tokenizeString(s) {
     // replace special characters with spaces
-    const normalized = s.toLowerCase().replace(/[`&()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ' ');
+    const normalized = s.toLowerCase().replace(/[`&()_|+\-=?;:'"<>\{\}\[\]\\\/]/gi, ' ');
 
     // split newQuery into words and add to tokens
     const tokens = normalized.split(" ").filter(t => t.length > 0);
@@ -38,6 +38,7 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
+// gets strong matches for sequential words in title/content
 function getStrongMatch(matches, post, query) {
     const previewLength = 20;
 
@@ -181,12 +182,17 @@ async function cakoSearch(query) {
                 // if the string matches a month, check the publish date
                 // with the formatted string for the month number
                 matches.push({ in: "date" });
-            } else if (publishDate.getDate() === parseInt(t)) {
+            } else if (!isNaN(t) &&
+                publishDate.getDate() === parseInt(t.replace(/,/g, ""))) {
                 matches.push({ in: "date" });
-            } else if (isNaN(t) && p.html && p.html.toLowerCase().indexOf(t) !== -1) {
-                // exclude numbers from html content matches
-                // this makes it easier to search for numbers in dates/titles
+            } else if (p.html && p.html.toLowerCase().indexOf(t) !== -1) {
                 matches.push({ in: "html", token: t });
+            } else if (p.html && !isNaN(t)) {
+                // check for number with commas in html content
+                const localeStr = Number(t).toLocaleString("en-US");
+                if (p.html.indexOf(localeStr) !== -1) {
+                    matches.push({ in: "html", token: t });
+                }
             }
         }
 
