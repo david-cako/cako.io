@@ -147,10 +147,12 @@ function getStrongMatch(matches, post, query) {
 
             const tokensMatched = new Set(maxSequential.map(m => m.token)).size
 
-            return {
-                in: "html", preview: preview,
-                rank: (tokensMatched / query.split(" ").length) + (charsMatched / charsInSeq)
-            };
+            if (tokensMatched / query.split(" ").length > 0.7) {
+                return {
+                    in: "html", preview: preview,
+                    rank: (tokensMatched / query.split(" ").length) + (charsMatched / charsInSeq)
+                };
+            }
         }
     }
 }
