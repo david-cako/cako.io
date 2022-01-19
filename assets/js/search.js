@@ -87,7 +87,7 @@ function getStrongMatch(matches, post, query) {
                 if (m.token !== undefined
                     && m.token.length > 1
                     && word.indexOf(m.token) !== -1
-                    && htmlMatchIdxs.indexOf(i) === -1
+                    && htmlMatchIdxs.findIndex(m => m.idx == i) === -1
                 ) {
                     htmlMatchIdxs.push({ idx: i, word: word, token: m.token });
                 }
@@ -100,8 +100,8 @@ function getStrongMatch(matches, post, query) {
 
         htmlMatchIdxs.sort((a, b) => a.idx - b.idx);
 
-        let maxSequential = [];
         let sequential = [];
+        let maxSequential = sequential;
         let prev;
 
         for (const m of htmlMatchIdxs) {
@@ -118,7 +118,7 @@ function getStrongMatch(matches, post, query) {
         }
 
         // get surrounding text before returning sequential html match
-        if (maxSequential.length / matches.length >= 0.7) {
+        if (maxSequential.length > 1) {
             const matchIdxs = maxSequential.map(m => m.idx);
             const matchMin = Math.min(...matchIdxs);
             const matchMax = Math.max(...matchIdxs);
