@@ -1337,8 +1337,28 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-content li p {
-    margin: 0;
+    margin-left: 0;
+    margin-right: 0;
     display: inline;
+}
+
+.post-full-content .center-img {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.7em;
+    margin-bottom: 0.7em;
+}
+
+.post-full-content .center-img a {
+    box-shadow: none;
+}
+
+.post-full-content .center-img a:hover {
+    box-shadow: none;
+}
+
+.post-full-content .center-img img {
+    margin: 0;
 }
 
 .post-template .post-full-content > p:first-child {
