@@ -1402,6 +1402,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 .post-full-content .flex img {
     box-shadow: 0 1px 10px rgba(0,0,0,0.3);
+    margin: 1em auto;
 }
 
 .post-full-content .flex a:hover img {
