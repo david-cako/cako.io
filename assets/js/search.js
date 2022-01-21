@@ -70,7 +70,7 @@ function getStrongMatch(matches, post, query) {
 
         return {
             in: "title", preview: post.title,
-            rank: (tokensMatched / query.split(" ").length) + (charsMatched / charsInSeq)
+            rank: 1 + (tokensMatched / query.split(" ").length) + (charsMatched / charsInSeq)
         };
     }
 
