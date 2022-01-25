@@ -44,6 +44,7 @@ function getStrongTextMatch(matches, post, query) {
 
     const htmlMatches = matches.filter(m => m.in == "html");
     const titleWords = post.title.toLowerCase().split(" ");
+    const tokens = tokenizeString(query);
 
     let titleMatches = [];
 
@@ -70,7 +71,7 @@ function getStrongTextMatch(matches, post, query) {
 
         return {
             in: "title", preview: post.title,
-            rank: 1 + (tokensMatched / query.split(" ").length) + (charsMatched / charsInSeq)
+            rank: 1 + (tokensMatched / tokens.length) + (charsMatched / charsInSeq)
         };
     }
 
@@ -147,10 +148,10 @@ function getStrongTextMatch(matches, post, query) {
 
             const tokensMatched = new Set(maxSequential.map(m => m.token)).size
 
-            if (tokensMatched / query.split(" ").length > 0.7) {
+            if (tokensMatched / tokens.length > 0.7) {
                 return {
                     in: "html", preview: preview,
-                    rank: (tokensMatched / query.split(" ").length) + (charsMatched / charsInSeq)
+                    rank: (tokensMatched / tokens.length) + (charsMatched / charsInSeq)
                 };
             }
         }
