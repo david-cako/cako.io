@@ -39,7 +39,7 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
 ];
 
 // gets strong matches for sequential words in title/content
-function getStrongMatch(matches, post, query) {
+function getStrongTextMatch(matches, post, query) {
     const previewLength = 20;
 
     const htmlMatches = matches.filter(m => m.in == "html");
@@ -208,7 +208,7 @@ async function cakoSearch(query) {
             });
         } else if (matches.length == tokens.length ||
             matches.length > 2 && matches.length / tokens.length >= .7) {
-            const strong = getStrongMatch(matches, p, query);
+            const strong = getStrongTextMatch(matches, p, query);
             results.push({ post: p, strong: strong });
         }
     }
