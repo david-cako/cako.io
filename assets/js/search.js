@@ -198,7 +198,15 @@ async function cakoSearch(query) {
             }
         }
 
-        if (matches.length == tokens.length ||
+        if (matches.filter(m => m.in === "date").length === tokens.length) {
+            results.push({
+                post: p,
+                strong: {
+                    in: "date",
+                    rank: 3
+                }
+            });
+        } else if (matches.length == tokens.length ||
             matches.length > 2 && matches.length / tokens.length >= .7) {
             const strong = getStrongMatch(matches, p, query);
             results.push({ post: p, strong: strong });
