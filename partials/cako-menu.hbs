@@ -1,6 +1,6 @@
 <div id="cako-menu">
     <div class="menu-icon-outer">
-        <ion-icon name="menu-outline" onclick="toggleMenu()"></ion-icon>
+        <ion-icon id="menu-icon" name="menu-outline" onclick="toggleMenu()"></ion-icon>
     </div>
     <div id="cako-menu-inner">
         <div class="cako-menu-item" onclick="toggleLights()">
@@ -82,17 +82,32 @@
             }
         }
 
-        const menuItems = document.getElementsByClassName("cako-menu-item");
+        (() => {
+            const menuItems = document.getElementsByClassName("cako-menu-item");
 
-        for (const i of menuItems) {
-            i.addEventListener("click", toggleMenu);
-        }
+            for (const i of menuItems) {
+                i.addEventListener("click", toggleMenu);
+            }
 
-        // show indicator for new features
-        const indicatorCleared = localStorage.getItem("menuIndicatorCleared");
+            // show indicator for new features
+            const indicatorCleared = localStorage.getItem("menuIndicatorCleared");
 
-        if (!indicatorCleared || (Number(indicatorCleared) < 1633046530235)) {
-            showMenuIndicator();
-        }
+            if (!indicatorCleared || (Number(indicatorCleared) < 1633046530235)) {
+                showMenuIndicator();
+            }
+
+            document.addEventListener("click", e => {
+                const menuInner = document.getElementById("cako-menu-inner");
+                const menuIcon = document.getElementById("menu-icon");
+
+                if (menuInner.style.display === "block") {
+                    if (e.target !== menuIcon &&
+                        e.target !== menuInner &&
+                        !menuInner.contains(e.target)) {
+                        closeMenu();
+                    }
+                }
+            })
+        })();
     </script>
 </div>
