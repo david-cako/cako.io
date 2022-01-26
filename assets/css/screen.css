@@ -191,15 +191,11 @@ code.hljs {
     border-radius: 7px;
     max-width: 750px;
     line-height: 1.6rem;
-    margin-bottom: 1em;
+    margin: 0.8em -8px;
 }
 
 .post-full-content .cako-featured {
     max-width: 800px;
-}
-
-.index .cako-featured {
-    margin: 0.8em -8px 0.6em;
 }
 
 .cako-featured-date {
@@ -251,6 +247,10 @@ code.hljs {
 .post-nav .cako-post-link:focus .cako-post-date,
 .post-nav .cako-post-link:hover .cako-post-date {
     border-bottom: 1px solid #0070e6;
+}
+
+#cako-search-results > .cako-post:not(:nth-of-type(1)) {
+    margin-top: 2em;
 }
 
 .cako-post {
