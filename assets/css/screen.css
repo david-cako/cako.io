@@ -151,10 +151,6 @@ code.hljs {
     -webkit-transform: rotate(40deg);
 }
 
-#cako-intro {
-    margin: 2em 0 0.5em;
-}
-
 #cako-intro a {
     text-decoration: underline;
 }
@@ -195,6 +191,7 @@ code.hljs {
     border-radius: 7px;
     max-width: 750px;
     line-height: 1.6rem;
+    margin-bottom: 1em;
 }
 
 .post-full-content .cako-featured {
@@ -202,7 +199,7 @@ code.hljs {
 }
 
 .index .cako-featured {
-    margin: 0 -8px -5px;
+    margin: 0.8em -8px 0.5em;
 }
 
 .cako-featured-date {
@@ -210,24 +207,20 @@ code.hljs {
     font-weight: 400;
 }
 
-.cako-featured:not(:nth-of-type(1)) {
-    margin-top: 1em;
-}
-
 .cako-featured-header {
-    margin: 0 0 0.8em;
     color: #d98e00;
     font-size: 1.9rem;
     font-weight: 500;
     line-height: 1.15;
+    margin-bottom: 0.8em;
 }
 
-.cako-featured .cako-post:not(:nth-of-type(1)) {
+.cako-featured .cako-post {
     margin-top: 1.5em;
 }
 
 .cako-featured .cako-post:nth-of-type(2) {
-    margin-top: 1.2em;
+    margin-top: 0;
 }
 
 .cako-post-link.blue .cako-post-date {
@@ -269,8 +262,8 @@ code.hljs {
     text-align: right;
 }
 
-.cako-post:not(:nth-of-type(1)) {
-    margin-top: 2.4em;
+#cako-post-feed > .cako-post:not(:nth-of-type(1)) {
+    margin-top: 2em;
 }
 
 .cako-post-title {
