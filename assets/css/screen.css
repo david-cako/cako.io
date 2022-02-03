@@ -1356,7 +1356,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-template .post-full-content > p:first-child {
     font-weight: 500;
     font-size: 1.1em;
-    line-height: 1.5em;
+    line-height: 1.6em;
 }
 
 .post-full-content a {
