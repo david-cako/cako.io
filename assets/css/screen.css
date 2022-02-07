@@ -1216,7 +1216,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-meta-date {
-    color: #000;
+    color: #333;
 }
 
 .post-full-title {
