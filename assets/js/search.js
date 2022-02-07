@@ -24,14 +24,24 @@ window.focusSearch = () => {
     searchElement.focus();
 }
 
+function normalizeString(s) {
+    return s.toLowerCase()
+        .replace(/[&_|+\-\{\}\[\]\\\/]/gi, ' ')
+        .replace(/[`()=?;:'"<>]/gi, '');
+}
+
 function tokenizeString(s) {
     // replace special characters with spaces
-    const normalized = s.toLowerCase().replace(/[`&()_|+\-=?;:'"<>\{\}\[\]\\\/]/gi, ' ');
+    const normalized = normalizeString(s);
 
     // split newQuery into words and add to tokens
     const tokens = normalized.split(" ").filter(t => t.length > 0);
 
     return tokens;
+}
+
+function stripHtmlTags(s) {
+    return s.replace(/(<p>|<\/p>|<em>|<\/em>|<ol>|<\/ol>|<li>|<\/li>)/g, " ");
 }
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
@@ -75,15 +85,15 @@ function getStrongTextMatch(matches, post, query) {
         };
     }
 
-    if (htmlMatches.length > 0) {
-        const htmlWords = post.html
-            ? post.html.replace(/<(.|\n)*?>/g, " ").split(" ")
-            : [];
+    if (htmlMatches.length > 0 && post.html) {
+        const normalizedHtml = normalizeString(stripHtmlTags(post.html));
+
+        const htmlWords = normalizedHtml.split(" ");
 
         let htmlMatchIdxs = [];
 
         for (let i = 0; i < htmlWords.length; i++) {
-            const word = htmlWords[i].toLowerCase();
+            const word = htmlWords[i];
             for (const m of matches) {
                 if (m.token !== undefined
                     && m.token.length > 1
@@ -116,6 +126,10 @@ function getStrongTextMatch(matches, post, query) {
             }
 
             prev = m;
+        }
+
+        if (sequential.length >= maxSequential.length) {
+            maxSequential = sequential;
         }
 
         // get surrounding text before returning sequential html match
@@ -169,6 +183,7 @@ async function cakoSearch(query) {
     for (const p of posts) {
         const publishDate = new Date(p.published_at);
         const publishDateStr = p.published_at.split("T")[0];
+        const normalizedHtml = p.html ? normalizeString(p.html) : "";
 
         let matches = [];
 
@@ -188,12 +203,12 @@ async function cakoSearch(query) {
             } else if (!isNaN(t) &&
                 publishDate.getDate() === parseInt(t.replace(/,/g, ""))) {
                 matches.push({ in: "date" });
-            } else if (p.html && p.html.toLowerCase().indexOf(t) !== -1) {
+            } else if (normalizedHtml.toLowerCase().indexOf(t) !== -1) {
                 matches.push({ in: "html", token: t });
-            } else if (p.html && !isNaN(t)) {
+            } else if (!isNaN(t)) {
                 // check for number with commas in html content
                 const localeStr = Number(t).toLocaleString("en-US");
-                if (p.html.indexOf(localeStr) !== -1) {
+                if (normalizedHtml.indexOf(localeStr) !== -1) {
                     matches.push({ in: "html", token: t });
                 }
             }

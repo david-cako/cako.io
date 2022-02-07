@@ -99,10 +99,12 @@
             document.addEventListener("click", e => {
                 const menuInner = document.getElementById("cako-menu-inner");
                 const menuIcon = document.getElementById("menu-icon");
+                const cakoSearchFeed = document.getElementById("cako-search-feed");
 
                 if (menuInner.style.display === "block") {
                     if (e.target !== menuIcon &&
                         e.target !== menuInner &&
+                        !cakoSearchFeed.contains(e.target) &&
                         !menuInner.contains(e.target)) {
                         closeMenu();
                     }
