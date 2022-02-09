@@ -1346,7 +1346,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content .center-img {
     display: flex;
     justify-content: center;
-    margin-top: 1.7em;
+    margin-top: 1.25em;
     margin-bottom: 0.7em;
 }
 
