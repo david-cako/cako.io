@@ -1,7 +1,7 @@
 import { Spinner } from './spin.js';
 
 const LIGHT_ACCENT = "#07b059";
-const DARK_ACCENT = "#27d7ff";
+const DARK_ACCENT = "#eca80a";
 const BLUE_ACCENT = "#658CFF";
 const YELLOW_ACCENT = "#eca80a";
 const RED_ACCENT = "#f92f00";
