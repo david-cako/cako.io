@@ -1,7 +1,7 @@
 import { Spinner } from './spin.js';
 
-const LIGHT_ACCENT = "#07b059";
-const DARK_ACCENT = "#eca80a";
+const LIGHT_ACCENT = "#0070e6";
+const DARK_ACCENT = "#27d7ff";
 const BLUE_ACCENT = "#658CFF";
 const YELLOW_ACCENT = "#eca80a";
 const RED_ACCENT = "#f92f00";
@@ -47,13 +47,18 @@ window.onPostClicked = (e) => {
 
   const opts = Object.assign({}, spinnerOpts);
 
+  const isFeatured = e.currentTarget.parentElement.parentElement
+    .classList.contains("cako-featured");
+
   if (e.currentTarget.classList.contains("blue")) {
     opts.color = BLUE_ACCENT;
-  } else if (e.currentTarget.classList.contains("yellow")) {
+  } else if (e.currentTarget.classList.contains("yellow") ||
+    (LS_LIGHTS !== "on" && isFeatured)) {
     opts.color = YELLOW_ACCENT;
   } else if (e.currentTarget.classList.contains("red")) {
     opts.color = RED_ACCENT;
-  } else if (e.currentTarget.classList.contains("green")) {
+  } else if (e.currentTarget.classList.contains("green") ||
+    (LS_LIGHTS !== "off" && isFeatured)) {
     opts.color = GREEN_ACCENT;
   } else if (e.currentTarget.classList.contains("purple")) {
     opts.color = PURPLE_ACCENT;
