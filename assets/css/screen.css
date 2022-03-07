@@ -195,7 +195,7 @@ code.hljs {
 }
 
 .cako-featured {
-    border: 1px solid #ddbd10;
+    border: 1px solid #09954c;
     padding: 1.5rem 1.5rem 1.7rem;
     border-radius: 7px;
     max-width: 750px;
@@ -213,7 +213,7 @@ code.hljs {
 }
 
 .cako-featured-header {
-    color: #d29e00;
+    color: #07b059;
     font-size: 1.9rem;
     font-weight: 500;
     line-height: 1.15;
@@ -240,8 +240,9 @@ code.hljs {
     color: #f92f00;
 }
 
-.cako-post-link.green .cako-post-date {
-    color: #00bf3b;
+.cako-post-link.green .cako-post-date, 
+.cako-featured .cako-post-link .cako-post-date {
+    color: #05a653;
 }
 
 .cako-post-link.purple .cako-post-date {

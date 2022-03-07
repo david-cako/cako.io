@@ -40,8 +40,18 @@ function lightsOff() {
     document.head.appendChild(themeColor);
 }
 
-function toggleLights() {
+function lightsStatus() {
     const lights = localStorage.getItem("lights");
+
+    if (lights === "off") {
+        return "off"
+    } else {
+        return "on";
+    }
+}
+
+function toggleLights() {
+    const lights = lightsStatus();
 
     if (lights === "off") {
         lightsOn();
@@ -55,7 +65,7 @@ function toggleLights() {
 }
 
 (() => {
-    const lights = localStorage.getItem("lights");
+    const lights = lightsStatus();
 
     if (lights === "off") {
         lightsOff();

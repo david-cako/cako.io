@@ -5,7 +5,7 @@ const DARK_ACCENT = "#27d7ff";
 const BLUE_ACCENT = "#658CFF";
 const YELLOW_ACCENT = "#eca80a";
 const RED_ACCENT = "#f92f00";
-const GREEN_ACCENT = "#00bf3b";
+const GREEN_ACCENT = "#05a653";
 const PURPLE_ACCENT = "#d300ff";
 
 const spinnerOpts = {
