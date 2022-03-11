@@ -1724,6 +1724,15 @@ Usage (In Ghost editor):
     border: color(var(--whitegrey) l(-1%) s(-5%)) 1px solid;
 }
 
+.post-full-content .spoiler {
+    color: #000;
+    background: #000;
+    border-radius: 0.4em;
+}
+
+.post-full-content .spoiler:hover {
+    color: #fff;
+}
 
 /* 7.1. Subscribe Form
 /* ---------------------------------------------------------- */

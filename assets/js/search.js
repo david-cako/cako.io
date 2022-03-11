@@ -172,9 +172,18 @@ function getStrongTextMatch(matches, post, query) {
     }
 }
 
+let PREVIOUS_QUERY;
+let PREVIOUS_RESULTS;
+
 /** Match for title, content, and date on posts */
 async function cakoSearch(query) {
-    const posts = await getOrFetchPosts();
+    let posts;
+
+    if (PREVIOUS_QUERY && normalizeString(query).indexOf(PREVIOUS_QUERY) !== -1) {
+        posts = PREVIOUS_RESULTS;
+    } else {
+        posts = await getOrFetchPosts();
+    }
 
     const tokens = tokenizeString(query);
 
@@ -228,6 +237,9 @@ async function cakoSearch(query) {
             results.push({ post: p, strong: strong });
         }
     }
+
+    PREVIOUS_RESULTS = results.map(r => r.post);
+    PREVIOUS_QUERY = query;
 
     const sorted = results.sort((a, b) => {
         const aVal = a.strong !== undefined
@@ -438,16 +450,16 @@ function onKeyDown(e) {
     const searchElement = document.getElementById("cako-search");
 
     searchElement.addEventListener("focus", async () => {
-        let prev = "";
-
         getOrFetchPosts();
+    });
 
-        searchElement.addEventListener("input", (e) => {
-            if (e.target.value !== prev) {
-                prev = e.target.value;
-                onSearchChange(e.target.value);
-            }
-        });
+    let prev = "";
+
+    searchElement.addEventListener("input", (e) => {
+        if (e.target.value !== prev) {
+            prev = e.target.value;
+            onSearchChange(e.target.value);
+        }
     });
 
     searchElement.addEventListener("keydown", (e) => {
