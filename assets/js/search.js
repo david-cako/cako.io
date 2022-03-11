@@ -76,15 +76,12 @@ function getStrongTextMatch(matches, post, query) {
         }
     }
 
-    if (titleMatches.length / titleWords.length >= 0.7) {
-        const charsMatched = titleMatches.reduce((prev, cur) => prev + cur.token.length, 0)
-        const charsInSeq = titleMatches.reduce((prev, cur) => prev + cur.word.length, 0)
+    const tokensMatched = new Set(titleMatches.map(m => m.token)).size
 
-        const tokensMatched = new Set(titleMatches.map(m => m.token)).size
-
+    if (tokensMatched / tokens.length > 0.7) {
         return {
             in: "title", preview: post.title,
-            rank: 1 + (tokensMatched / tokens.length) + (charsMatched / charsInSeq)
+            rank: 2
         };
     }
 
