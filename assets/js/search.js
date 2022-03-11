@@ -24,15 +24,18 @@ window.focusSearch = () => {
     searchElement.focus();
 }
 
-function normalizeString(s) {
-    return s.toLowerCase()
-        .replace(/[&_|+\-\{\}\[\]\\\/]/gi, ' ')
+function normalizeString(s, lower) {
+    if (lower) {
+        s = s.toLowerCase();
+    }
+
+    return s.replace(/[&_|+\-\{\}\[\]\\\/]/gi, ' ')
         .replace(/[`()=?;:'"<>]/gi, '');
 }
 
-function tokenizeString(s) {
+function tokenizeString(s, lower) {
     // replace special characters with spaces
-    const normalized = normalizeString(s);
+    const normalized = normalizeString(s, lower);
 
     // split newQuery into words and add to tokens
     const tokens = normalized.split(" ").filter(t => t.length > 0);
@@ -54,7 +57,7 @@ function getStrongTextMatch(matches, post, query) {
 
     const htmlMatches = matches.filter(m => m.in == "html");
     const titleWords = post.title.toLowerCase().split(" ");
-    const tokens = tokenizeString(query);
+    const tokens = tokenizeString(query, true);
 
     let titleMatches = [];
 
@@ -97,7 +100,7 @@ function getStrongTextMatch(matches, post, query) {
             for (const m of matches) {
                 if (m.token !== undefined
                     && m.token.length > 1
-                    && word.indexOf(m.token) !== -1
+                    && word.toLowerCase().indexOf(m.token) !== -1
                     && htmlMatchIdxs.findIndex(m => m.idx == i) === -1
                 ) {
                     htmlMatchIdxs.push({ idx: i, word: word, token: m.token });
@@ -179,20 +182,20 @@ let PREVIOUS_RESULTS;
 async function cakoSearch(query) {
     let posts;
 
-    if (PREVIOUS_QUERY && normalizeString(query).indexOf(PREVIOUS_QUERY) !== -1) {
+    if (PREVIOUS_QUERY && normalizeString(query, true).indexOf(PREVIOUS_QUERY) !== -1) {
         posts = PREVIOUS_RESULTS;
     } else {
         posts = await getOrFetchPosts();
     }
 
-    const tokens = tokenizeString(query);
+    const tokens = tokenizeString(query, true);
 
     const results = [];
 
     for (const p of posts) {
         const publishDate = new Date(p.published_at);
         const publishDateStr = p.published_at.split("T")[0];
-        const normalizedHtml = p.html ? normalizeString(p.html) : "";
+        const normalizedHtml = p.html ? normalizeString(p.html, true) : "";
 
         let matches = [];
 
@@ -260,7 +263,7 @@ function formatPreview(result, query) {
         return ``
     }
 
-    const tokens = tokenizeString(query).sort((a, b) => a.length - b.length);
+    const tokens = tokenizeString(query, true).sort((a, b) => a.length - b.length);
     const words = result.strong.preview.split(" ");
 
     for (let i = 0; i < words.length; i++) {
