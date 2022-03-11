@@ -136,41 +136,39 @@ function getStrongTextMatch(matches, post, query) {
         }
 
         // get surrounding text before returning sequential html match
-        if (maxSequential.length > 1) {
-            const matchIdxs = maxSequential.map(m => m.idx);
-            const matchMin = Math.min(...matchIdxs);
-            const matchMax = Math.max(...matchIdxs);
+        const matchIdxs = maxSequential.map(m => m.idx);
+        const matchMin = Math.min(...matchIdxs);
+        const matchMax = Math.max(...matchIdxs);
 
-            let min = matchMin;
-            let max = matchMax;
+        let min = matchMin;
+        let max = matchMax;
 
-            while (max - min < previewLength) {
-                if (min !== 0) {
-                    min--;
-                }
-
-                if (max - min < previewLength && max < htmlWords.length) {
-                    max++;
-                }
-
-                if (min === 0 && max === htmlWords.length) {
-                    break;
-                }
+        while (max - min < previewLength) {
+            if (min !== 0) {
+                min--;
             }
 
-            const preview = htmlWords.slice(min, max + 1).join(" ");
-
-            const charsMatched = maxSequential.reduce((prev, cur) => prev + cur.token.length, 0)
-            const charsInSeq = maxSequential.reduce((prev, cur) => prev + cur.word.length, 0)
-
-            const tokensMatched = new Set(maxSequential.map(m => m.token)).size
-
-            if (tokensMatched / tokens.length > 0.7) {
-                return {
-                    in: "html", preview: preview,
-                    rank: (tokensMatched / tokens.length) + (charsMatched / charsInSeq)
-                };
+            if (max - min < previewLength && max < htmlWords.length) {
+                max++;
             }
+
+            if (min === 0 && max === htmlWords.length) {
+                break;
+            }
+        }
+
+        const preview = htmlWords.slice(min, max + 1).join(" ");
+
+        const charsMatched = maxSequential.reduce((prev, cur) => prev + cur.token.length, 0)
+        const charsInSeq = maxSequential.reduce((prev, cur) => prev + cur.word.length, 0)
+
+        const tokensMatched = new Set(maxSequential.map(m => m.token)).size
+
+        if (tokensMatched / tokens.length > 0.7) {
+            return {
+                in: "html", preview: preview,
+                rank: (tokensMatched / tokens.length) + (charsMatched / charsInSeq)
+            };
         }
     }
 }
