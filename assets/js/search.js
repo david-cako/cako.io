@@ -456,10 +456,20 @@ function onKeyDown(e) {
 
     let prev = "";
 
+    let inputTimeout;
+
     searchElement.addEventListener("input", (e) => {
         if (e.target.value !== prev) {
             prev = e.target.value;
-            onSearchChange(e.target.value);
+
+            if (inputTimeout) {
+                clearTimeout(inputTimeout);
+            }
+
+            inputTimeout = setTimeout(() => {
+                inputTimeout = undefined;
+                onSearchChange(e.target.value);
+            }, 200);
         }
     });
 
