@@ -64,6 +64,10 @@ function toggleLights() {
     }
 }
 
+function prefetchDarkCss() {
+    return fetch(DARK_CSS_PATH);
+}
+
 (() => {
     const lights = lightsStatus();
 
