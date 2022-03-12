@@ -169,7 +169,6 @@ code.hljs {
 }
 
 #cako-post-feed-outer {
-    margin-top: 3.5em;
     padding: 0 15px;
 }
 
@@ -324,7 +323,7 @@ code.hljs {
 @media (max-width: 650px) {
     .post-nav-outer {
         position: absolute;
-        bottom: 160px;
+        bottom: 120px;
     }
 }
 
@@ -615,14 +614,20 @@ body {
 
 .site-main {
     z-index: 100;
-    top: 90px;
+    top: 120px;
     flex: 1;
+}
+
+@media (max-height: 800px) {
+    .site-main {
+        top: 100px;
+    }
 }
 
 /* Full width page blocks */
 .outer {
     position: relative;
-    padding-bottom: 225px;
+    padding-bottom: 175px;
 }
 
 /* Centered content container blocks */
@@ -632,6 +637,18 @@ body {
     max-width: 800px;
     z-index: 100;
     background: #fff;
+}
+
+@media (max-height: 1100px) {
+    .inner:not(.index) {
+        max-width: 775px;
+    }   
+}
+
+@media (max-height: 800px) {
+    .inner:not(.index) {
+        max-width: 700px;
+    }   
 }
 
 @media (min-width: 900px) {
@@ -1204,7 +1221,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    margin: 2.5em 15px 1.5em;
+    margin: 0em 15px 1.5em;
 }
 
 .post-full-meta {
