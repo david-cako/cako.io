@@ -336,7 +336,7 @@ code.hljs {
 @media (max-width: 650px) {
     .post-nav-outer {
         position: absolute;
-        bottom: 135px;
+        bottom: 155px;
     }
 }
 
@@ -640,7 +640,7 @@ body {
 /* Full width page blocks */
 .outer {
     position: relative;
-    padding-bottom: 185px;
+    padding-bottom: 210px;
 }
 
 /* Centered content container blocks */
