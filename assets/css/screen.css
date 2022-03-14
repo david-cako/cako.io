@@ -28,6 +28,7 @@ production stylesheet in assets/built/screen.css
 /* ---------------------------------------------------------- */
 @import "global.css";
 
+
 @font-face {
     font-family: "Lato";
     src: url("/assets/fonts/Lato-Light.ttf") format("truetype");
@@ -35,6 +36,8 @@ production stylesheet in assets/built/screen.css
     font-style: normal;
     font-display: swap;
 }
+
+/*
 
 @font-face {
     font-family: "Roboto";
@@ -99,6 +102,8 @@ production stylesheet in assets/built/screen.css
     font-style: italic;
     font-display: swap;
 }
+
+*/
 
 blockquote a {
     font-size: 0.5em;
@@ -293,7 +298,7 @@ code.hljs {
     position: relative;
     margin-bottom: 0.2em;
     font-size: 1.75em;
-    font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
     font-weight: 500;
     color: #000;
 }
@@ -302,7 +307,7 @@ code.hljs {
     font-weight: 500;
     word-spacing: -0.08em;
     font-size: 1em;
-    font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
     color: #0070e6;
 }
 
@@ -452,7 +457,7 @@ code.hljs {
 }
 
 #cako-header-text {
-    font-family: "Lato", -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", sans-serif;
+    font-family: "Lato", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
     font-size: 24px;
     letter-spacing: -2px;
     font-weight: 300;
@@ -1255,7 +1260,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     font-size: 3.5rem;
     color: #0c76e6;
     font-weight: 700;
-    font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
 }
 
 @media (max-width: 650px) {
@@ -1303,7 +1308,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     line-height: 1.5em;
     background: #fff;
     border-radius: 10px;
-    font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
     font-weight: 300;
     padding: 0;
 }
@@ -1589,7 +1594,7 @@ Usage (In Ghost editor):
 .post-full-content h5,
 .post-full-content h6 {
     color: color(var(--darkgrey) l(-5%));
-    font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
 }
 
 .post-full-content h1 {
