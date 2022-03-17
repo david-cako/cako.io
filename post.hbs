@@ -20,7 +20,8 @@ into the {body} of the default.hbs template --}}
             <header class="post-full-header">
                 <h1 class="post-full-title">{{title}}</h1>
                 <section class="post-full-meta">
-                    <time class="post-full-meta-date" datetime="{{date format="YYYY-MM-DDTHH:mm:ss"}}">{{date format="D MMMM YYYY"}}</time>
+                    <time class="post-full-meta-date" title="{{date format="D MMMM YYYY HH:mm:ss"}}" 
+                        datetime="{{date format="YYYY-MM-DDTHH:mm:ss"}}">{{date format="D MMMM YYYY"}}</time>
                 </section>
             </header>
 
