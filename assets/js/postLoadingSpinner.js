@@ -42,7 +42,7 @@ function removeSpinners() {
 window.onPostClicked = (e) => {
   removeSpinners();
 
-  const LS_LIGHTS = localStorage.getItem("lights");
+  const LS_LIGHTS = localStorage.getItem("lights") || "on";
   const ACTIVE_ACCENT = LS_LIGHTS === "off" ? DARK_ACCENT : LIGHT_ACCENT;
 
   const opts = Object.assign({}, spinnerOpts);
@@ -53,12 +53,12 @@ window.onPostClicked = (e) => {
   if (e.currentTarget.classList.contains("blue")) {
     opts.color = BLUE_ACCENT;
   } else if (e.currentTarget.classList.contains("yellow") ||
-    (LS_LIGHTS !== "on" && isFeatured)) {
+    (LS_LIGHTS === "off" && isFeatured)) {
     opts.color = YELLOW_ACCENT;
   } else if (e.currentTarget.classList.contains("red")) {
     opts.color = RED_ACCENT;
   } else if (e.currentTarget.classList.contains("green") ||
-    (LS_LIGHTS !== "off" && isFeatured)) {
+    (LS_LIGHTS === "on" && isFeatured)) {
     opts.color = GREEN_ACCENT;
   } else if (e.currentTarget.classList.contains("purple")) {
     opts.color = PURPLE_ACCENT;
