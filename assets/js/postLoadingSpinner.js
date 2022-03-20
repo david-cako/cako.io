@@ -50,15 +50,15 @@ window.onPostClicked = (e) => {
   const isFeatured = e.currentTarget.parentElement.parentElement
     .classList.contains("cako-featured");
 
-  if (e.currentTarget.classList.contains("blue")) {
+  if (e.currentTarget.classList.contains("blue") ||
+    (LS_LIGHTS === "on" && isFeatured)) {
     opts.color = BLUE_ACCENT;
   } else if (e.currentTarget.classList.contains("yellow") ||
     (LS_LIGHTS === "off" && isFeatured)) {
     opts.color = YELLOW_ACCENT;
   } else if (e.currentTarget.classList.contains("red")) {
     opts.color = RED_ACCENT;
-  } else if (e.currentTarget.classList.contains("green") ||
-    (LS_LIGHTS === "on" && isFeatured)) {
+  } else if (e.currentTarget.classList.contains("green")) {
     opts.color = GREEN_ACCENT;
   } else if (e.currentTarget.classList.contains("purple")) {
     opts.color = PURPLE_ACCENT;
