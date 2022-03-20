@@ -362,7 +362,7 @@ function getOrFetchPosts() {
     localStorage.removeItem("postsDate");
 
     if (!GHOST_POSTS) {
-        GHOST_POSTS = GHOST_API.posts.browse({ limit: "all", fields: "title,html,published_at,slug" });
+        GHOST_POSTS = GHOST_API.posts.browse({ limit: "all", fields: "title,html,published_at,slug,tags" });
     }
 
     return GHOST_POSTS;
