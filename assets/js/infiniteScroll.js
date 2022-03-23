@@ -1,3 +1,4 @@
+import { Api } from "./api";
 import { generatePostLinkHTML } from "./html";
 
 const POSTS_PER_REQUEST = 25;
@@ -11,6 +12,8 @@ class PostManager {
     postFeed = document.getElementById("cako-post-feed");
     postElems = document.querySelectorAll("#cako-post-feed .cako-post");
 
+    loadAllPosts = localStorage.getItem("loadAllPosts")
+
     constructor() {
         document.addEventListener("scroll", this.onScroll);
     }
@@ -19,34 +22,37 @@ class PostManager {
         if (this.isUpdatingPosts) {
             return false;
         }
-        if (!pagination) {
-            return true;
-        }
-        if (pagination.next === null) {
+
+        if (this.pagination?.next === null) {
             // we've already requested posts and no more are available
             return false;
         }
-
-        if (this.postElems.length < 1) {
-            return false;
+        if (this.loadAllPosts && this.pagination) {
+            // continue loading all posts
+            return true;
         }
 
+        // check scroll position
         const lastPost = this.postElems[this.postElems.length - 1];
 
         return lastPost.getBoundingClientRect().top < (window.innerHeght * 1.7);
     }
 
-    async getPosts(page, { includeHtml }) {
+    async getPosts() {
         let posts;
         let retries = 0;
 
+        let page;
+        if (POST_PAGINATION) { // next page populated by previous request
+            page = POST_PAGINATION.next;
+        } else { // otherwise, continue from server-rendered posts
+            2;
+        }
+
         while (posts === undefined && retries < this.maxRetries) {
             try {
-                posts = await GHOST_API.posts.browse({
-                    page,
-                    limit: POSTS_PER_REQUEST,
-                    fields: "title,html,published_at,slug"
-                });
+                posts = await Api.getPosts(POSTS_PER_REQUEST, page,
+                    { includeBody: this.loadAllPosts == false });
             } catch (e) {
                 console.log(`Error fetching posts, attempt ${retries + 1}`, e);
                 if (retries >= this.maxRetries) {
@@ -63,7 +69,8 @@ class PostManager {
     }
 
     appendPostsToFeed(posts) {
-        const postHtml = posts.map(p => generatePostLinkHTML(p, { includeBody: true }));
+        const postHtml = posts.map(p => generatePostLinkHTML(p,
+            { includeBody: this.loadAllPosts == false }));
 
         this.postFeed.insertAdjacentHTML("beforeend", postHtml.join("\n"));
 
@@ -78,14 +85,12 @@ class PostManager {
 
     }
 
-    onScroll(e) {
-        if (shouldGetPosts()) {
+    onScroll = async (e) => {
+        while (shouldGetPosts()) {
             this.isUpdatingPosts = true;
-            // first page is rendered server-side
-            const page = POST_PAGINATION?.next || 2;
 
             try {
-                const posts = getPosts(page, { includeHtml: true });
+                const posts = await getPosts();
                 appendPostsToFeed(posts);
             } catch (e) {
                 this.isUpdatingPosts = false;
@@ -94,5 +99,9 @@ class PostManager {
 
             this.isUpdatingPosts = false;
         }
+    }
+
+    removeListener() {
+        document.removeEventListener("scroll", this.onScroll);
     }
 }
