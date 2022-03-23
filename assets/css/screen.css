@@ -205,6 +205,7 @@ code.hljs {
     max-width: 750px;
     line-height: 1.6rem;
     margin: 0.8em -8px;
+    transition: max-height 0.3s ease-in-out;
 }
 
 .post-full-content .cako-featured {
@@ -601,6 +602,25 @@ ion-icon#cako-search-clear {
     padding: 0.4em 0.5em 0.3em;
     display: flex;
     align-items: center;
+}
+
+#cako-menu .cako-featured {
+    padding: 1.2rem 3rem 1.4rem 1.6rem;
+    top: 3px;
+    right: -8px;
+    max-width: calc(100vw - 5.5em);
+    overflow: hidden;
+    font-size: 0.8em;
+    width: 400px;
+}
+
+#cako-menu .cako-featured.collapsed {
+    max-height: 3em;
+}
+
+#cako-menu .cako-featured-header {
+    font-size: 1.1em;
+    margin-bottom: 0.7em;
 }
 
 body {

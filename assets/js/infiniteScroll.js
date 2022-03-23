@@ -2,18 +2,14 @@ import { generatePostLinkHTML } from "./html";
 
 const POSTS_PER_REQUEST = 25;
 
-function appendPostsToFeed(posts) {
-    const postFeed = document.getElementById("cako-post-feed");
-    const postHtml = posts.map(p => generatePostLinkHTML(p, { includeBody: true }));
-
-    postFeed?.insertAdjacentHTML("beforeend", postHtml.join("\n"));
-}
-
 class PostManager {
     pagination;
 
     isUpdatingPosts = false;
     maxRetries = 10;
+
+    postFeed = document.getElementById("cako-post-feed");
+    postElems = document.querySelectorAll("#cako-post-feed .cako-post");
 
     constructor() {
         document.addEventListener("scroll", this.onScroll);
@@ -31,13 +27,11 @@ class PostManager {
             return false;
         }
 
-        const postElems = document.querySelectorAll("#cako-post-feed .cako-post");
-
-        if (postElems.length < 1) {
+        if (this.postElems.length < 1) {
             return false;
         }
 
-        const lastPost = postElems[postElems.length - 1];
+        const lastPost = this.postElems[this.postElems.length - 1];
 
         return lastPost.getBoundingClientRect().top < (window.innerHeght * 1.7);
     }
@@ -55,6 +49,9 @@ class PostManager {
                 });
             } catch (e) {
                 console.log(`Error fetching posts, attempt ${retries + 1}`, e);
+                if (retries >= this.maxRetries) {
+                    throw e;
+                }
             }
 
             retries++;
@@ -63,6 +60,22 @@ class PostManager {
         this.pagination = posts.meta.pagination;
 
         return posts;
+    }
+
+    appendPostsToFeed(posts) {
+        const postHtml = posts.map(p => generatePostLinkHTML(p, { includeBody: true }));
+
+        this.postFeed.insertAdjacentHTML("beforeend", postHtml.join("\n"));
+
+        this.postElems = document.querySelectorAll("#cako-post-feed .cako-post");
+    }
+
+    showLoadingIndicator() {
+
+    }
+
+    hideLoadingIndicator() {
+
     }
 
     onScroll(e) {
