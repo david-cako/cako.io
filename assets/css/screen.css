@@ -563,6 +563,19 @@ ion-icon#cako-search-clear {
     padding-right: 0;
 }
 
+#cako-menu #menu-icon {
+    transform: scaleX(0.9);
+    opacity: 0.9;
+    background-color: #000;
+    -webkit-mask: url(/assets/menu-outline.svg) no-repeat center;
+    mask: url(/assets/menu-outline.svg) no-repeat center;
+    width: 2em;
+    height: 2em;
+    cursor: pointer;
+    padding: 0 0.1em;
+    box-sizing: content-box;
+}
+
 #cako-menu .menu-icon-outer {
     background: #fff;
     height: 1.7em;
