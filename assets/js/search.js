@@ -200,7 +200,7 @@ async function cakoSearch(query) {
 
             if (p.title.toLowerCase().indexOf(t) !== -1) {
                 matches.push({ in: "title", token: t });
-            } else if (publishDate.getFullYear() === parseInt(t)) {
+            } else if (String(publishDate.getFullYear()).indexOf(t) !== -1) {
                 // check for hard date ranges before using month string matches
                 matches.push({ in: "date" });
             } else if (monthIdx !== -1 && publishDateStr.indexOf(`-${monthStr}-`) !== -1) {
