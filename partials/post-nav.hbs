@@ -1,38 +1,40 @@
 <div class="post-nav-outer">
     <div id="post-nav-inner" class="post-nav inner">
         {{#prev_post}}
-        <a href="{{url}}" class="cako-post-link post-nav-link">
-            <div class="cako-post">
-                <div class="cako-post-title">{{title}}</div>
-                <div class="cako-post-date-outer">
-                    <time class="cako-post-date" datetime="{{date format="YYYY-MM-DDTHH:mm:ss"}}">{{date format="D . M . YYYY"}}</time>
+            <a href="{{url}}" class="cako-post-link post-nav-link">
+                <div class="cako-post">
+                    <div class="cako-post-title">{{title}}</div>
+                    <div class="cako-post-date-outer">
+                        <time class="cako-post-date" datetime="{{date format="YYYY-MM-DDTHH:mm:ss"}}">{{date format="D . M . YYYY"}}</time>
+                    </div>
                 </div>
-            </div>
-        </a>
-        <script>
-            function navigationIsVisible() {
-                const r = document.getElementById("post-nav-inner").getBoundingClientRect();
+            </a>
+            <script>
+                function navigationIsVisible() {
+                    const r = document.getElementById("post-nav-inner").getBoundingClientRect();
 
-                return r.top >= 0 &&
-                    r.bottom <= window.innerHeight + 50;
-            }
-
-            document.addEventListener("keydown", e => {
-                // don't navigate if currently searching
-                if (e.key == "ArrowLeft" && 
-                (!document.activeElement || !document.activeElement.classList.contains("cako-post-link"))) {
-                    window.location = "{{url}}";
-
-                    const navLinks = document.querySelectorAll(".post-nav-link");
-
-                    if (navLinks[0] && navigationIsVisible()) {
-                        navLinks[0].focus();
-                    }
+                    return r.top >= 0 &&
+                        r.bottom <= window.innerHeight + 50;
                 }
-            });
-        </script>
-        {{/prev_post}}
 
+                document.addEventListener("keydown", e => {
+                    // don't navigate if currently searching
+                    if (e.key == "ArrowLeft" && 
+                    (!document.activeElement || !document.activeElement.classList.contains("cako-post-link"))) {
+                        window.location = "{{url}}";
+
+                        const navLinks = document.querySelectorAll(".post-nav-link");
+
+                        if (navLinks[0] && navigationIsVisible()) {
+                            navLinks[0].focus();
+                        }
+                    }
+                });
+            </script>
+        {{else}}
+            <div></div>
+        {{/prev_post}}
+            
         {{#next_post}}
         <a href="{{url}}" class="cako-post-link post-nav-link">
             <div class="cako-post right">

@@ -576,6 +576,10 @@ ion-icon#cako-search-clear {
     box-sizing: content-box;
 }
 
+#cako-menu #menu-icon:active {
+    opacity: 0.6;
+}
+
 #cako-menu .menu-icon-outer {
     background: #fff;
     height: 1.7em;
