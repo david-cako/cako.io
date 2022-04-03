@@ -148,7 +148,7 @@ sup:target {
 
 code {
     font-family: 'Fira Code', monospace;
-    background: rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.1);
     padding: 0 0.3em;
     border-radius: 5px;
 }
@@ -200,7 +200,7 @@ code.hljs {
 
 .cako-featured {
     border: 1px solid #000;
-    padding: 1.5rem 1.5rem 1.7rem;
+    padding: 1.5rem 1.5rem 1.75rem;
     border-radius: 7px;
     max-width: 750px;
     line-height: 1.6rem;
@@ -263,7 +263,7 @@ code.hljs {
     border-bottom: 1px solid #0070e6;
 }
 
-#cako-search-results > .cako-post:not(:nth-of-type(1)) {
+#cako-search-results>.cako-post:not(:nth-of-type(1)) {
     margin-top: 2em;
 }
 
@@ -275,7 +275,7 @@ code.hljs {
     text-align: right;
 }
 
-#cako-post-feed > .cako-post:not(:nth-of-type(1)) {
+#cako-post-feed>.cako-post:not(:nth-of-type(1)) {
     margin-top: 1.8em;
 }
 
@@ -285,13 +285,14 @@ code.hljs {
 }
 
 @media (max-width: 650px) {
-    #cako-search-results > .cako-post:not(:nth-of-type(1)) {
+    #cako-search-results>.cako-post:not(:nth-of-type(1)) {
         margin-top: 1.6em;
     }
 
-    #cako-post-feed > .cako-post:not(:nth-of-type(1)) {
+    #cako-post-feed>.cako-post:not(:nth-of-type(1)) {
         margin-top: 1.4em;
     }
+
     .cako-featured .cako-post {
         margin-top: 1.3em;
     }
@@ -318,7 +319,7 @@ code.hljs {
 
 .cako-post-link {
     display: inline-block;
-    position: relative; 
+    position: relative;
 }
 
 .cako-post-link:hover {
@@ -349,6 +350,7 @@ code.hljs {
         bottom: 165px;
     }
 }
+
 .post-nav {
     display: flex;
     justify-content: space-between;
@@ -440,7 +442,7 @@ code.hljs {
     background: transparent;
 }
 
-#cako-site-nav-link:hover > span {
+#cako-site-nav-link:hover>span {
     color: #0c76e6 !important;
 }
 
@@ -473,7 +475,7 @@ code.hljs {
 }
 
 #last-name-c {
-    color: #658CFF; 
+    color: #658CFF;
 }
 
 #last-name-a {
@@ -520,14 +522,14 @@ code.hljs {
     text-decoration: none;
 }
 
-#cako-menu-inner .cako-menu-item:active, 
-#cako-menu-inner .cako-menu-item:hover, 
-.cako-menu-item:active, 
+#cako-menu-inner .cako-menu-item:active,
+#cako-menu-inner .cako-menu-item:hover,
+.cako-menu-item:active,
 .cako-menu-item:hover {
     color: #fff;
     background-color: #000;
     transform: scale(1.02);
-    box-shadow: 0 1px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
 }
 
 ion-icon#cako-search-clear {
@@ -569,8 +571,8 @@ ion-icon#cako-search-clear {
     background-color: #000;
     -webkit-mask: url(/assets/menu-outline.svg) no-repeat center;
     mask: url(/assets/menu-outline.svg) no-repeat center;
-    width: 2em;
-    height: 2em;
+    width: 100%;
+    height: 100%;
     cursor: pointer;
     padding: 0 0.1em;
     box-sizing: content-box;
@@ -582,7 +584,7 @@ ion-icon#cako-search-clear {
 
 #cako-menu .menu-icon-outer {
     background: #fff;
-    height: 1.7em;
+    height: 1.8em;
     width: 1.8em;
     display: flex;
     justify-content: center;
@@ -700,13 +702,13 @@ body {
 @media (max-height: 1100px) {
     .inner:not(.index) {
         max-width: 775px;
-    }   
+    }
 }
 
 @media (max-height: 800px) {
     .inner:not(.index) {
         max-width: 700px;
-    }   
+    }
 }
 
 @media (min-width: 900px) {
@@ -729,6 +731,7 @@ body {
 /* ---------------------------------------------------------- */
 
 @media (min-width: 900px) {
+
     .home-template .post-feed,
     .tag-template .post-feed,
     .author-template .post-feed {
@@ -784,6 +787,7 @@ body {
     .site-title {
         font-size: 3.5rem;
     }
+
     .site-description {
         font-size: 1.8rem;
     }
@@ -958,6 +962,7 @@ The knock-on effect of this is ugly browser-scroll bars at the bottom, so 80px o
 }
 
 @media (max-width: 700px) {
+
     /*.site-header {
         padding-right: 0;
         padding-left: 0;
@@ -966,6 +971,7 @@ The knock-on effect of this is ugly browser-scroll bars at the bottom, so 80px o
         margin-right: 0;
         padding-left: 4vw;
     }
+
     .site-nav-right {
         display: none;
     }
@@ -993,12 +999,12 @@ The knock-on effect of this is ugly browser-scroll bars at the bottom, so 80px o
     background: #fff center center;
     background-size: cover;
     border-radius: 5px;
-    box-shadow: rgba(39,44,49,0.06) 8px 14px 38px, rgba(39, 44, 49, 0.03) 1px 3px 8px;
+    box-shadow: rgba(39, 44, 49, 0.06) 8px 14px 38px, rgba(39, 44, 49, 0.03) 1px 3px 8px;
     transition: all 0.5s ease;
 }
 
 .post-card:hover {
-    box-shadow: rgba(39,44,49,0.07) 8px 28px 50px, rgba(39, 44, 49, 0.04) 1px 6px 12px;
+    box-shadow: rgba(39, 44, 49, 0.07) 8px 28px 50px, rgba(39, 44, 49, 0.04) 1px 6px 12px;
     transition: all 0.4s ease;
     transform: translate3D(0, -1px, 0) scale(1.02);
 }
@@ -1128,39 +1134,39 @@ The knock-on effect of this is ugly browser-scroll bars at the bottom, so 80px o
     transform: translateX(-10px);
 }
 
-.author-list-item:nth-child( 1 ) {
+.author-list-item:nth-child(1) {
     z-index: 9;
 }
 
-.author-list-item:nth-child( 2 ) {
+.author-list-item:nth-child(2) {
     z-index: 8;
 }
 
-.author-list-item:nth-child( 3 ) {
+.author-list-item:nth-child(3) {
     z-index: 7;
 }
 
-.author-list-item:nth-child( 4 ) {
+.author-list-item:nth-child(4) {
     z-index: 6;
 }
 
-.author-list-item:nth-child( 5 ) {
+.author-list-item:nth-child(5) {
     z-index: 5;
 }
 
-.author-list-item:nth-child( 6 ) {
+.author-list-item:nth-child(6) {
     z-index: 4;
 }
 
-.author-list-item:nth-child( 7 ) {
+.author-list-item:nth-child(7) {
     z-index: 3;
 }
 
-.author-list-item:nth-child( 8 ) {
+.author-list-item:nth-child(8) {
     z-index: 2;
 }
 
-.author-list-item:nth-child( 9 ) {
+.author-list-item:nth-child(9) {
     z-index: 1;
 }
 
@@ -1180,7 +1186,7 @@ The knock-on effect of this is ugly browser-scroll bars at the bottom, so 80px o
     white-space: nowrap;
     background: var(--darkgrey);
     border-radius: 3px;
-    box-shadow: rgba(39,44,49,0.08) 0 12px 26px, rgba(39, 44, 49, 0.03) 1px 3px 8px;
+    box-shadow: rgba(39, 44, 49, 0.08) 0 12px 26px, rgba(39, 44, 49, 0.03) 1px 3px 8px;
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
     transform: translateY(6px);
@@ -1262,6 +1268,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     .post-feed {
         padding-top: 5vw;
     }
+
     .post-card {
         margin: 0 20px 5vw;
     }
@@ -1276,6 +1283,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     position: relative;
     z-index: 50;
 }
+
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
@@ -1359,6 +1367,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
         padding: 0;
     }
 }
+
 .post-full-content:before {
     content: "";
     position: absolute;
@@ -1368,7 +1377,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     display: block;
     width: 20px;
     height: 200px;
-    background: rgba(39,44,49,0.15);
+    background: rgba(39, 44, 49, 0.15);
     filter: blur(5px);
     transform: rotate(-5deg);
 }
@@ -1382,7 +1391,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     display: block;
     width: 20px;
     height: 200px;
-    background: rgba(39,44,49,0.15);
+    background: rgba(39, 44, 49, 0.15);
     filter: blur(5px);
     transform: rotate(5deg);
 }
@@ -1392,7 +1401,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     display: none;
 }
 
-.post-full-content > * {
+.post-full-content>* {
     padding: 0 15px;
 }
 
@@ -1442,7 +1451,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     margin: 0;
 }
 
-.post-template .post-full-content > p:first-child {
+.post-template .post-full-content>p:first-child {
     font-weight: 500;
     font-size: 1.1em;
     line-height: 1.6em;
@@ -1482,13 +1491,13 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-content .flex img {
-    box-shadow: 0 1px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
     margin: 0.5em auto 1em auto;
 }
 
 .post-full-content .flex a:hover img {
     transform: scale(1.01);
-    box-shadow: 0 1px 12px rgba(0,0,0,0.35);
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
 }
 
 @media (max-width: 650px) {
@@ -1537,18 +1546,18 @@ The first (most recent) post in the list is styled to be bigger than the others 
     }
 }
 
-.post-full-content p img, 
+.post-full-content p img,
 .post-full-content img.card,
 .post-full-content .kg-image {
     margin-top: 0;
-    box-shadow: 0 1px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
 }
 
-.post-full-content p a:hover img, 
-.post-full-content a:hover img.card, 
+.post-full-content p a:hover img,
+.post-full-content a:hover img.card,
 .post-full-content a:hover .kg-image {
     transform: scale(1.01);
-    box-shadow: 0 1px 12px rgba(0,0,0,0.35);
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
 }
 
 .post-full-content img.card {
@@ -1577,7 +1586,7 @@ Usage (In Ghost editor):
 <small>Your image caption</small>
 
 */
-.post-full-content img + br + small {
+.post-full-content img+br+small {
     display: block;
     margin-top: -3em;
     margin-bottom: 1.5em;
@@ -1642,6 +1651,7 @@ Usage (In Ghost editor):
     font-size: 4.6rem;
     font-weight: 700;
 }
+
 @media (max-width: 500px) {
     .post-full-content h1 {
         font-size: 2.8rem;
@@ -1653,6 +1663,7 @@ Usage (In Ghost editor):
     font-size: 3.5rem;
     font-weight: 700;
 }
+
 @media (max-width: 500px) {
     .post-full-content h2 {
         font-size: 2.6rem;
@@ -1660,10 +1671,11 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h3 {
-    margin: 1.2em 0 0.2em 0;
+    margin: 0.9em 0 0.2em 0;
     font-size: 2.8rem;
     font-weight: 700;
 }
+
 @media (max-width: 500px) {
     .post-full-content h3 {
         font-size: 2.2rem;
@@ -1675,6 +1687,7 @@ Usage (In Ghost editor):
     font-size: 2.8rem;
     font-weight: 700;
 }
+
 @media (max-width: 500px) {
     .post-full-content h4 {
         font-size: 2.2rem;
@@ -1687,17 +1700,19 @@ Usage (In Ghost editor):
     padding: 1em 0 1.5em;
     border: 0;
     color: var(--blue);
-    font-family: Georgia,serif;
+    font-family: Georgia, serif;
     font-size: 3.2rem;
     line-height: 1.35em;
     text-align: center;
 }
+
 @media (min-width: 1180px) {
     .post-full-content h5 {
         max-width: 1060px;
         width: 100vw;
     }
 }
+
 @media (max-width: 500px) {
     .post-full-content h5 {
         padding: 0 0 0.5em;
@@ -1710,6 +1725,7 @@ Usage (In Ghost editor):
     font-size: 2.3rem;
     font-weight: 700;
 }
+
 @media (max-width: 500px) {
     .post-full-content h6 {
         font-size: 2rem;
@@ -1742,6 +1758,7 @@ Usage (In Ghost editor):
         margin-bottom: 4vw;
         height: 350px;
     }
+
     /*.post-full-content {
         padding: 0;
     }*/
@@ -1775,13 +1792,13 @@ Usage (In Ghost editor):
 }
 
 .post-full-content table td:first-child {
-    background-image: linear-gradient(to right, rgba(255,255,255, 1) 50%, rgba(255,255,255, 0) 100%);
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 100%);
     background-size: 20px 100%;
     background-repeat: no-repeat;
 }
 
 .post-full-content table td:last-child {
-    background-image: linear-gradient(to left, rgba(255,255,255, 1) 50%, rgba(255,255,255, 0) 100%);
+    background-image: linear-gradient(to left, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 100%);
     background-position: 100% 0;
     background-size: 20px 100%;
     background-repeat: no-repeat;
@@ -1886,15 +1903,13 @@ Usage (In Ghost editor):
     line-height: 37px;
     font-weight: 400;
     text-align: center;
-    text-shadow: 0 -1px 0 rgba(0,0,0,0.1);
-    background: linear-gradient(
-    color(var(--blue) whiteness(+7%)),
-    color(var(--blue) lightness(-7%) saturation(-10%)) 60%,
-    color(var(--blue) lightness(-7%) saturation(-10%)) 90%,
-    color(var(--blue) lightness(-4%) saturation(-10%))
-    );
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
+    background: linear-gradient(color(var(--blue) whiteness(+7%)),
+            color(var(--blue) lightness(-7%) saturation(-10%)) 60%,
+            color(var(--blue) lightness(-7%) saturation(-10%)) 90%,
+            color(var(--blue) lightness(-4%) saturation(-10%)));
     border-radius: 5px;
-    box-shadow: 0 0 0 1px inset rgba(0,0,0,0.14);
+    box-shadow: 0 0 0 1px inset rgba(0, 0, 0, 0.14);
 
     -webkit-font-smoothing: subpixel-antialiased;
 }
@@ -1908,6 +1923,7 @@ Usage (In Ghost editor):
     .subscribe-form-title {
         font-size: 2.4rem;
     }
+
     .subscribe-form p {
         font-size: 1.6rem;
     }
@@ -1917,9 +1933,11 @@ Usage (In Ghost editor):
     .subscribe-form form {
         flex-direction: column;
     }
+
     .subscribe-form .form-group {
         width: 100%;
     }
+
     .subscribe-form button {
         margin: 10px 0 0 0;
         width: 100%;
@@ -2030,7 +2048,7 @@ Usage (In Ghost editor):
     }
 }
 
-.post-full-footer .author-list-item > a {
+.post-full-footer .author-list-item>a {
     position: absolute;
     display: inline-block;
     width: 48px;
@@ -2064,7 +2082,7 @@ Usage (In Ghost editor):
     letter-spacing: 0.2px;
     background: white;
     border-radius: 6px;
-    box-shadow: rgba(39,44,49,0.08) 0 12px 26px, rgba(39, 44, 49, 0.03) 1px 3px 8px;
+    box-shadow: rgba(39, 44, 49, 0.08) 0 12px 26px, rgba(39, 44, 49, 0.03) 1px 3px 8px;
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
     transform: scale(0.98) translateY(10px);
@@ -2169,7 +2187,7 @@ Usage (In Ghost editor):
     background: var(--darkgrey) center center;
     background-size: cover;
     border-radius: 5px;
-    box-shadow: rgba(39,44,49,0.06) 8px 14px 38px, rgba(39, 44, 49, 0.03) 1px 3px 8px;
+    box-shadow: rgba(39, 44, 49, 0.06) 8px 14px 38px, rgba(39, 44, 49, 0.03) 1px 3px 8px;
 }
 
 .read-next-card:before {
@@ -2180,7 +2198,7 @@ Usage (In Ghost editor):
     bottom: 0;
     left: 0;
     display: block;
-    background: linear-gradient(135deg, rgba(0,40,60,0.8) 0%,rgba(0,20,40,0.7) 100%);
+    background: linear-gradient(135deg, rgba(0, 40, 60, 0.8) 0%, rgba(0, 20, 40, 0.7) 100%);
     border-radius: 5px;
 
     backdrop-filter: blur(2px);
@@ -2264,7 +2282,7 @@ Usage (In Ghost editor):
 .read-next-card-content li a {
     display: block;
     padding: 20px 0;
-    border-bottom: rgba(255,255,255,0.3) 1px solid;
+    border-bottom: rgba(255, 255, 255, 0.3) 1px solid;
     color: #fff;
     font-weight: 500;
     vertical-align: top;
@@ -2303,8 +2321,8 @@ Usage (In Ghost editor):
     display: flex;
     align-items: center;
     height: 60px;
-    border-bottom: rgba(0,0,0,0.06) 1px solid;
-    background: rgba(255,255,255,0.95);
+    border-bottom: rgba(0, 0, 0, 0.06) 1px solid;
+    background: rgba(255, 255, 255, 0.95);
     transition: all 500ms cubic-bezier(0.19, 1, 0.22, 1);
     transform: translate3d(0, -120%, 0);
 }
@@ -2385,7 +2403,7 @@ Usage (In Ghost editor):
     display: flex;
     align-items: center;
     margin-right: 10px;
-    color: rgba(0,0,0,0.7);
+    color: rgba(0, 0, 0, 0.7);
     font-weight: 500;
 }
 
@@ -2393,7 +2411,7 @@ Usage (In Ghost editor):
     margin: 0 5px 0 10px;
     width: 18px;
     height: 18px;
-    stroke: rgba(0,0,0,0.7);
+    stroke: rgba(0, 0, 0, 0.7);
     transform: rotate(90deg);
 }
 
@@ -2464,10 +2482,12 @@ Usage (In Ghost editor):
     .floating-header {
         height: 40px;
     }
+
     .floating-header-title,
     .floating-header-logo {
         font-size: 1.5rem;
     }
+
     .floating-header-share-tw,
     .floating-header-share-fb {
         width: 40px;
@@ -2480,9 +2500,11 @@ Usage (In Ghost editor):
     .floating-header-logo {
         margin-left: 10px;
     }
+
     .floating-header-logo a {
         color: #2e2e2e;
     }
+
     .floating-header-title,
     .floating-header-divider {
         visibility: hidden;
@@ -2505,7 +2527,7 @@ Usage (In Ghost editor):
     margin: 0 0 20px 0;
     width: 100px;
     height: 100px;
-    box-shadow: rgba(255,255,255,0.1) 0 0 0 6px;
+    box-shadow: rgba(255, 255, 255, 0.1) 0 0 0 6px;
 }
 
 .site-header-content .author-bio {
@@ -2552,6 +2574,7 @@ Usage (In Ghost editor):
         line-height: 1.15em;
         letter-spacing: 0;
     }
+
     .author-location,
     .author-stats {
         display: none;
@@ -2627,7 +2650,7 @@ Usage (In Ghost editor):
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0,25,40,0.97);
+    background: rgba(0, 25, 40, 0.97);
     opacity: 0;
     transition: opacity 200ms ease-in;
     pointer-events: none;
@@ -2718,15 +2741,13 @@ Usage (In Ghost editor):
     line-height: 37px;
     font-weight: 400;
     text-align: center;
-    text-shadow: 0 -1px 0 rgba(0,0,0,0.1);
-    background: linear-gradient(
-    color(var(--blue) whiteness(+7%)),
-    color(var(--blue) lightness(-7%) saturation(-10%)) 60%,
-    color(var(--blue) lightness(-7%) saturation(-10%)) 90%,
-    color(var(--blue) lightness(-4%) saturation(-10%))
-    );
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
+    background: linear-gradient(color(var(--blue) whiteness(+7%)),
+            color(var(--blue) lightness(-7%) saturation(-10%)) 60%,
+            color(var(--blue) lightness(-7%) saturation(-10%)) 90%,
+            color(var(--blue) lightness(-4%) saturation(-10%)));
     border-radius: 8px;
-    box-shadow: 0 0 0 1px inset rgba(0,0,0,0.14);
+    box-shadow: 0 0 0 1px inset rgba(0, 0, 0, 0.14);
 
     -webkit-font-smoothing: subpixel-antialiased;
 }
