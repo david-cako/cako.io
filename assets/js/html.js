@@ -8,7 +8,7 @@ export function generatePostLinkHTML(post, { isCurrentPost, includeBody }) {
 
     const datetime = `${year}-${monthStr}-${String(date).padStart(2, "0")}`;
 
-    postsHtml += `<div class="cako-post ${isCurrentPost ? "current" : ""}">
+    postsHtml += `<div class="cako-post${isCurrentPost ? " current" : ""}">
     ${isCurrentPost ? '<div class="current-post-marker">◆</div>' : ""}
     <a href="/${post.slug}/" class="cako-post-link">
         <div class="cako-post-title">${post.title}</div>
@@ -22,7 +22,7 @@ export function generatePostLinkHTML(post, { isCurrentPost, includeBody }) {
 </div>`;
 }
 
-export function generateFeatureHTML(feature, { includeDescription, collapsed }) {
+export function generateFeatureHTML(feature, { includeDescription, closed }) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
@@ -47,8 +47,8 @@ export function generateFeatureHTML(feature, { includeDescription, collapsed }) 
             featureYear = d.getFullYear();
         }
 
-        return `<div class="cako-featured ${collapsed ? "collapsed" : ""}">
-        ${collapsed ? '<div class="arrow">▸</div>' : ''}
+        return `<div class="cako-featured${closed ? " closed" : ""}">
+        <div class="arrow${closed ? " closed" : ""}">▸</div>
         <div class="cako-featured-header">${feature.tag.name}
             <div class="cako-featured-description">${featureMetadata.description}</div>
             <div class="cako-featured-date">${featureDate} ${featureMonth} ${featureYear}</div>

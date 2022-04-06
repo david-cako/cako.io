@@ -62,12 +62,12 @@ function isFeatureIndex() {
 }
 
 function toggleFeature(element) {
-    const collapsedIdx = element.classList.indexOf("collapsed");
+    const closedIdx = element.classList.indexOf("closed");
 
-    if (collapsedIdx !== -1) {
-        element.classList.push("collapsed");
+    if (closedIdx === -1) {
+        element.classList.push("closed");
     } else {
-        element.classList.splice(collapsedIdx, 1);
+        element.classList.splice(closedIdx, 1);
     }
 }
 
@@ -97,12 +97,12 @@ function setupToggleHandler() {
 
         if (feature && featureElem) {
             featureElem.outerHTML = generateFeatureHTML(feature,
-                { includeDescription: true, collapsed: true });
+                { includeDescription: true, closed: true });
         }
     } else if (menu) { // Populate any feature related to currently viewed post
         const feature = getFeatureForCurrentPost();
         const featureHtml = generateFeatureHTML(feature,
-            { includeDescription: true, collapsed: true });
+            { includeDescription: true, closed: true });
 
         menu.insertAdjacentElement("beforeend", featureHtml);
     }

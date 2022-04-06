@@ -584,8 +584,8 @@ ion-icon#cako-search-clear {
 
 #cako-menu .menu-icon-outer {
     background: #fff;
-    height: 1.8em;
-    width: 1.8em;
+    height: 24px;
+    width: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1660,7 +1660,7 @@ Usage (In Ghost editor):
 
 .post-full-content h2 {
     margin: 0.9em 0 0.3em 0;
-    font-size: 3.5rem;
+    font-size: 3.2rem;
     font-weight: 700;
 }
 

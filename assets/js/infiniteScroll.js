@@ -23,7 +23,7 @@ class PostManager {
             return false;
         }
 
-        if (this.pagination?.next === null) {
+        if (this.pagination && this.pagination.next === null) {
             // we've already requested posts and no more are available
             return false;
         }

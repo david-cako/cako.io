@@ -357,10 +357,6 @@ async function onSearchChange(value) {
 }
 
 function getOrFetchPosts() {
-    // remove ls from previous version
-    localStorage.removeItem("posts");
-    localStorage.removeItem("postsDate");
-
     if (!GHOST_POSTS) {
         GHOST_POSTS = GHOST_API.posts.browse({
             limit: "all",
@@ -391,7 +387,7 @@ function onKeyDown(e) {
         }
     }
 
-    // ctrl + cmd + f to open search
+    // cmd/ctrl + shift + f to open search
     if (e.key.toLowerCase() == "f" && (e.ctrlKey || e.metaKey) && e.shiftKey) {
         e.preventDefault();
 
