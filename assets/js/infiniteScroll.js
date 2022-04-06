@@ -9,10 +9,11 @@ class PostManager {
     isUpdatingPosts = false;
 
     maxRetries = 10;
-    loadAllPosts = localStorage.getItem("loadAllPosts")
-    get loadPostsOffset() { return window.innerHeght * 1.7; }
+    loadAllPosts = localStorage.getItem("loadAllPosts") === true;
 
     postFeed = document.getElementById("cako-post-feed");
+
+    get loadPostsOffset() { return window.innerHeght * 1.7; }
     get postElems() { return document.querySelectorAll("#cako-post-feed .cako-post"); }
 
     constructor() {
@@ -34,9 +35,10 @@ class PostManager {
         }
 
         // check scroll position
-        const lastPost = this.postElems[this.postElems.length - 1];
+        const postElems = this.postElems;
+        const lastPost = postElems[postElems.length - 1];
 
-        return lastPost.getBoundingClientRect().top < this.loadPostsOffset;
+        return lastPost?.getBoundingClientRect().top < this.loadPostsOffset;
     }
 
     async getPosts() {
@@ -82,7 +84,7 @@ class PostManager {
 
     }
 
-    onScroll = async (e) => {
+    onScroll = async () => {
         while (shouldGetPosts()) {
             this.isUpdatingPosts = true;
 
@@ -98,6 +100,18 @@ class PostManager {
 
             this.isUpdatingPosts = false;
         }
+    }
+
+    toggleLoadAllPosts = () => {
+        if (this.loadAllPosts) {
+            this.loadAllPosts = false;
+        } else {
+            this.loadAllPosts = true;
+        }
+
+        localStorage.setItem("loadAllPosts", this.loadAllPosts);
+
+        return this.loadAllPosts;
     }
 
     removeListener() {
