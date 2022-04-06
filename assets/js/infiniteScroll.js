@@ -4,15 +4,16 @@ import { generatePostLinkHTML } from "./html";
 const POSTS_PER_REQUEST = 25;
 
 class PostManager {
+    // Ghost API pagination, populated with each request for posts
     pagination;
-
     isUpdatingPosts = false;
+
     maxRetries = 10;
+    loadAllPosts = localStorage.getItem("loadAllPosts")
+    get loadPostsOffset() { return window.innerHeght * 1.7; }
 
     postFeed = document.getElementById("cako-post-feed");
-    postElems = document.querySelectorAll("#cako-post-feed .cako-post");
-
-    loadAllPosts = localStorage.getItem("loadAllPosts")
+    get postElems() { return document.querySelectorAll("#cako-post-feed .cako-post"); }
 
     constructor() {
         document.addEventListener("scroll", this.onScroll);
@@ -35,7 +36,7 @@ class PostManager {
         // check scroll position
         const lastPost = this.postElems[this.postElems.length - 1];
 
-        return lastPost.getBoundingClientRect().top < (window.innerHeght * 1.7);
+        return lastPost.getBoundingClientRect().top < this.loadPostsOffset;
     }
 
     async getPosts() {
@@ -63,8 +64,6 @@ class PostManager {
             retries++;
         }
 
-        this.pagination = posts.meta.pagination;
-
         return posts;
     }
 
@@ -73,8 +72,6 @@ class PostManager {
             { includeBody: this.loadAllPosts == false }));
 
         this.postFeed.insertAdjacentHTML("beforeend", postHtml.join("\n"));
-
-        this.postElems = document.querySelectorAll("#cako-post-feed .cako-post");
     }
 
     showLoadingIndicator() {
@@ -91,6 +88,8 @@ class PostManager {
 
             try {
                 const posts = await getPosts();
+                this.pagination = posts.meta.pagination;
+
                 appendPostsToFeed(posts);
             } catch (e) {
                 this.isUpdatingPosts = false;
