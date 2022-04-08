@@ -41,11 +41,11 @@ export default class InfiniteScroll {
 
         // check scroll position
         const postElems = this.postElems;
-        const lastPost = postElems[postElems.length - 1];
-
-        if (!lastPost) {
+        if (postElems.length < 1) {
             return true;
         }
+
+        const lastPost = postElems[postElems.length - 1];
 
         return lastPost?.getBoundingClientRect().top < this.loadPostsOffset;
     }
