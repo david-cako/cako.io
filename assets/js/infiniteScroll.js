@@ -1,19 +1,20 @@
-import { Api } from "./api";
-import { generatePostLinkHTML } from "./html";
+import { Api } from "./api.js";
+import { generatePostLinkHTML } from "./html.js";
 
-const POSTS_PER_REQUEST = 25;
 
-class PostManager {
+export default class InfiniteScroll {
     // Ghost API pagination, populated with each request for posts
     pagination;
     isUpdatingPosts = false;
 
+    postsPerRequest = 25;
     maxRetries = 10;
     loadAllPosts = localStorage.getItem("loadAllPosts") === true;
 
     postFeed = document.getElementById("cako-post-feed");
+    loadingPostsElem = document.getElementById("loading-posts");
 
-    get loadPostsOffset() { return window.innerHeght * 1.7; }
+    get loadPostsOffset() { return window.innerHeight * 1.2; }
     get postElems() { return document.querySelectorAll("#cako-post-feed .cako-post"); }
 
     constructor() {
@@ -38,6 +39,10 @@ class PostManager {
         const postElems = this.postElems;
         const lastPost = postElems[postElems.length - 1];
 
+        if (!lastPost) {
+            return true;
+        }
+
         return lastPost?.getBoundingClientRect().top < this.loadPostsOffset;
     }
 
@@ -46,16 +51,15 @@ class PostManager {
         let retries = 0;
 
         let page;
-        if (POST_PAGINATION) { // next page populated by previous request
-            page = POST_PAGINATION.next;
+        if (this.pagination) { // next page populated by previous request
+            page = this.pagination.next;
         } else { // otherwise, continue from server-rendered posts
-            2;
+            page = 2;
         }
 
         while (posts === undefined && retries < this.maxRetries) {
             try {
-                posts = await Api.getPosts(POSTS_PER_REQUEST, page,
-                    { includeBody: this.loadAllPosts == false });
+                posts = await Api.getPosts(this.postsPerRequest, page);
             } catch (e) {
                 console.log(`Error fetching posts, attempt ${retries + 1}`, e);
                 if (retries >= this.maxRetries) {
@@ -70,34 +74,36 @@ class PostManager {
     }
 
     appendPostsToFeed(posts) {
-        const postHtml = posts.map(p => generatePostLinkHTML(p,
-            { includeBody: this.loadAllPosts == false }));
+        const postHtml = posts.map(p => generatePostLinkHTML(p));
 
         this.postFeed.insertAdjacentHTML("beforeend", postHtml.join("\n"));
     }
 
     showLoadingIndicator() {
-
+        this.loadingPostsElem.style.display = "block";
     }
 
     hideLoadingIndicator() {
-
+        this.loadingPostsElem.style.display = "none";
     }
 
     onScroll = async () => {
-        while (shouldGetPosts()) {
+        while (this.shouldGetPosts()) {
             this.isUpdatingPosts = true;
+            this.showLoadingIndicator();
 
             try {
-                const posts = await getPosts();
+                const posts = await this.getPosts();
                 this.pagination = posts.meta.pagination;
 
-                appendPostsToFeed(posts);
+                this.appendPostsToFeed(posts);
             } catch (e) {
+                this.hideLoadingIndicator();
                 this.isUpdatingPosts = false;
                 throw e;
             }
 
+            this.hideLoadingIndicator();
             this.isUpdatingPosts = false;
         }
     }
@@ -118,3 +124,7 @@ class PostManager {
         document.removeEventListener("scroll", this.onScroll);
     }
 }
+
+(() => {
+    new InfiniteScroll();
+})();

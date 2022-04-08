@@ -1,32 +1,32 @@
-export function generatePostLinkHTML(post, { isCurrentPost, includeBody }) {
+const MonthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+
+export function generatePostLinkHTML(post, { isCurrentPost, includeBody } = {}) {
     const d = new Date(post.published_at);
     const year = d.getFullYear();
     const month = d.getMonth();
     const date = d.getDate();
-    const monthName = monthNames[month];
+    const monthName = MonthNames[month];
     const monthStr = String(month + 1).padStart(2, "0");
 
     const datetime = `${year}-${monthStr}-${String(date).padStart(2, "0")}`;
 
-    postsHtml += `<div class="cako-post${isCurrentPost ? " current" : ""}">
+    return `<div class="cako-post${isCurrentPost ? " current" : ""}">
     ${isCurrentPost ? '<div class="current-post-marker">◆</div>' : ""}
     <a href="/${post.slug}/" class="cako-post-link">
         <div class="cako-post-title">${post.title}</div>
         <div class="cako-post-date-outer">
             <time class="cako-post-date" datetime="${datetime}">${date} ${monthName} ${year}</time>
         </div>
-        ${includeBody ? `<section class="post-full-content">
-            ${post.html}
-        </section>` : ""}
     </a>
+    ${includeBody ? `<section class="post-full-content">
+        ${post.html}
+    </section>` : ""}
 </div>`;
 }
 
-export function generateFeatureHTML(feature, { includeDescription, closed }) {
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-
+export function generateFeatureHTML(feature, { includeDescription, closed } = {}) {
     let postsHtml = features.posts.map(p => {
         const isCurrentPost = post.slug === window.location.pathname.replaceAll("/", "");
 
@@ -43,7 +43,7 @@ export function generateFeatureHTML(feature, { includeDescription, closed }) {
         if (featureMetadata?.date) {
             const d = new Date(featureMetadata?.date);
             featureDate = d.getDate();
-            featureMonth = monthNames[d.getMonth()];
+            featureMonth = MonthNames[d.getMonth()];
             featureYear = d.getFullYear();
         }
 

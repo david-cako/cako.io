@@ -5,7 +5,7 @@ const GHOST_API = new GhostContentAPI({
 });
 
 export class Api {
-    static getPosts(limit, page, { includeBody }) {
+    static getPosts(limit, page, { includeBody } = {}) {
         return GHOST_API.posts.browse({
             limit: limit || "all",
             fields: `title,published_at,slug${includeBody ? ',html' : ''}`,

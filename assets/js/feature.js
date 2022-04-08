@@ -1,4 +1,4 @@
-import { generateFeatureHTML } from "./html";
+import { generateFeatureHTML } from "./html.js";
 
 const GHOST_API = new GhostContentAPI({
     url: "https://cako.io",

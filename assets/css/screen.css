@@ -187,6 +187,11 @@ code.hljs {
     padding: 0.5em 15px 2em;
 }
 
+#loading-posts {
+    display: none;
+    margin-bottom: 2em;
+}
+
 #cako-search-feed {
     display: none;
     padding: 1.1em 15px;
@@ -1368,34 +1373,6 @@ The first (most recent) post in the list is styled to be bigger than the others 
     }
 }
 
-.post-full-content:before {
-    content: "";
-    position: absolute;
-    top: 15px;
-    left: -5px;
-    z-index: -1;
-    display: block;
-    width: 20px;
-    height: 200px;
-    background: rgba(39, 44, 49, 0.15);
-    filter: blur(5px);
-    transform: rotate(-5deg);
-}
-
-.post-full-content:after {
-    content: "";
-    position: absolute;
-    top: 15px;
-    right: -5px;
-    z-index: -1;
-    display: block;
-    width: 20px;
-    height: 200px;
-    background: rgba(39, 44, 49, 0.15);
-    filter: blur(5px);
-    transform: rotate(5deg);
-}
-
 .no-image .post-full-content:before,
 .no-image .post-full-content:after {
     display: none;
@@ -1404,6 +1381,11 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content>* {
     padding: 0 15px;
 }
+
+.index .post-full-content>* {
+    padding: 0;
+}
+
 
 .post-full-content h1,
 .post-full-content h2,
