@@ -7,7 +7,7 @@ export default class InfiniteScroll {
     pagination;
     isUpdatingPosts = false;
 
-    postsPerRequest = 25;
+    postsPerRequest = 100;
     maxRetries = 10;
     loadAllPosts = localStorage.getItem("loadAllPosts") === true;
 

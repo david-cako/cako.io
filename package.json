@@ -51,7 +51,7 @@
         "postcss-easy-import": "^3.0.0"
     },
     "config": {
-        "posts_per_page": 25
+        "posts_per_page": 100
     },
     "dependencies": {}
 }
