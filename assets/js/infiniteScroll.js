@@ -14,7 +14,7 @@ export default class InfiniteScroll {
     postFeed = document.getElementById("cako-post-feed");
     loadingPostsElem = document.getElementById("loading-posts");
 
-    get loadPostsOffset() { return window.innerHeight * 1.7; }
+    get loadPostsOffset() { return window.innerHeight * 3; }
     get postElems() { return document.querySelectorAll("#cako-post-feed .cako-post"); }
 
     constructor() {
