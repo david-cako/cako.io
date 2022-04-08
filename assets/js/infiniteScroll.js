@@ -12,6 +12,7 @@ export default class InfiniteScroll {
     loadAllPosts = localStorage.getItem("loadAllPosts") === true;
 
     postFeed = document.getElementById("cako-post-feed");
+    postFeedOuter = document.getElementById("cako-post-feed-outer");
     loadingPostsElem = document.getElementById("loading-posts");
 
     get loadPostsOffset() { return window.innerHeight * 3; }
@@ -22,10 +23,13 @@ export default class InfiniteScroll {
     }
 
     shouldGetPosts() {
+        if (this.postFeedOuter.style.display === "none") {
+            // search is currently active
+            return false;
+        }
         if (this.isUpdatingPosts) {
             return false;
         }
-
         if (this.pagination && this.pagination.next === null) {
             // we've already requested posts and no more are available
             return false;
