@@ -5,6 +5,8 @@ import { generatePostLinkHTML } from "./html.js";
 export default class InfiniteScroll {
     // Ghost API pagination, populated with each request for posts
     pagination;
+    newPostsInterval;
+    newPostsIntervalTime = 10000;
     isUpdatingPosts = false;
 
     postsPerRequest = 100;
@@ -20,6 +22,8 @@ export default class InfiniteScroll {
 
     constructor() {
         document.addEventListener("scroll", this.onScroll);
+        this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
+            this.newPostsIntervalTime);
     }
 
     shouldGetPosts() {
@@ -77,10 +81,10 @@ export default class InfiniteScroll {
         return posts;
     }
 
-    appendPostsToFeed(posts) {
+    appendPostsToFeed(posts, position = "beforeend") {
         const postHtml = posts.map(p => generatePostLinkHTML(p));
 
-        this.postFeed.insertAdjacentHTML("beforeend", postHtml.join("\n"));
+        this.postFeed.insertAdjacentHTML(position, postHtml.join("\n"));
     }
 
     showLoadingIndicator() {
@@ -110,6 +114,31 @@ export default class InfiniteScroll {
             this.hideLoadingIndicator();
             this.isUpdatingPosts = false;
         }
+    }
+
+    getAndAppendNewPosts = async () => {
+        this.isUpdatingPosts = true;
+
+        let posts;
+
+        try {
+            posts = await Api.getPosts(10, 0);
+        } catch (e) {
+            this.isUpdatingPosts = false;
+            throw e;
+        }
+
+        const newPosts = [];
+
+        for (const p of posts) {
+            if (!this.postFeed.querySelector(`[href="/${p.slug}/"]`)) {
+                newPosts.push(p);
+            }
+        }
+
+        this.appendPostsToFeed(newPosts, "afterbegin");
+
+        this.isUpdatingPosts = false;
     }
 
     toggleLoadAllPosts = () => {
