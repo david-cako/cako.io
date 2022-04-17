@@ -286,7 +286,8 @@ code.hljs {
 
 #cako-post-feed-outer .cako-post,
 #cako-search-results .cako-post {
-    max-width: 95%;
+    padding-right: 24px;
+    margin-right: 2px;
 }
 
 @media (max-width: 650px) {
@@ -333,7 +334,7 @@ code.hljs {
 
 .cako-post-link .spinner {
     margin-left: 18px;
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
 .cako-post-preview {
@@ -692,7 +693,13 @@ body {
 /* Full width page blocks */
 .outer {
     position: relative;
-    padding-bottom: 220px;
+    padding-bottom: 150px;
+}
+
+@media (max-width: 650px) {
+    .outer {
+        padding-bottom: 235px;
+    }
 }
 
 /* Centered content container blocks */

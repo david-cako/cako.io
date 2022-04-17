@@ -190,6 +190,7 @@ async function cakoSearch(query) {
     for (const p of posts) {
         const publishDate = new Date(p.published_at);
         const publishDateStr = p.published_at.split("T")[0];
+        const normalizedTitle = normalizeString(p.title, true);
         const normalizedHtml = p.html ? normalizeString(p.html, true) : "";
 
         let matches = [];
@@ -198,7 +199,7 @@ async function cakoSearch(query) {
             const monthIdx = MONTH_NAMES.findIndex(m => m.toLowerCase().indexOf(t) !== -1);
             const monthStr = String(monthIdx + 1).padStart(2, "0");
 
-            if (p.title.toLowerCase().indexOf(t) !== -1) {
+            if (normalizedTitle.indexOf(t) !== -1) {
                 matches.push({ in: "title", token: t });
             } else if (String(publishDate.getFullYear()).indexOf(t) !== -1) {
                 // check for hard date ranges before using month string matches
