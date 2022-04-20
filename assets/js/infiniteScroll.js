@@ -66,16 +66,16 @@ export default class InfiniteScroll {
         }
 
         while (posts === undefined && retries < this.maxRetries) {
+            retries++;
+
             try {
                 posts = await Api.getPosts(this.postsPerRequest, page);
             } catch (e) {
                 console.log(`Error fetching posts, attempt ${retries + 1}`, e);
-                if (retries >= this.maxRetries) {
+                if (retries + 1 >= this.maxRetries) {
                     throw e;
                 }
             }
-
-            retries++;
         }
 
         return posts;
