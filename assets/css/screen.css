@@ -1517,7 +1517,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full-content img,
 .post-full-content video {
     display: block;
-    margin: 1.2em auto 0.7em auto;
+    margin: 0 auto 0.7em auto;
     border-radius: 8px;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     width: auto;
@@ -1534,10 +1534,9 @@ The first (most recent) post in the list is styled to be bigger than the others 
     }
 }
 
-.post-full-content p img,
-.post-full-content img.card,
-.post-full-content .kg-image {
-    margin-top: 0;
+.post-full-content p a img,
+.post-full-content a img.card,
+.post-full-content a .kg-image {
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
 }
 
