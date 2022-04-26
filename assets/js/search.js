@@ -44,7 +44,7 @@ function tokenizeString(s, lower) {
 }
 
 function stripHtmlTags(s) {
-    return s.replace(/(<p>|<\/p>|<em>|<\/em>|<ol>|<\/ol>|<li>|<\/li>)/g, " ");
+    return s.replace(/(<([^>]+)>)/gi, " ");
 }
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
