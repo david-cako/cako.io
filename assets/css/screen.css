@@ -239,7 +239,7 @@ code.hljs {
 }
 
 .cako-post-link.blue .cako-post-date {
-    color: #658CFF;
+    color: #36daff;
 }
 
 .cako-post-link.yellow .cako-post-date {
@@ -480,20 +480,20 @@ code.hljs {
 }
 
 #last-name-c {
-    color: #658CFF;
+    color: #36daff;
 }
 
 #last-name-a {
-    color: #FFBD16;
+    color: #F9DE04;
 }
 
 #last-name-k {
-    color: #00BF3B;
+    color: #00DB44;
     padding-left: 2px;
 }
 
 #last-name-o {
-    color: #D60000;
+    color: #E80000;
     font-size: 1.02em;
 }
 
