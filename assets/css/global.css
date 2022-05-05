@@ -166,8 +166,9 @@ small {
 sub,
 sup {
     position: relative;
-    font-size: 75%;
-    line-height: 0;
+    font-size: 0.75em;
+    line-height: 1.5em;
+    display: inline-block;
     vertical-align: baseline;
 }
 sup {
