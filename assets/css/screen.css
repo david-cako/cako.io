@@ -268,7 +268,7 @@ code.hljs {
 }
 
 #cako-search-results>.cako-post:not(:nth-of-type(1)) {
-    margin-top: 2em;
+    margin-top: 1.8em;
 }
 
 .cako-post {
@@ -280,7 +280,7 @@ code.hljs {
 }
 
 #cako-post-feed>.cako-post:not(:nth-of-type(1)) {
-    margin-top: 1.8em;
+    margin-top: 1.5em;
 }
 
 #cako-post-feed-outer .cako-post,
@@ -309,7 +309,7 @@ code.hljs {
     position: relative;
     margin-bottom: 0.2em;
     font-size: 1.75em;
-    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Arial, sans-serif;
     font-weight: 500;
     color: #000;
 }
@@ -318,7 +318,7 @@ code.hljs {
     font-weight: 500;
     word-spacing: -0.08em;
     font-size: 1em;
-    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Arial, sans-serif;
     color: #0070e6;
 }
 
@@ -333,7 +333,7 @@ code.hljs {
 
 .cako-post-link .spinner {
     margin-left: 18px;
-    margin-top: 1px;
+    margin-top: 1.5px;
 }
 
 .cako-post-preview {
@@ -352,7 +352,7 @@ code.hljs {
 @media (max-width: 650px) {
     .post-nav-outer {
         position: absolute;
-        bottom: 165px;
+        bottom: 155px;
     }
 }
 
@@ -401,6 +401,7 @@ code.hljs {
 
 .post-nav .cako-post-date-outer {
     line-height: 1em;
+    margin-top: -0.1em;
 }
 
 .post-nav .icon {
@@ -468,13 +469,13 @@ code.hljs {
 }
 
 #cako-header-text {
-    font-family: "Lato", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Arial, sans-serif;
     font-size: 24px;
     letter-spacing: -2px;
     font-weight: 300;
     color: #fff;
     text-align: center;
-    margin: 0.8em 0 20px 15px;
+    margin: 15px 0 20px 15px;
     line-height: 75%;
     display: inline-block;
 }
@@ -489,7 +490,7 @@ code.hljs {
 
 #last-name-k {
     color: #00DB44;
-    padding-left: 2px;
+    padding-left: 1.7px;
 }
 
 #last-name-o {
@@ -679,25 +680,19 @@ body {
 
 .site-main {
     z-index: 100;
-    top: 120px;
+    top: 100px;
     flex: 1;
-}
-
-@media (max-height: 800px) {
-    .site-main {
-        top: 105px;
-    }
 }
 
 /* Full width page blocks */
 .outer {
     position: relative;
-    padding-bottom: 150px;
+    padding-bottom: 100px;
 }
 
 @media (max-width: 650px) {
     .outer {
-        padding-bottom: 235px;
+        padding-bottom: 225px;
     }
 }
 
@@ -1293,12 +1288,13 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-full {
     position: relative;
     z-index: 50;
+    padding-top: 0.5em;
 }
 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    margin: 0em 15px 1.5em;
+    margin: 0em 15px 1.4em;
 }
 
 .post-full-meta {
@@ -1319,7 +1315,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     font-size: 3.5rem;
     color: #0c76e6;
     font-weight: 700;
-    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Arial, sans-serif;
 }
 
 @media (max-width: 650px) {
@@ -1367,7 +1363,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     line-height: 1.5em;
     background: #fff;
     border-radius: 10px;
-    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Arial, sans-serif;
     font-weight: 300;
     padding: 0;
 }
@@ -1442,7 +1438,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 .post-template .post-full-content>p:first-child {
     font-weight: 500;
     font-size: 1.1em;
-    line-height: 1.6em;
+    line-height: 1.5em;
 }
 
 .post-full-content a {
@@ -1630,7 +1626,7 @@ Usage (In Ghost editor):
 .post-full-content h5,
 .post-full-content h6 {
     color: color(var(--darkgrey) l(-5%));
-    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Arial, sans-serif;
 }
 
 .post-full-content h1 {
@@ -1658,7 +1654,7 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h3 {
-    margin: 1.2em 0 0.2em 0;
+    margin: 1.2em 0 0.3em 0;
     font-size: 2.8rem;
     font-weight: 600;
 }
@@ -1670,7 +1666,7 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h4 {
-    margin: 1.2em 0 0.2em 0;
+    margin: 1.2em 0 0.3em 0;
     font-size: 2.4rem;
     font-weight: 500;
 }
@@ -1764,7 +1760,7 @@ Usage (In Ghost editor):
     width: auto;
     border-spacing: 0;
     border-collapse: collapse;
-    font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     font-size: 1.6rem;
     white-space: nowrap;
     vertical-align: top;
@@ -2807,7 +2803,7 @@ Usage (In Ghost editor):
     justify-content: space-between;
     align-items: center;
     font-size: 1.3rem;
-    padding: 15px 15px 25px;
+    padding: 10px 15px 20px;
 }
 
 .site-footer-nav {
