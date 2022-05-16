@@ -35,11 +35,10 @@
 
 </head>
 <body class="{{body_class}}">
-    <script type="module" src="{{asset "js/ionicons/ionicons.esm.js"}}"></script>
-
     <div class="site-wrapper">
         {{!-- All the main content gets inserted here, index.hbs, post.hbs, etc --}}
         {{{body}}}
+        <script type="module" src="{{asset "js/ionicons/ionicons.esm.js"}}"></script>
         {{> "cako-menu"}}
     </div>
 
