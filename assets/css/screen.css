@@ -1294,7 +1294,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    margin: 0em 15px 1.4em;
+    margin: 0em 15px 1.2em;
 }
 
 .post-full-meta {
@@ -1630,7 +1630,7 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h1 {
-    margin: 1.2em 0 0.3em 0;
+    margin: 1em 0 0.3em 0;
     font-size: 4.6rem;
     font-weight: 700;
 }
@@ -1642,7 +1642,7 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h2 {
-    margin: 1.2em 0 0.3em 0;
+    margin: 1em 0 0.3em 0;
     font-size: 3rem;
     font-weight: 700;
 }
@@ -1654,7 +1654,7 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h3 {
-    margin: 1.2em 0 0.3em 0;
+    margin: 1em 0 0.3em 0;
     font-size: 2.8rem;
     font-weight: 600;
 }
@@ -1666,7 +1666,7 @@ Usage (In Ghost editor):
 }
 
 .post-full-content h4 {
-    margin: 1.2em 0 0.3em 0;
+    margin: 1em 0 0.3em 0;
     font-size: 2.4rem;
     font-weight: 500;
 }
