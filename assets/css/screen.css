@@ -105,6 +105,11 @@ production stylesheet in assets/built/screen.css
 
 */
 
+.index {
+    position: relative;
+    padding-bottom: 4em;
+}
+
 blockquote a {
     font-size: 0.5em;
 }
