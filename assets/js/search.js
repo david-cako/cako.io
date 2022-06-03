@@ -77,11 +77,13 @@ function getStrongTextMatch(matches, post, query) {
     }
 
     const tokensMatched = new Set(titleMatches.map(m => m.token)).size
+    const charsMatched = titleMatches.reduce((prev, cur) => prev + cur.token.length, 0)
+    const charsInSeq = titleMatches.reduce((prev, cur) => prev + cur.word.length, 0)
 
     if (tokensMatched / tokens.length > 0.7) {
         return {
             in: "title", preview: post.title,
-            rank: 2
+            rank: 1.4 * ((tokensMatched / tokens.length) + (charsMatched / charsInSeq))
         };
     }
 
