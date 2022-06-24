@@ -239,7 +239,7 @@ code.hljs {
     margin-top: 1.4em;
 }
 
-.cako-featured .cako-post:nth-of-type(2) {
+.cako-featured > .cako-post:nth-of-type(2) {
     margin-top: 0;
 }
 
@@ -357,7 +357,7 @@ code.hljs {
 @media (max-width: 650px) {
     .post-nav-outer {
         position: absolute;
-        bottom: 155px;
+        bottom: 145px;
     }
 }
 
@@ -617,6 +617,7 @@ ion-icon#cako-search-clear {
     margin-right: 0.3em;
     overflow: hidden;
     padding: 0.25em 0.3em;
+    z-index: 900;
 }
 
 .cako-menu-item {
@@ -635,13 +636,20 @@ ion-icon#cako-search-clear {
 }
 
 #cako-menu .cako-featured {
-    padding: 1.2rem 3rem 1.4rem 1.6rem;
-    top: 3px;
-    right: -8px;
-    max-width: calc(100vw - 5.5em);
+    position: absolute;
+    padding: 0.7rem 3rem 1rem 1.3rem;
+    max-height: 48px;
+    right: 30px;
+    max-width: calc(100vw - 8.5em);
+    margin: 0;
     overflow: hidden;
-    font-size: 0.8em;
     width: 400px;
+    background-color: #fff;
+    transition: max-height 0.3s ease-in-out;
+}
+
+#cako-menu .cako-featured:not(.closed) {
+    max-height: 9999px;
 }
 
 #cako-menu .cako-featured.collapsed {
@@ -649,8 +657,37 @@ ion-icon#cako-search-clear {
 }
 
 #cako-menu .cako-featured-header {
-    font-size: 1.1em;
-    margin-bottom: 0.7em;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-bottom: 0;
+}
+
+#cako-menu .cako-featured .arrow {
+    cursor: pointer;
+    font-size: 1.8em;
+    position: absolute;
+    right: 0.2em;
+    display: inline;
+    color: #f7ae05;
+}
+
+#cako-menu .cako-featured:not(.closed) .arrow {
+    transform: rotate(90deg);
+}
+
+#cako-menu .cako-featured.closed .posts {
+    display: none;
+}
+
+#cako-menu .cako-featured .cako-post {
+    font-size: 0.9em;
+    margin-top: 0.8em;
+}
+
+#cako-menu .cako-featured .current-post-marker {
+    position: absolute;
+    right: 0.6em;
+    margin-top: 0.2em;
 }
 
 body {
@@ -697,7 +734,7 @@ body {
 
 @media (max-width: 650px) {
     .outer {
-        padding-bottom: 225px;
+        padding-bottom: 230px;
     }
 }
 

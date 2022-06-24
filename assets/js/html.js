@@ -27,11 +27,11 @@ export function generatePostLinkHTML(post, { isCurrentPost, includeBody } = {}) 
 }
 
 export function generateFeatureHTML(feature, { includeDescription, closed } = {}) {
-    let postsHtml = features.posts.map(p => {
-        const isCurrentPost = post.slug === window.location.pathname.replaceAll("/", "");
+    let postsHtml = (feature.posts.map(p => {
+        const isCurrentPost = p.slug === window.location.pathname.replaceAll("/", "");
 
-        generatePostLinkHTML(p, { isCurrentPost })
-    });
+        return generatePostLinkHTML(p, { isCurrentPost })
+    })).join("");
 
     if (includeDescription) {
         const featureMetadata = JSON.parse(feature.tag.description);
@@ -48,12 +48,17 @@ export function generateFeatureHTML(feature, { includeDescription, closed } = {}
         }
 
         return `<div class="cako-featured${closed ? " closed" : ""}">
-        <div class="arrow${closed ? " closed" : ""}">▸</div>
+        <div class="arrow">▸</div>
         <div class="cako-featured-header">${feature.tag.name}
-            <div class="cako-featured-description">${featureMetadata.description}</div>
+            ${featureMetadata.description
+                ? `<div class="cako-featured-description">${featureMetadata.description}</div>`
+                : ""
+            }
             <div class="cako-featured-date">${featureDate} ${featureMonth} ${featureYear}</div>
         </div>
-        ${postsHtml}
+        <div class="posts">
+            ${postsHtml}
+        </div>
         </div>`
     } else {
         return `<div class="cako-featured">

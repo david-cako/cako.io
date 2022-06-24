@@ -64,6 +64,11 @@ body {
     color: #000;
 }
 
+#cako-menu .cako-featured {
+    background-color: #000;
+}
+
+
 .cako-post-title {
     color: #fff;
 }

@@ -12,7 +12,8 @@ async function getAllFeatures() {
         GHOST_API.posts.browse({
             filter: `tag:feature`,
             limit: "all",
-            fields: "title,html,published_at,slug"
+            fields: "title,html,published_at,slug",
+            include: "tags"
         })
     ]);
 
@@ -26,13 +27,14 @@ async function getAllFeatures() {
     return features;
 }
 
-function getFeature(name) {
+async function getFeature(name) {
     const [tag, posts] = await Promise.all([
         GHOST_API.tags.read({ slug: name }),
         GHOST_API.posts.browse({
             filter: `tag:${name}`,
             limit: "all",
-            fields: "title,html,published_at,slug"
+            fields: "title,html,published_at,slug",
+            include: "tags"
         })
     ]);
 
@@ -42,9 +44,9 @@ function getFeature(name) {
     };
 }
 
-function getFeatureForCurrentPost() {
+async function getFeatureForCurrentPost() {
     const postSlug = window.location.pathname.replaceAll("/", "");
-    const features = getAllFeatures();
+    const features = await getAllFeatures();
 
     for (const f of features) {
         if (f.posts.filter(p => p.slug === postSlug)) {
@@ -61,13 +63,14 @@ function isFeatureIndex() {
     return window.location.pathname === "/features/";
 }
 
-function toggleFeature(element) {
-    const closedIdx = element.classList.indexOf("closed");
+function toggleFeature(e) {
+    const element = e.currentTarget;
+    const isClosed = element.classList.contains("closed");
 
-    if (closedIdx === -1) {
-        element.classList.push("closed");
+    if (isClosed) {
+        element.classList.remove("closed");
     } else {
-        element.classList.splice(closedIdx, 1);
+        element.classList.add("closed");
     }
 }
 
@@ -79,7 +82,7 @@ function setupToggleHandler() {
     }
 }
 
-(async () => {
+window.initFeature = async () => {
     const menu = document.getElementById("cako-menu");
 
     if (isFeatureIndex()) { // Populate index of features
@@ -100,12 +103,15 @@ function setupToggleHandler() {
                 { includeDescription: true, closed: true });
         }
     } else if (menu) { // Populate any feature related to currently viewed post
-        const feature = getFeatureForCurrentPost();
-        const featureHtml = generateFeatureHTML(feature,
-            { includeDescription: true, closed: true });
+        const feature = await getFeatureForCurrentPost();
 
-        menu.insertAdjacentElement("beforeend", featureHtml);
+        if (feature) {
+            const featureHtml = generateFeatureHTML(feature,
+                { includeDescription: true, closed: true });
+
+            menu.insertAdjacentHTML("beforeend", featureHtml);
+        }
     }
 
     setupToggleHandler();
-})();
+};
