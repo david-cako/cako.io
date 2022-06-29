@@ -47,9 +47,65 @@ function stripHtmlTags(s) {
     return s.replace(/(<([^>]+)>)/gi, " ");
 }
 
+function getTitleMatch(token, post) {
+    const normalizedTitle = normalizeString(post.title, true);
+
+    if (normalizedTitle.indexOf(token) !== -1) {
+        return true
+    }
+
+    return false;
+}
+
+function getHtmlMatch(token, post) {
+    const normalizedHtml = post.html ? normalizeString(post.html, true) : "";
+
+    if (normalizedHtml.toLowerCase().indexOf(token) !== -1) {
+        return true;
+    } else if (!isNaN(token)) {
+        // check for number with commas in html content
+        const localeStr = Number(token).toLocaleString("en-US");
+        if (normalizedHtml.indexOf(localeStr) !== -1) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
+
+function getDateMatch(token, post) {
+    const publishDate = new Date(post.published_at);
+    const publishDateStr = post.published_at.split("T")[0];
+
+    if (String(publishDate.getFullYear()).indexOf(token) !== -1) {
+        return true;
+    }
+
+    if (!isNaN(token) &&
+        publishDate.getDate() === parseInt(token.replace(/,/g, ""))) {
+        return true
+    }
+
+    const monthMatches = [];
+
+    for (let i = 0; i < MONTH_NAMES.length; i++) {
+        if (MONTH_NAMES[i].toLowerCase().indexOf(token.toLowerCase()) !== -1) {
+            monthMatches.push({ month: MONTH_NAMES[i], numeric: String(i + 1).padStart(2, "0") });
+        }
+    }
+
+    for (const m of monthMatches) {
+        if (publishDateStr.indexOf(`-${m.numeric}-`) !== -1) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 // gets strong matches for sequential words in title/content
 function getStrongTextMatch(matches, post, query) {
@@ -190,41 +246,19 @@ async function cakoSearch(query) {
     const results = [];
 
     for (const p of posts) {
-        const publishDate = new Date(p.published_at);
-        const publishDateStr = p.published_at.split("T")[0];
-        const normalizedTitle = normalizeString(p.title, true);
-        const normalizedHtml = p.html ? normalizeString(p.html, true) : "";
-
         let matches = [];
 
         for (const t of tokens) {
-            const monthIdx = MONTH_NAMES.findIndex(m => m.toLowerCase().indexOf(t) !== -1);
-            const monthStr = String(monthIdx + 1).padStart(2, "0");
-
-            if (normalizedTitle.indexOf(t) !== -1) {
+            if (getTitleMatch(t, p)) {
                 matches.push({ in: "title", token: t });
-            } else if (String(publishDate.getFullYear()).indexOf(t) !== -1) {
-                // check for hard date ranges before using month string matches
+            } else if (getDateMatch(t, p)) {
                 matches.push({ in: "date" });
-            } else if (monthIdx !== -1 && publishDateStr.indexOf(`-${monthStr}-`) !== -1) {
-                // if the string matches a month, check the publish date
-                // with the formatted string for the month number
-                matches.push({ in: "date" });
-            } else if (!isNaN(t) &&
-                publishDate.getDate() === parseInt(t.replace(/,/g, ""))) {
-                matches.push({ in: "date" });
-            } else if (normalizedHtml.toLowerCase().indexOf(t) !== -1) {
+            } else if (getHtmlMatch(t, p)) {
                 matches.push({ in: "html", token: t });
-            } else if (!isNaN(t)) {
-                // check for number with commas in html content
-                const localeStr = Number(t).toLocaleString("en-US");
-                if (normalizedHtml.indexOf(localeStr) !== -1) {
-                    matches.push({ in: "html", token: t });
-                }
             }
         }
 
-        if (matches.filter(m => m.in === "date").length === tokens.length) {
+        if (matches.filter(m => m.in === "date").length >= tokens.length) {
             results.push({
                 post: p,
                 strong: {
@@ -240,7 +274,7 @@ async function cakoSearch(query) {
     }
 
     PREVIOUS_RESULTS = results.map(r => r.post);
-    PREVIOUS_QUERY = query;
+    PREVIOUS_QUERY = normalizeString(query, true);
 
     const sorted = results.sort((a, b) => {
         const aVal = a.strong !== undefined
