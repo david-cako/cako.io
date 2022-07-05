@@ -375,13 +375,13 @@ code.hljs {
     margin: 0;
     padding: 0;
     font-size: 10px;
-    max-width: 35vw;
 }
 
 .post-nav .cako-post-link {
     display: flex;
     align-items: center;
     transition: transform ease-in-out 0.1s;
+    max-width: 45%;
 }
 
 .post-nav .cako-post-link:hover {
