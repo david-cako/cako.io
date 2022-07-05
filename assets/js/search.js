@@ -10,12 +10,10 @@ window.clearSearch = () => {
     const searchElement = document.getElementById("cako-search");
     searchElement.value = "";
 
-    hideResults();
+    clearResults();
 
     const clearIcon = document.getElementById("cako-search-clear");
     clearIcon.style.display = "none";
-
-    focusSearch();
 }
 
 window.focusSearch = () => {
@@ -47,11 +45,37 @@ function stripHtmlTags(s) {
     return s.replace(/(<([^>]+)>)/gi, " ");
 }
 
+function containsNumber(myString) {
+    return /\d/.test(myString);
+}
+
 function getTitleMatch(token, post) {
     const normalizedTitle = normalizeString(post.title, true);
 
     if (normalizedTitle.indexOf(token) !== -1) {
         return true
+    } else if (isNumericMatch(token, normalizedTitle)) {
+        return true;
+    }
+
+    return false;
+}
+
+function normalizeNumber(string) {
+    return Number(string.replace(/[$%]/gi, "")).toLocaleString("en-US");
+}
+
+function removePunctuation(string) {
+    return string.replace(/[$%,]/gi, "")
+}
+
+function isNumericMatch(token, string) {
+    // check for number without punctuation
+    const normalizedToken = removePunctuation(token)
+    const normalizedString = removePunctuation(string);
+
+    if (normalizedString.indexOf(normalizedToken) !== -1) {
+        return true;
     }
 
     return false;
@@ -62,12 +86,8 @@ function getHtmlMatch(token, post) {
 
     if (normalizedHtml.toLowerCase().indexOf(token) !== -1) {
         return true;
-    } else if (!isNaN(token)) {
-        // check for number with commas in html content
-        const localeStr = Number(token).toLocaleString("en-US");
-        if (normalizedHtml.indexOf(localeStr) !== -1) {
-            return true;
-        }
+    } else if (isNumericMatch(token, normalizedHtml)) {
+        return true;
     }
 
     return false;
@@ -81,13 +101,18 @@ function getDateMatch(token, post) {
     const publishDate = new Date(post.published_at);
     const publishDateStr = post.published_at.split("T")[0];
 
-    if (String(publishDate.getFullYear()).indexOf(token) !== -1) {
-        return true;
-    }
+    const t = token.replace(/,/g, "");
 
-    if (!isNaN(token) &&
-        publishDate.getDate() === parseInt(token.replace(/,/g, ""))) {
-        return true
+    if (!isNaN(t)) {
+        const tokenInt = parseInt(t);
+
+        if (publishDate.getFullYear() === tokenInt) {
+            return true;
+        }
+
+        if (publishDate.getDate() === tokenInt) {
+            return true;
+        }
     }
 
     const monthMatches = [];
@@ -155,7 +180,7 @@ function getStrongTextMatch(matches, post, query) {
             for (const m of matches) {
                 if (m.token !== undefined
                     && m.token.length > 1
-                    && word.toLowerCase().indexOf(m.token) !== -1
+                    && (word.toLowerCase().indexOf(m.token) !== -1 || isNumericMatch(m.token, word))
                     && htmlMatchIdxs.findIndex(m => m.idx == i) === -1
                 ) {
                     htmlMatchIdxs.push({ idx: i, word: word, token: m.token });
@@ -235,7 +260,12 @@ let PREVIOUS_RESULTS;
 async function cakoSearch(query) {
     let posts;
 
-    if (PREVIOUS_QUERY && normalizeString(query, true).indexOf(PREVIOUS_QUERY) !== -1) {
+    // if query contains previous query, search from previous results,
+    // unless it contains a number.  date results are not idempotent due
+    // to exact integer matching, and require a new full search.
+    if (PREVIOUS_QUERY
+        && normalizeString(query, true).indexOf(PREVIOUS_QUERY) !== -1
+        && !containsNumber(query)) {
         posts = PREVIOUS_RESULTS;
     } else {
         posts = await getOrFetchPosts();
@@ -299,10 +329,21 @@ function formatPreview(result, query) {
     const words = result.strong.preview.split(" ");
 
     for (let i = 0; i < words.length; i++) {
-        let w = words[i];
+        let w = words[i].toLowerCase();
 
-        for (const t of tokens) {
-            const tokenIdx = w.toLowerCase().indexOf(t);
+        for (let t of tokens) {
+            let tokenIdx = w.indexOf(t);
+
+            if (tokenIdx === -1) {
+                const normalizedToken = normalizeNumber(t)
+                const normalizedIdx = w.indexOf(normalizedToken);
+
+                if (normalizedIdx !== -1) {
+                    tokenIdx = normalizedIdx;
+                    t = normalizedToken;
+                }
+            }
+
             if (tokenIdx !== -1) {
                 const before = w.slice(0, tokenIdx);
                 const match = w.slice(tokenIdx, tokenIdx + t.length);
@@ -362,9 +403,12 @@ function showResults(results, query) {
     }
 }
 
-function hideResults() {
+function clearResults() {
     const searchFeed = document.getElementById("cako-search-feed");
     searchFeed.style.display = "none";
+
+    const searchResults = document.getElementById("cako-search-results");
+    searchResults.innerHTML = "";
 
     const postFeed = document.getElementById("cako-post-feed-outer");
     if (postFeed) {
@@ -516,5 +560,8 @@ function onKeyDown(e) {
     document.addEventListener("keydown", onKeyDown);
 
     const searchClear = document.getElementById("cako-search-clear");
-    searchClear.addEventListener("click", clearSearch);
+    searchClear.addEventListener("click", () => {
+        clearSearch();
+        focusSearch();
+    });
 })();
