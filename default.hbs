@@ -16,6 +16,8 @@
     <link rel="stylesheet" type="text/css" href="{{asset "css/screen.css"}}" />
     <link rel="stylesheet" type="text/css" href="{{asset "css/spin.css"}}" />
     
+    <meta id="theme-color" name="theme-color" content="#fff">
+
     {{!-- Set dark css path from template to enable cache-busting in lights.js --}}
     <script>
         const DARK_CSS_PATH = '{{asset "css/dark.css"}}';
@@ -28,7 +30,6 @@
     <link rel="shortcut icon" sizes="192x192" href="/assets/android-chrome-192x192.png">
     <link rel="manifest" href="/assets/site.webmanifest">
     <meta name="msapplication-TileColor" content="#000000">
-    <meta id="theme-color" name="theme-color" content="#fff">
 
     {{!-- This tag outputs SEO meta+structured data and other important settings --}}
     {{ghost_head}}
