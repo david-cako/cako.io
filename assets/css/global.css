@@ -168,8 +168,12 @@ sup {
     position: relative;
     font-size: 0.75em;
     line-height: 1.4em;
-    display: block;
     margin-bottom: -0.4em;
+}
+img + sup,
+video + sup,
+iframe + sup {
+    display: block;
 }
 sup {
     top: -0.4em;
