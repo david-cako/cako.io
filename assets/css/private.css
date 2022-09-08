@@ -1,0 +1,65 @@
+.gh-main {
+    background: #000;
+}
+
+h1, h2 {
+    color: #fff;
+}
+
+.gh-signin {
+    background: transparent;
+    border-radius: 25px;
+}
+
+.gh-input {
+    border-radius: 10px;
+    color: #fff;
+    background-color: #000;
+}
+
+.gh-flow-content input {
+    border: 1px solid #fff;
+}
+
+.gh-input::placeholder {
+    color: #fff;
+}
+
+.gh-input-icon svg {
+    fill: #fff;
+}
+
+.gh-flow-content {
+    color: #fff;
+}
+
+.gh-btn-blue {
+    border: 1px solid #fff;
+    background: transparent;
+}
+
+.gh-btn-blue span {
+    background: transparent;
+}
+
+.gh-btn:hover {
+    border-color: #27d7ff;
+}
+
+.gh-btn-blue:hover, .gh-btn-blue:active, .gh-btn-blue:focus {
+    color: #27d7ff;
+}
+
+.gh-btn-blue:active, .gh-btn-blue:focus {
+    border-color: #27d7ff;
+    color: #27d7ff;
+    background: transparent;
+}
+
+.gh-btn-blue:active span, .gh-btn-blue:focus span {
+    background: transparent;
+}
+
+.gh-btn {
+    border-radius: 10px;
+}
