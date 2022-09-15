@@ -426,7 +426,7 @@ async function onSearchChange(value) {
     const clearIcon = document.getElementById("cako-search-clear");
 
     if (value.length < 1) {
-        hideResults();
+        clearResults();
         clearIcon.style.display = "none";
         return;
     }
