@@ -169,9 +169,9 @@ function getStrongTextMatch(matches, post, query) {
     }
 
     if (htmlMatches.length > 0 && post.html) {
-        const normalizedHtml = normalizeString(stripHtmlTags(post.html));
+        const strippedHtml = stripHtmlTags(post.html);
 
-        const htmlWords = normalizedHtml.split(" ");
+        const htmlWords = strippedHtml.split(" ");
 
         let htmlMatchIdxs = [];
 
@@ -180,7 +180,8 @@ function getStrongTextMatch(matches, post, query) {
             for (const m of matches) {
                 if (m.token !== undefined
                     && m.token.length > 1
-                    && (word.toLowerCase().indexOf(m.token) !== -1 || isNumericMatch(m.token, word))
+                    && (word.toLowerCase().indexOf(m.token) !== -1 || isNumericMatch(m.token, word) ||
+                        normalizeString(word, true).indexOf(m.token) !== -1)
                     && htmlMatchIdxs.findIndex(m => m.idx == i) === -1
                 ) {
                     htmlMatchIdxs.push({ idx: i, word: word, token: m.token });
@@ -247,7 +248,8 @@ function getStrongTextMatch(matches, post, query) {
         if (tokensMatched / tokens.length > 0.7) {
             return {
                 in: "html", preview: preview,
-                rank: (tokensMatched / tokens.length) + (charsMatched / charsInSeq)
+                rank: (tokensMatched / tokens.length) + (charsMatched / charsInSeq),
+                matches: htmlMatchIdxs
             };
         }
     }
@@ -325,29 +327,28 @@ function formatPreview(result, query) {
         return ``
     }
 
-    const tokens = tokenizeString(query, true).sort((a, b) => a.length - b.length);
     const words = result.strong.preview.split(" ");
 
     for (let i = 0; i < words.length; i++) {
-        let w = words[i].toLowerCase();
+        const w = words[i];
 
-        for (let t of tokens) {
-            let tokenIdx = w.indexOf(t);
+        for (let m of result.strong.matches) {
+            let matchIdx = w.indexOf(m.word);
 
-            if (tokenIdx === -1) {
-                const normalizedToken = normalizeNumber(t)
-                const normalizedIdx = w.indexOf(normalizedToken);
+            if (matchIdx !== -1) {
+                let before, match, after;
 
-                if (normalizedIdx !== -1) {
-                    tokenIdx = normalizedIdx;
-                    t = normalizedToken;
+                const tokenIdx = m.word.toLowerCase().indexOf(m.token);
+
+                if (tokenIdx !== -1) {
+                    before = w.slice(0, tokenIdx);
+                    match = w.slice(tokenIdx, tokenIdx + m.token.length);
+                    after = w.slice(tokenIdx + m.token.length);
+                } else {
+                    before = "";
+                    match = w;
+                    after = "";
                 }
-            }
-
-            if (tokenIdx !== -1) {
-                const before = w.slice(0, tokenIdx);
-                const match = w.slice(tokenIdx, tokenIdx + t.length);
-                const after = w.slice(tokenIdx + t.length);
 
                 words[i] = `${before}<span class="match">${match}</span>${after}`;
             }
