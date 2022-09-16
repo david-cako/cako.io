@@ -37,6 +37,14 @@ production stylesheet in assets/built/screen.css
     font-display: swap;
 }
 
+@font-face {
+    font-family: "color-emoji";
+    src: local("Apple Color Emoji"),
+         local("Segoe UI Emoji"), 
+         local("Segoe UI Symbol"),
+         local("Noto Color Emoji");
+  }
+
 /*
 
 @font-face {
