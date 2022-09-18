@@ -40,10 +40,10 @@ production stylesheet in assets/built/screen.css
 @font-face {
     font-family: "color-emoji";
     src: local("Apple Color Emoji"),
-         local("Segoe UI Emoji"), 
-         local("Segoe UI Symbol"),
-         local("Noto Color Emoji");
-  }
+        local("Segoe UI Emoji"),
+        local("Segoe UI Symbol"),
+        local("Noto Color Emoji");
+}
 
 /*
 
@@ -346,12 +346,13 @@ code.hljs {
 
 .post-nav-outer {
     width: 100%;
+    height: 75px;
 }
 
 @media (max-width: 850px) {
     .post-nav-outer {
         position: absolute;
-        bottom: 150px;
+        bottom: calc(150px + env(safe-area-inset-bottom));
     }
 }
 
@@ -362,7 +363,7 @@ code.hljs {
 }
 
 .post-nav.inner {
-    padding: 0 15px 45px;
+    padding: 0 15px;
 }
 
 .post-nav .cako-post {
@@ -372,7 +373,6 @@ code.hljs {
 }
 
 .post-nav .cako-post-link {
-    display: flex;
     align-items: center;
     transition: transform ease-in-out 0.1s;
     max-width: 45%;
@@ -388,9 +388,13 @@ code.hljs {
 
 .post-nav .cako-post-title {
     font-size: 1.3em;
-    margin-bottom: 0;
+    margin-bottom: 0.5em;
     font-weight: 400;
     color: #111;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
 }
 
 .post-nav .cako-post-date {
@@ -723,7 +727,6 @@ body {
 /* Full width page blocks */
 .outer {
     position: relative;
-    padding-bottom: 100px;
 }
 
 @media (max-width: 850px) {
