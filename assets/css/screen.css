@@ -727,6 +727,7 @@ body {
 /* Full width page blocks */
 .outer {
     position: relative;
+    padding-bottom: 100px;
 }
 
 @media (max-width: 850px) {
