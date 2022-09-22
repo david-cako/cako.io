@@ -164,7 +164,8 @@ function getStrongTextMatch(matches, post, query) {
     if (tokensMatched / tokens.length > 0.7) {
         return {
             in: "title", preview: post.title,
-            rank: 1.4 * ((tokensMatched / tokens.length) + (charsMatched / charsInSeq) + (charsMatched/post.title.length))
+            rank: 1.4 * ((tokensMatched / tokens.length) + (charsMatched / charsInSeq) + 
+                (charsMatched / post.title.length))
         };
     }
 
