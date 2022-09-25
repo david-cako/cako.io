@@ -37,10 +37,10 @@
 </head>
 <body class="{{body_class}}">
     <div class="site-wrapper">
+        {{> "cako-menu"}}
         {{!-- All the main content gets inserted here, index.hbs, post.hbs, etc --}}
         {{{body}}}
         <script type="module" src="{{asset "js/ionicons/ionicons.esm.js"}}"></script>
-        {{> "cako-menu"}}
     </div>
 
     {{!-- jQuery + Fitvids, which makes all video embeds responsive --}}
