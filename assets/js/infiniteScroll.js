@@ -6,7 +6,7 @@ export default class InfiniteScroll {
     // Ghost API pagination, populated with each request for posts
     pagination;
     newPostsInterval;
-    newPostsIntervalTime = 10000;
+    newPostsIntervalTime = 30000;
     isUpdatingPosts = false;
 
     postsPerRequest = 100;
