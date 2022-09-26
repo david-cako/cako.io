@@ -208,6 +208,8 @@ code.hljs {
 #cako-search-feed {
     display: none;
     padding: 1.1em 15px;
+    max-width: 750px;
+    margin: 0 auto;
 }
 
 #cako-search-header {

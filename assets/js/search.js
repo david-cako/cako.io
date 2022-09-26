@@ -6,12 +6,16 @@ const GHOST_API = new GhostContentAPI({
 
 let GHOST_POSTS;
 
+let PREVIOUS_QUERY = "";
+let PREVIOUS_RESULTS;
+
 /** Position in document from when search is hidden. */
 let CONTENT_SCROLL_POSITION;
 
 window.clearSearch = () => {
     const searchElement = document.getElementById("cako-search");
     searchElement.value = "";
+    PREVIOUS_QUERY = "";
 
     clearResults();
 
@@ -259,9 +263,6 @@ function getStrongTextMatch(matches, post, query) {
     }
 }
 
-let PREVIOUS_QUERY = "";
-let PREVIOUS_RESULTS;
-
 /** Match for title, content, and date on posts */
 async function cakoSearch(query) {
     let posts;
@@ -453,7 +454,7 @@ async function onSearchChange(value) {
     showResults(results, value);
 
     if (previousQuery === "") {
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        window.scrollTo({top: 0});
     }
 }
 
