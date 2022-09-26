@@ -6,6 +6,9 @@ const GHOST_API = new GhostContentAPI({
 
 let GHOST_POSTS;
 
+/** Position in document from when search is hidden. */
+let CONTENT_SCROLL_POSITION;
+
 window.clearSearch = () => {
     const searchElement = document.getElementById("cako-search");
     searchElement.value = "";
@@ -256,7 +259,7 @@ function getStrongTextMatch(matches, post, query) {
     }
 }
 
-let PREVIOUS_QUERY;
+let PREVIOUS_QUERY = "";
 let PREVIOUS_RESULTS;
 
 /** Match for title, content, and date on posts */
@@ -323,7 +326,7 @@ async function cakoSearch(query) {
     return sorted;
 }
 
-function formatPreview(result, query) {
+function formatPreview(result) {
     if (result.strong === undefined || result.strong.in !== "html") {
         return ``
     }
@@ -421,22 +424,37 @@ function clearResults() {
     if (postFull) {
         postFull.style.display = "block";
     }
+
+    window.scrollTo({top: CONTENT_SCROLL_POSITION});
+}
+
+function onScroll() {
+    if (PREVIOUS_QUERY === "") {
+        CONTENT_SCROLL_POSITION = window.scrollY;
+    }
 }
 
 async function onSearchChange(value) {
     const clearIcon = document.getElementById("cako-search-clear");
 
     if (value.length < 1) {
+        PREVIOUS_QUERY = "";
         clearResults();
         clearIcon.style.display = "none";
         return;
     }
+
+    let previousQuery = PREVIOUS_QUERY;
 
     clearIcon.style.display = "block";
 
     const results = await cakoSearch(value);
 
     showResults(results, value);
+
+    if (previousQuery === "") {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
 }
 
 function getOrFetchPosts() {
@@ -549,7 +567,7 @@ function onKeyDown(e) {
             inputTimeout = setTimeout(() => {
                 inputTimeout = undefined;
                 onSearchChange(e.target.value);
-            }, 200);
+            }, 100);
         }
     });
 
@@ -566,4 +584,6 @@ function onKeyDown(e) {
         clearSearch();
         focusSearch();
     });
+
+    document.addEventListener("scroll", onScroll);
 })();
