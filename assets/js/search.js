@@ -134,7 +134,7 @@ function getDateMatch(token, post) {
 
 // gets strong matches for sequential words in title/content
 function getStrongTextMatch(matches, post, query) {
-    const previewLength = 20;
+    const previewLength = 42;
 
     const htmlMatches = matches.filter(m => m.in == "html");
     const titleWords = post.title.toLowerCase().split(" ");
@@ -164,7 +164,7 @@ function getStrongTextMatch(matches, post, query) {
     if (tokensMatched / tokens.length > 0.7) {
         return {
             in: "title", preview: post.title,
-            rank: 1.4 * ((tokensMatched / tokens.length) + (charsMatched / charsInSeq) + 
+            rank: 1.4 * ((tokensMatched / tokens.length) + (charsMatched / charsInSeq) +
                 (charsMatched / post.title.length))
         };
     }
