@@ -15,9 +15,10 @@ let CONTENT_SCROLL_POSITION;
 window.clearSearch = () => {
     const searchElement = document.getElementById("cako-search");
     searchElement.value = "";
-    PREVIOUS_QUERY = "";
 
     clearResults();
+
+    PREVIOUS_QUERY = "";
 
     const clearIcon = document.getElementById("cako-search-clear");
     clearIcon.style.display = "none";
