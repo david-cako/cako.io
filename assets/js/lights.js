@@ -5,6 +5,8 @@ function lightsOn() {
         link.remove();
     }
 
+    document.documentElement.classList.remove("dark");
+
     const tc = document.getElementById("theme-color");
     if (tc) {
         tc.remove();
@@ -26,6 +28,8 @@ function lightsOff() {
     link.href = DARK_CSS_PATH;
 
     document.head.appendChild(link);
+
+    document.documentElement.classList.add("dark");
 
     const tc = document.getElementById("theme-color");
     if (tc) {
