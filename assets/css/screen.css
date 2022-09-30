@@ -1625,7 +1625,14 @@ Usage (In Ghost editor):
 .post-full-content blockquote {
     margin: 0 15px 0.7em;
     padding: 0 20px;
-    border-left: #3eb0ef 3px solid;
+    border-left: #007cff 1px solid;
+    min-width: initial;
+}
+
+@media (max-width: 500px) {
+    .post-full-content blockquote {
+        padding: 0 15px;
+    }
 }
 
 .post-full-content blockquote p {
