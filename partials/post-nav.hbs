@@ -10,13 +10,6 @@
                 </div>
             </a>
             <script>
-                function navigationIsVisible() {
-                    const r = document.getElementById("post-nav-inner").getBoundingClientRect();
-
-                    return r.top >= 0 &&
-                        r.bottom <= window.innerHeight + 50;
-                }
-
                 document.addEventListener("keydown", e => {
                     // don't navigate if currently searching
                     if (e.key == "ArrowLeft" && 
@@ -25,8 +18,8 @@
 
                         const navLinks = document.querySelectorAll(".post-nav-link");
 
-                        if (navLinks[0] && navigationIsVisible()) {
-                            navLinks[0].focus();
+                        if (navLinks[0]) {
+                            navLinks[0].focus({preventScroll: true});
                         }
                     }
                 });
@@ -54,8 +47,8 @@
 
                     const navLinks = document.querySelectorAll(".post-nav-link");
 
-                    if (navLinks[1] && navigationIsVisible()) {
-                        navLinks[1].focus();
+                    if (navLinks[1]) {
+                        navLinks[1].focus({preventScroll: true});
                     }
                 }
             });
