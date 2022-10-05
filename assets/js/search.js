@@ -254,13 +254,11 @@ function getStrongTextMatch(matches, post, query) {
 
         const tokensMatched = new Set(maxSequential.map(m => m.token)).size
 
-        if (tokensMatched / tokens.length > 0.7) {
-            return {
-                in: "html", preview: preview,
-                rank: (tokensMatched / tokens.length) + (charsMatched / charsInSeq),
-                matches: htmlMatchIdxs
-            };
-        }
+        return {
+            in: "html", preview: preview,
+            rank: (tokensMatched / tokens.length) + (charsMatched / charsInSeq),
+            matches: htmlMatchIdxs
+        };
     }
 }
 
@@ -427,7 +425,7 @@ function clearResults() {
         postFull.style.display = "block";
     }
 
-    window.scrollTo({top: CONTENT_SCROLL_POSITION});
+    window.scrollTo({ top: CONTENT_SCROLL_POSITION });
 }
 
 function onScroll() {
@@ -455,7 +453,7 @@ async function onSearchChange(value) {
     showResults(results, value);
 
     if (previousQuery === "") {
-        window.scrollTo({top: 0});
+        window.scrollTo({ top: 0 });
     }
 }
 
