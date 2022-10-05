@@ -167,13 +167,11 @@ function getStrongTextMatch(matches, post, query) {
 
     const tokensMatched = new Set(titleMatches.map(m => m.token)).size
     const charsMatched = titleMatches.reduce((prev, cur) => prev + cur.token.length, 0)
-    const charsInSeq = titleMatches.reduce((prev, cur) => prev + cur.word.length, 0)
 
-    if (tokensMatched / tokens.length > 0.7) {
+    if (tokensMatched / tokens.length > 0.7 || charsMatched / post.title.length > 0.7) {
         return {
             in: "title", preview: post.title,
-            rank: 1.4 * ((tokensMatched / tokens.length) + (charsMatched / charsInSeq) +
-                (charsMatched / post.title.length))
+            rank: 1.4 * ((tokensMatched / tokens.length) + (charsMatched / post.title.length))
         };
     }
 
@@ -302,8 +300,7 @@ async function cakoSearch(query) {
                     rank: 3
                 }
             });
-        } else if (matches.length == tokens.length ||
-            matches.length > 2 && matches.length / tokens.length >= .7) {
+        } else if (matches.length > 0 && matches.length / tokens.length >= .6) {
             const strong = getStrongTextMatch(matches, p, query);
             results.push({ post: p, strong: strong });
         }
