@@ -64,6 +64,16 @@
             clearMenuIndicator();
 
             if (focusSearch !== undefined) {
+                // autofocus unless on iOS, prevents scroll jump
+                !([
+                    'iPad Simulator',
+                    'iPhone Simulator',
+                    'iPod Simulator',
+                    'iPad',
+                    'iPhone',
+                    'iPod'
+                ].includes(navigator.platform)
+                || (navigator.userAgent.includes("Mac") && "ontouchend" in document)) &&
                 focusSearch();
             }
             if (prefetchDarkCss !== undefined) {
