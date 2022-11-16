@@ -242,11 +242,11 @@ code.hljs {
     font-size: 1.9rem;
     font-weight: 500;
     line-height: 1.15;
-    margin-bottom: 0.8em;
+    margin-bottom: 0.7em;
 }
 
 .cako-featured .cako-post {
-    margin-top: 1.2em;
+    margin-top: 1em;
 }
 
 .cako-featured>.cako-post:nth-of-type(2) {
