@@ -10,7 +10,7 @@ let PREVIOUS_QUERY = "";
 let PREVIOUS_RESULTS;
 
 /** Position in document from when search is hidden. */
-let CONTENT_SCROLL_POSITION;
+let CONTENT_SCROLL_POSITION = 0;
 
 window.clearSearch = () => {
     const searchElement = document.getElementById("cako-search");
