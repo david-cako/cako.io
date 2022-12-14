@@ -384,7 +384,7 @@ code.hljs {
 .post-nav .cako-post-link {
     align-items: center;
     transition: transform ease-in-out 0.1s;
-    max-width: 45%;
+    max-width: 40%;
 }
 
 .post-nav .cako-post-link:hover {
