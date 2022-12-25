@@ -507,7 +507,8 @@ code.hljs {
 
 #last-name-o {
     color: #E80000;
-    font-size: 1.02em;
+    font-size: 1.025em;
+    margin-left: -0.007em;
 }
 
 #header-io {
