@@ -130,14 +130,14 @@ export default class InfiniteScroll {
     }
 
     loadAllPosts = async () => {
+        this.scrollToBottom();
+
         this.shouldLoadAllPosts = true;
         
         while (this.shouldGetPosts()) {
             await this.getAndAppendPosts();
             this.scrollToBottom();
         }
-
-        this.scrollToBottom();
     }
 
     scrollToBottom() {
