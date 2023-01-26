@@ -11,7 +11,7 @@ export default class InfiniteScroll {
 
     postsPerRequest = 100;
     maxRetries = 10;
-    loadAllPosts = localStorage.getItem("loadAllPosts") === true;
+    shouldLoadAllPosts = false;
 
     postFeed = document.getElementById("cako-post-feed");
     postFeedOuter = document.getElementById("cako-post-feed-outer");
@@ -26,35 +26,7 @@ export default class InfiniteScroll {
             this.newPostsIntervalTime);
     }
 
-    shouldGetPosts() {
-        if (this.postFeedOuter.style.display === "none") {
-            // search is currently active
-            return false;
-        }
-        if (this.isUpdatingPosts) {
-            return false;
-        }
-        if (this.pagination && this.pagination.next === null) {
-            // we've already requested posts and no more are available
-            return false;
-        }
-        if (this.loadAllPosts && this.pagination) {
-            // continue loading all posts
-            return true;
-        }
-
-        // check scroll position
-        const postElems = this.postElems;
-        if (postElems.length < 1) {
-            return true;
-        }
-
-        const lastPost = postElems[postElems.length - 1];
-
-        return lastPost?.getBoundingClientRect().top < this.loadPostsOffset;
-    }
-
-    async getPosts() {
+    async fetchPosts() {
         let posts;
         let retries = 0;
 
@@ -87,34 +59,23 @@ export default class InfiniteScroll {
         this.postFeed.insertAdjacentHTML(position, postHtml.join("\n"));
     }
 
-    showLoadingIndicator() {
-        this.loadingPostsElem.style.display = "block";
-    }
 
-    hideLoadingIndicator() {
-        this.loadingPostsElem.style.display = "none";
-    }
+    async getAndAppendPosts() {
+        this.isUpdatingPosts = true;
 
-    onScroll = async () => {
-        while (this.shouldGetPosts()) {
-            this.isUpdatingPosts = true;
-            this.showLoadingIndicator();
+        try {
+            const posts = await this.fetchPosts();
+            this.pagination = posts.meta.pagination;
 
-            try {
-                const posts = await this.getPosts();
-                this.pagination = posts.meta.pagination;
-
-                this.appendPostsToFeed(posts);
-            } catch (e) {
-                this.hideLoadingIndicator();
-                this.isUpdatingPosts = false;
-                throw e;
-            }
-
-            this.hideLoadingIndicator();
+            this.appendPostsToFeed(posts);
+        } catch (e) {
             this.isUpdatingPosts = false;
+            throw e;
         }
+
+        this.isUpdatingPosts = false;
     }
+
 
     getAndAppendNewPosts = async () => {
         this.isUpdatingPosts = true;
@@ -141,16 +102,50 @@ export default class InfiniteScroll {
         this.isUpdatingPosts = false;
     }
 
-    toggleLoadAllPosts = () => {
-        if (this.loadAllPosts) {
-            this.loadAllPosts = false;
-        } else {
-            this.loadAllPosts = true;
+    shouldGetPosts() {
+        if (this.postFeedOuter.style.display === "none") {
+            // search is currently active
+            return false;
+        }
+        if (this.isUpdatingPosts) {
+            return false;
+        }
+        if (this.pagination && this.pagination.next === null) {
+            // we've already requested posts and no more are available
+            return false;
+        }
+        if (this.shouldLoadAllPosts) {
+            return true;
         }
 
-        localStorage.setItem("loadAllPosts", this.loadAllPosts);
+        // check scroll position
+        const postElems = this.postElems;
+        if (postElems.length < 1) {
+            return true;
+        }
 
-        return this.loadAllPosts;
+        const lastPost = postElems[postElems.length - 1];
+
+        return lastPost?.getBoundingClientRect().top < this.loadPostsOffset;
+    }
+
+    loadAllPosts = async () => {
+        this.shouldLoadAllPosts = true;
+        
+        while (this.shouldGetPosts()) {
+            await this.getAndAppendPosts();
+            this.scrollToBottom();
+        }
+    }
+
+    scrollToBottom() {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    onScroll = async () => {
+        while (this.shouldGetPosts()) {
+            this.getAndAppendPosts();
+        }
     }
 
     removeListener() {
@@ -159,5 +154,5 @@ export default class InfiniteScroll {
 }
 
 (() => {
-    new InfiniteScroll();
+    window.InfiniteScroll = new InfiniteScroll();
 })();

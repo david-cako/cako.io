@@ -1,8 +1,9 @@
 <div id="cako-menu">
-    <div class="menu-icon-outer">
-        <div id="menu-icon" onclick="toggleMenu()"></div>
+    <div class="nav-icon-outer">
+        <div id="menu-icon" class="nav-icon" onclick="toggleMenu()"></div>
     </div>
     <div id="cako-menu-inner">
+        <script type="module" src="{{asset "js/ionicons/ionicons.esm.js"}}"></script>
         <div class="cako-menu-item" onclick="toggleLights()">
             <ion-icon name="bulb-outline"></ion-icon>
             Lights
@@ -25,6 +26,7 @@
             </div>
         </div>
     </div>
+    <script type="module" src="{{asset "js/search.js"}}"></script>
     <script>
         function showMenuIndicator() {
             const menu = document.getElementById("cako-menu");

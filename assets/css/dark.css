@@ -31,11 +31,11 @@ body {
     color: #eee;
 }
 
-#cako-menu #menu-icon {
+.nav-icon {
     background: #fff;
 }
 
-#cako-menu .menu-icon-outer {
+.nav-icon-outer {
     background: #000;
 }
 

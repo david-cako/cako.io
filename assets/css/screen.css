@@ -517,7 +517,7 @@ code.hljs {
 #cako-menu {
     position: fixed;
     top: 1.2em;
-    right: 1.2em;
+    right: 0.9em;
     z-index: 900;
     display: flex;
     flex-direction: column;
@@ -558,12 +558,6 @@ ion-icon#cako-search-clear {
     display: none;
 }
 
-#cako-menu ion-icon[name="menu-outline"] {
-    font-size: 1.6em;
-    opacity: 0.9;
-    cursor: pointer;
-}
-
 #cako-menu-indicator {
     width: 7px;
     height: 7px;
@@ -583,37 +577,40 @@ ion-icon#cako-search-clear {
     padding-right: 0;
 }
 
-#cako-menu #menu-icon {
+.nav-icon {
     transform: scaleX(0.9);
     opacity: 0.9;
     background-color: #000;
-    -webkit-mask: url(/assets/menu-outline.svg) no-repeat center;
-    mask: url(/assets/menu-outline.svg) no-repeat center;
-    width: 100%;
-    height: 100%;
+    height: 24px;
+    width: 24px;
     cursor: pointer;
     padding: 0 0.1em;
     box-sizing: content-box;
 }
 
-#cako-menu #menu-icon:active {
+.nav-icon:active {
     opacity: 0.6;
 }
 
-#cako-menu .menu-icon-outer {
+.nav-icon-outer {
     background: #fff;
-    height: 24px;
-    width: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 6px;
 }
 
-#cako-menu ion-icon[name="menu-outline"]:active {
-    opacity: 0.6;
+@media (max-width: 650px) {
+    .nav-icon {
+        height: 26px;
+        width: 26px;
+    }
 }
 
+#cako-menu #menu-icon {
+    -webkit-mask: url(/assets/menu-outline.svg) no-repeat center;
+    mask: url(/assets/menu-outline.svg) no-repeat center;
+}
 #cako-menu-inner {
     display: none;
     background: #fff;
@@ -696,6 +693,19 @@ ion-icon#cako-search-clear {
     right: 0.6em;
     margin-top: 0.2em;
 }
+
+#get-all-posts {
+    z-index: 1000;
+    position: fixed;
+    right: 0.9em;
+    bottom: 0.9em;
+}
+
+#get-all-posts-icon {
+    -webkit-mask: url(/assets/albums-outline.svg) no-repeat center;
+    mask: url(/assets/albums-outline.svg) no-repeat center;
+}
+
 
 body {
     overflow: hidden;
