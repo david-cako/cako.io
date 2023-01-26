@@ -136,6 +136,8 @@ export default class InfiniteScroll {
             await this.getAndAppendPosts();
             this.scrollToBottom();
         }
+
+        this.scrollToBottom();
     }
 
     scrollToBottom() {
