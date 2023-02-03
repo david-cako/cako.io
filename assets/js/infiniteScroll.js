@@ -21,7 +21,7 @@ export default class InfiniteScroll {
     get postElems() { return document.querySelectorAll("#cako-post-feed .cako-post"); }
 
     constructor() {
-        document.addEventListener("scroll", this.onScroll);
+        this.loadAllPosts();
         this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
             this.newPostsIntervalTime);
     }
@@ -130,28 +130,15 @@ export default class InfiniteScroll {
     }
 
     loadAllPosts = async () => {
-        this.scrollToBottom();
-
         this.shouldLoadAllPosts = true;
         
         while (this.shouldGetPosts()) {
             await this.getAndAppendPosts();
-            this.scrollToBottom();
         }
     }
 
     scrollToBottom() {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-
-    onScroll = async () => {
-        while (this.shouldGetPosts()) {
-            this.getAndAppendPosts();
-        }
-    }
-
-    removeListener() {
-        document.removeEventListener("scroll", this.onScroll);
     }
 }
 
