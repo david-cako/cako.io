@@ -444,7 +444,7 @@ code.hljs {
 
 #cako-site-nav-link {
     display: inline-block;
-    padding: 4.5px 4.2px 5.5px 0;
+    padding: 4.5px 4.2px 5.5px 0.7px;
     background: #000;
     border-radius: 7px;
     min-width: 38px;
