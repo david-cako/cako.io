@@ -2,14 +2,29 @@
     background: #000;
 }
 
-h1, h2 {
+.gh-flow-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.8em;
+    text-align: center;
     color: #fff;
+}
+
+.gh-flow-content #logo {
+    height: 3.5rem;
+    position: absolute;
+    top: 0.6em;
+    left: 0.7em;
 }
 
 .gh-signin {
     background: transparent;
-    border-radius: 25px;
+    border-radius: 20px;
     margin: 10px auto;
+    padding: 0.8em 0.7em 0.7em;
+}
+
+.gh-signin .form-group {
+    margin-bottom: 0.7em;
 }
 
 .gh-input {
@@ -17,6 +32,7 @@ h1, h2 {
     color: #fff;
     background-color: #000;
     transition: none;
+    height: 2.3em;
 }
 
 .gh-input:focus {
@@ -70,4 +86,11 @@ h1, h2 {
 .gh-btn {
     border-radius: 10px;
     text-shadow: none;
+    height: 2.3em;
+}
+
+.gh-btn span {
+    height: initial;
+    line-height: initial;
+    font-size: 1.4rem;
 }
