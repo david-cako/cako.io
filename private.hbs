@@ -26,7 +26,9 @@
                     <div class="gh-flow">
                         <div class="gh-flow-content-wrap">
                             <section class="gh-flow-content">
-                                <form class="gh-signin" method="post" novalidate="novalidate">
+                                <form class="gh-signin" method="post" novalidate="novalidate" 
+                                    onsubmit="document.getElementById('submit').focus()"
+                                >
                                     <img id="logo" src="/assets/cako_rounded.png">
                                     <h1>cako.io is private</h1>
                                     <div class="form-group{{#if error}} error{{/if}}">
@@ -35,7 +37,9 @@
                                             {{input_password class="gh-input" placeholder="Password"}}
                                         </span>
                                     </div>
-                                    <button class="gh-btn gh-btn-blue gh-btn-block" type="submit"><span>Enter Now</span></button>
+                                    <button id="submit" class="gh-btn gh-btn-blue gh-btn-block" type="submit">
+                                        <span>Enter Now</span>
+                                    </button>
                                 </form>
 
                                 {{#if error}}
