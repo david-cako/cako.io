@@ -15,6 +15,7 @@ export default class InfiniteScroll {
     contentScrollPosition = 0;
     lastScrollPositionTime;
     scrollPositionThrottle = 100;
+    scrollEvents = 0;
 
     get savedScrollPosition() {
         let pos = localStorage.getItem("contentScrollPosition")
@@ -47,12 +48,19 @@ export default class InfiniteScroll {
                 savedPos <= document.body.clientHeight - window.innerHeight) {
                 this.restoreScrollPosition();
                 shouldRestoreScrollPosition = false;
-
-                document.addEventListener("scroll", this.onScroll);
             }
 
             await this.getAndAppendPosts();
         }
+
+        // restore scroll position on iOS back navigation
+        window.addEventListener("pageshow", (e) => {
+            if (e.persisted) {
+                this.restoreScrollPosition();
+            }
+        });
+
+        document.addEventListener("scroll", this.onScroll);
 
         this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
             this.newPostsIntervalTime);
@@ -175,6 +183,12 @@ export default class InfiniteScroll {
     }
 
     onScroll = () => {
+        this.scrollEvents++;
+
+        if (this.scrollEvents <= 1) {
+            return;
+        }
+
         if (!this.searchShown) {
             this.contentScrollPosition = window.scrollY;
 
