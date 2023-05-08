@@ -22,6 +22,8 @@ window.clearSearch = () => {
 
     const clearIcon = document.getElementById("cako-search-clear");
     clearIcon.style.display = "none";
+
+    InfiniteScroll.searchShown = false;
 }
 
 window.focusSearch = () => {
@@ -360,6 +362,8 @@ function formatPreview(result) {
 }
 
 function showResults(results, query) {
+    InfiniteScroll.searchShown = true;
+
     const searchResults = document.getElementById("cako-search-results");
     searchResults.innerHTML = "";
 

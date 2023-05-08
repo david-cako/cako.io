@@ -12,14 +12,45 @@ export default class InfiniteScroll {
     postsPerRequest = 100;
     maxRetries = 10;
 
+    contentScrollPosition = 0;
+    lastScrollPositionTime;
+    scrollPositionThrottle = 100;
+    
+    get savedScrollPosition () {
+        let pos = localStorage.getItem("contentScrollPosition")
+
+        if (pos !== null && Number(pos) !== NaN) {
+            return Number(pos);
+        } else {
+            return null;
+        }
+    }
+
+    searchShown = false; // updated by search.js on search events
+
     postFeed = document.getElementById("cako-post-feed");
     postFeedOuter = document.getElementById("cako-post-feed-outer");
     loadingPostsElem = document.getElementById("loading-posts");
 
     constructor() {
-        this.loadAllPosts();
+        this.initialize();
         this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
             this.newPostsIntervalTime);
+    }
+
+    initialize = async () => {
+        let savedPos = this.savedScrollPosition;
+
+        while (this.shouldGetPosts()) {
+            await this.getAndAppendPosts();
+
+            if (savedPos !== null && 
+                savedPos <= document.body.clientHeight - window.innerHeight) {
+                    this.restoreScrollPosition();
+                }
+        }
+        
+        document.addEventListener("scroll", this.onScroll);
     }
 
     async fetchPosts(count, page) {
@@ -125,9 +156,28 @@ export default class InfiniteScroll {
         return true;
     }
 
-    loadAllPosts = async () => {
-        while (this.shouldGetPosts()) {
-            await this.getAndAppendPosts();
+    saveScrollPosition() {
+        localStorage.setItem("contentScrollPosition", this.contentScrollPosition);
+        this.lastScrollPositionTime = Date.now();
+    }
+
+    restoreScrollPosition() {
+        const pos = this.savedScrollPosition;
+
+        if (pos !== null && Number(pos) !== NaN) {
+            window.scroll(0, Number(pos));
+        }
+    }
+
+    onScroll = () => {
+        if (!this.searchShown) {
+            this.contentScrollPosition = window.scrollY;
+
+            let time = Date.now();
+            if (!this.lastScrollPositionTime ||
+                time - this.lastScrollPositionTime > this.scrollPositionThrottle) {
+                this.saveScrollPosition();
+            }
         }
     }
 
