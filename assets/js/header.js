@@ -1,5 +1,6 @@
 (() => {
   const cakoHeader = document.getElementById('cako-header-text');
+  const cakoHeaderLink = document.getElementById('cako-site-nav-link');
   const cakoHeaderMaxScroll = 35;
 
   let lastOpacity = 1;
@@ -17,9 +18,14 @@
     lastOpacity = newOpacity;
   }
 
+  updateHeaderOpacity();
+
   window.addEventListener('scroll', () => {
     updateHeaderOpacity();
   });
 
-  updateHeaderOpacity();
+  // header navigation goes to top of home page
+  cakoHeaderLink.addEventListener('click', () => {
+    localStorage.setItem("contentScrollPosition", 0);
+  });
 })();

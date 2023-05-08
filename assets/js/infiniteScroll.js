@@ -43,8 +43,6 @@ export default class InfiniteScroll {
         let shouldRestoreScrollPosition = savedPos !== null;
 
         while (this.shouldGetPosts()) {
-            await this.getAndAppendPosts();
-
             if (shouldRestoreScrollPosition &&
                 savedPos <= document.body.clientHeight - window.innerHeight) {
                 this.restoreScrollPosition();
@@ -52,6 +50,8 @@ export default class InfiniteScroll {
 
                 document.addEventListener("scroll", this.onScroll);
             }
+
+            await this.getAndAppendPosts();
         }
 
         this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
