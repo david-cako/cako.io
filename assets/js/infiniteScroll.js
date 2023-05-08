@@ -11,14 +11,10 @@ export default class InfiniteScroll {
 
     postsPerRequest = 100;
     maxRetries = 10;
-    shouldLoadAllPosts = false;
 
     postFeed = document.getElementById("cako-post-feed");
     postFeedOuter = document.getElementById("cako-post-feed-outer");
     loadingPostsElem = document.getElementById("loading-posts");
-
-    get loadPostsOffset() { return window.innerHeight * 3; }
-    get postElems() { return document.querySelectorAll("#cako-post-feed .cako-post"); }
 
     constructor() {
         this.loadAllPosts();
@@ -26,31 +22,36 @@ export default class InfiniteScroll {
             this.newPostsIntervalTime);
     }
 
-    async fetchPosts() {
-        let posts;
+    async fetchPosts(count, page) {
         let retries = 0;
 
+        while (retries < this.maxRetries) {
+            retries++;
+
+            try {
+                let posts = await Api.getPosts(count, page);
+                return posts;
+            } catch (e) {
+                console.log(`Error fetching posts, attempt ${retries}`, e);
+                if (retries >= this.maxRetries) {
+                    throw e;
+                }
+            }
+        }
+    }
+
+    async fetchNextPage() {
         let page;
+
         if (this.pagination) { // next page populated by previous request
             page = this.pagination.next;
         } else { // otherwise, continue from server-rendered posts
             page = 2;
         }
 
-        while (posts === undefined && retries < this.maxRetries) {
-            retries++;
+        let posts = await this.fetchPosts(this.postsPerRequest, page);
 
-            try {
-                posts = await Api.getPosts(this.postsPerRequest, page);
-            } catch (e) {
-                console.log(`Error fetching posts, attempt ${retries + 1}`, e);
-                if (retries + 1 >= this.maxRetries) {
-                    throw e;
-                }
-            }
-        }
-
-        return posts;
+        return posts
     }
 
     appendPostsToFeed(posts, position = "beforeend") {
@@ -64,7 +65,7 @@ export default class InfiniteScroll {
         this.isUpdatingPosts = true;
 
         try {
-            const posts = await this.fetchPosts();
+            const posts = await this.fetchNextPage();
             this.pagination = posts.meta.pagination;
 
             this.appendPostsToFeed(posts);
@@ -79,7 +80,7 @@ export default class InfiniteScroll {
 
     getAndAppendNewPosts = async () => {
         this.isUpdatingPosts = true;
-        
+
         const newPosts = [];
 
         let page = 1;
@@ -90,13 +91,13 @@ export default class InfiniteScroll {
             let posts;
 
             try {
-                posts = await Api.getPosts(10, page);
+                posts = await this.fetchPosts(10, page);
                 page++;
             } catch (e) {
                 this.isUpdatingPosts = false;
                 throw e;
             }
-    
+
             for (const p of posts) {
                 if (!this.postFeed.querySelector(`[href="/${p.slug}/"]`)) {
                     newPosts.push(p);
@@ -113,10 +114,6 @@ export default class InfiniteScroll {
     }
 
     shouldGetPosts() {
-        if (this.postFeedOuter.style.display === "none") {
-            // search is currently active
-            return false;
-        }
         if (this.isUpdatingPosts) {
             return false;
         }
@@ -124,24 +121,11 @@ export default class InfiniteScroll {
             // we've already requested posts and no more are available
             return false;
         }
-        if (this.shouldLoadAllPosts) {
-            return true;
-        }
 
-        // check scroll position
-        const postElems = this.postElems;
-        if (postElems.length < 1) {
-            return true;
-        }
-
-        const lastPost = postElems[postElems.length - 1];
-
-        return lastPost?.getBoundingClientRect().top < this.loadPostsOffset;
+        return true;
     }
 
     loadAllPosts = async () => {
-        this.shouldLoadAllPosts = true;
-        
         while (this.shouldGetPosts()) {
             await this.getAndAppendPosts();
         }
