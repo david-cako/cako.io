@@ -48,6 +48,7 @@ export default class InfiniteScroll {
 
         while (this.shouldGetPosts()) {
             if (shouldRestoreScrollPosition &&
+                this.scrollEvents <= 1 &&
                 savedPos <= document.body.clientHeight - window.innerHeight) {
                 this.restoreScrollPosition();
                 shouldRestoreScrollPosition = false;
