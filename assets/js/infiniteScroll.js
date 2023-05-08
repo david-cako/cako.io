@@ -79,21 +79,31 @@ export default class InfiniteScroll {
 
     getAndAppendNewPosts = async () => {
         this.isUpdatingPosts = true;
-
-        let posts;
-
-        try {
-            posts = await Api.getPosts(10, 0);
-        } catch (e) {
-            this.isUpdatingPosts = false;
-            throw e;
-        }
-
+        
         const newPosts = [];
 
-        for (const p of posts) {
-            if (!this.postFeed.querySelector(`[href="/${p.slug}/"]`)) {
-                newPosts.push(p);
+        let page = 1;
+        let shouldFetchPosts = true;
+
+        // fetch posts until we reach newest shown post on page
+        while (shouldFetchPosts) {
+            let posts;
+
+            try {
+                posts = await Api.getPosts(10, page);
+                page++;
+            } catch (e) {
+                this.isUpdatingPosts = false;
+                throw e;
+            }
+    
+            for (const p of posts) {
+                if (!this.postFeed.querySelector(`[href="/${p.slug}/"]`)) {
+                    newPosts.push(p);
+                } else {
+                    shouldFetchPosts = false;
+                    break;
+                }
             }
         }
 
