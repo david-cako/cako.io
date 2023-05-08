@@ -21,5 +21,5 @@
     updateHeaderOpacity();
   });
 
-  document.addEventListener('DOMContentLoaded', updateHeaderOpacity);
+  updateHeaderOpacity();
 })();

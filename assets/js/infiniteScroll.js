@@ -15,8 +15,8 @@ export default class InfiniteScroll {
     contentScrollPosition = 0;
     lastScrollPositionTime;
     scrollPositionThrottle = 100;
-    
-    get savedScrollPosition () {
+
+    get savedScrollPosition() {
         let pos = localStorage.getItem("contentScrollPosition")
 
         if (pos !== null && Number(pos) !== NaN) {
@@ -34,23 +34,28 @@ export default class InfiniteScroll {
 
     constructor() {
         this.initialize();
-        this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
-            this.newPostsIntervalTime);
     }
 
     initialize = async () => {
+        history.scrollRestoration = "manual";
+
         let savedPos = this.savedScrollPosition;
+        let shouldRestoreScrollPosition = savedPos !== null;
 
         while (this.shouldGetPosts()) {
             await this.getAndAppendPosts();
 
-            if (savedPos !== null && 
+            if (shouldRestoreScrollPosition &&
                 savedPos <= document.body.clientHeight - window.innerHeight) {
-                    this.restoreScrollPosition();
-                }
+                this.restoreScrollPosition();
+                shouldRestoreScrollPosition = false;
+
+                document.addEventListener("scroll", this.onScroll);
+            }
         }
 
-        document.addEventListener("scroll", this.onScroll);
+        this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
+            this.newPostsIntervalTime);
     }
 
     async fetchPosts(count, page) {
