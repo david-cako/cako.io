@@ -49,7 +49,7 @@ export default class InfiniteScroll {
                     this.restoreScrollPosition();
                 }
         }
-        
+
         document.addEventListener("scroll", this.onScroll);
     }
 
@@ -174,8 +174,9 @@ export default class InfiniteScroll {
             this.contentScrollPosition = window.scrollY;
 
             let time = Date.now();
-            if (!this.lastScrollPositionTime ||
-                time - this.lastScrollPositionTime > this.scrollPositionThrottle) {
+            if (this.contentScrollPosition === 0 ||
+                !this.lastScrollPositionTime ||
+                time - this.lastScrollPositionTime >= this.scrollPositionThrottle) {
                 this.saveScrollPosition();
             }
         }
