@@ -1,12 +1,11 @@
 import { Api } from "./api.js";
 import { generatePostLinkHTML } from "./html.js";
 
-
 export default class InfiniteScroll {
     // Ghost API pagination, populated with each request for posts
     pagination;
     newPostsInterval;
-    newPostsIntervalTime = 30000;
+    newPostsIntervalTime = 1000 * 30;
     isUpdatingPosts = false;
 
     postsPerRequest = 100;
@@ -27,6 +26,28 @@ export default class InfiniteScroll {
         }
     }
 
+    get savedScrollPositionTime() {
+        let time = localStorage.getItem("contentScrollPositionTime")
+
+        if (time !== null && Number(time) !== NaN) {
+            return Number(time);
+        } else {
+            return null;
+        }
+    }
+
+    restoreScrollPosTTL = 1000 * 60 * 30;
+
+    get savedScrollPosIsFresh() {
+        let savedPosTime = this.savedScrollPositionTime;
+
+        if (savedPosTime === null) {
+            return false;
+        }
+
+        return Date.now() - savedPosTime <= this.restoreScrollPosTTL;
+    }
+
     searchShown = false; // updated by search.js on search events
 
     postFeed = document.getElementById("cako-post-feed");
@@ -40,15 +61,23 @@ export default class InfiniteScroll {
     initialize = async () => {
         history.scrollRestoration = "manual";
 
-        let savedPos = this.savedScrollPosition;
-        let shouldRestoreScrollPosition = savedPos !== null;
-
         document.addEventListener("scroll", this.maybeSaveScrollPosition);
         document.addEventListener("click", this.maybeSaveScrollPosition);
+
+        // restore scroll position on iOS back navigation
+        window.addEventListener("pageshow", (e) => {
+            if (e.persisted && this.savedScrollPosIsFresh) {
+                this.restoreScrollPosition();
+            }
+        });
+
+        let savedPos = this.savedScrollPosition;
+        let shouldRestoreScrollPosition = savedPos !== null;
 
         while (this.shouldGetPosts()) {
             if (shouldRestoreScrollPosition &&
                 this.scrollEvents <= 1 &&
+                this.savedScrollPosIsFresh &&
                 savedPos <= document.body.clientHeight - window.innerHeight) {
                 this.restoreScrollPosition();
                 shouldRestoreScrollPosition = false;
@@ -56,13 +85,6 @@ export default class InfiniteScroll {
 
             await this.getAndAppendPosts();
         }
-
-        // restore scroll position on iOS back navigation
-        window.addEventListener("pageshow", (e) => {
-            if (e.persisted) {
-                this.restoreScrollPosition();
-            }
-        });
 
         this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
             this.newPostsIntervalTime);
@@ -173,7 +195,9 @@ export default class InfiniteScroll {
 
     saveScrollPosition() {
         localStorage.setItem("contentScrollPosition", this.contentScrollPosition);
+
         this.lastScrollPositionTime = Date.now();
+        localStorage.setItem("contentScrollPositionTime", this.lastScrollPositionTime);
     }
 
     restoreScrollPosition() {
