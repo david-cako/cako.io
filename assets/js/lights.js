@@ -1,3 +1,6 @@
+const LIGHTS_ON_CALLBACKS = [];
+const LIGHTS_OFF_CALLBACKS = [];
+
 function lightsOn() {
     const link = document.getElementById("dark-mode");
 
@@ -73,21 +76,21 @@ function prefetchDarkCss() {
 }
 
 function addLightsOnCallback(callback) {
-    this.lightsOnCallbacks.push(callback);
+    LIGHTS_ON_CALLBACKS.push(callback);
 }
 
 function addLightsOffCallback(callback) {
-    this.lightsOffCallbacks.push(callback)
+    LIGHTS_OFF_CALLBACKS.push(callback)
 }
 
 function removeLightsOnCallback(callback) {
-    this.lightsOnCallbacks = this.lightsOnCallbacks.filter(
+    LIGHTS_ON_CALLBACKS = LIGHTS_ON_CALLBACKS.filter(
         c => c !== callback
     );
 }
 
 function removeLightsOffCallback(callback) {
-    this.lightsOffCallbacks = this.lightsOffCallbacks.filter(
+    LIGHTS_OFF_CALLBACKS = LIGHTS_OFF_CALLBACKS.filter(
         c => c !== callback
     );
 }
