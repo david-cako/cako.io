@@ -72,6 +72,26 @@ function prefetchDarkCss() {
     return fetch(DARK_CSS_PATH);
 }
 
+function addLightsOnCallback(callback) {
+    this.lightsOnCallbacks.push(callback);
+}
+
+function addLightsOffCallback(callback) {
+    this.lightsOffCallbacks.push(callback)
+}
+
+function removeLightsOnCallback(callback) {
+    this.lightsOnCallbacks = this.lightsOnCallbacks.filter(
+        c => c !== callback
+    );
+}
+
+function removeLightsOffCallback(callback) {
+    this.lightsOffCallbacks = this.lightsOffCallbacks.filter(
+        c => c !== callback
+    );
+}
+
 (() => {
     const lights = lightsStatus();
 
