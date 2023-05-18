@@ -23,8 +23,8 @@ window.clearSearch = () => {
     const clearIcon = document.getElementById("cako-search-clear");
     clearIcon.style.display = "none";
 
-    if (window.InfiniteScroll) {
-        window.InfiniteScroll.searchShown = false;
+    if (InfiniteScroll) {
+        InfiniteScroll.searchShown = false;
     }
 }
 
@@ -364,8 +364,8 @@ function formatPreview(result) {
 }
 
 function showResults(results, query) {
-    if (window.InfiniteScroll) {
-        window.InfiniteScroll.searchShown = true;
+    if (InfiniteScroll) {
+        InfiniteScroll.searchShown = true;
     }
 
     const searchResults = document.getElementById("cako-search-results");
