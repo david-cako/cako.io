@@ -160,7 +160,8 @@ function getStrongTextMatch(matches, post, query) {
         for (const m of matches) {
             if (m.token !== undefined
                 && m.token.length > 1
-                && word.indexOf(m.token) !== -1
+                && (word.indexOf(m.token) !== -1 ||
+                    normalizeString(word, true).indexOf(m.token) !== -1)
                 && titleMatches.indexOf(word) === -1
             ) {
                 titleMatches.push({ idx: i, word: word, token: m.token });
