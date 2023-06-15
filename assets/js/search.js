@@ -23,9 +23,7 @@ window.clearSearch = () => {
     const clearIcon = document.getElementById("cako-search-clear");
     clearIcon.style.display = "none";
 
-    if (window.InfiniteScroll) {
-        window.InfiniteScroll.searchShown = false;
-    }
+    window.searchIsShown = false;
 }
 
 window.focusSearch = () => {
@@ -33,6 +31,8 @@ window.focusSearch = () => {
 
     searchElement.focus();
 }
+
+window.searchIsShown = document.getElementById("cako-search-feed").style.display === "block";
 
 function normalizeString(s, lower) {
     if (lower) {
@@ -365,10 +365,8 @@ function formatPreview(result) {
 }
 
 function showResults(results, query) {
-    if (window.InfiniteScroll) {
-        window.InfiniteScroll.searchShown = true;
-    }
-
+    window.searchIsShown = true;
+    
     const searchResults = document.getElementById("cako-search-results");
     searchResults.innerHTML = "";
 

@@ -48,8 +48,6 @@ export default class InfiniteScroll {
         return Date.now() - savedPosTime <= this.restoreScrollPosTTL;
     }
 
-    searchShown = false; // updated by search.js on search events
-
     postFeed = document.getElementById("cako-post-feed");
     postFeedOuter = document.getElementById("cako-post-feed-outer");
     loadingPostsElem = document.getElementById("loading-posts");
@@ -64,15 +62,16 @@ export default class InfiniteScroll {
         document.addEventListener("scroll", this.maybeSaveScrollPosition);
         document.addEventListener("click", this.maybeSaveScrollPosition);
 
+        let savedPos = this.savedScrollPosition;
+        let shouldRestoreScrollPosition = savedPos !== null && !window.searchIsShown;
+
         // restore scroll position on iOS back navigation
         window.addEventListener("pageshow", (e) => {
-            if (e.persisted && this.savedScrollPosIsFresh) {
+            if (e.persisted &&
+                this.savedScrollPosIsFresh && shouldRestoreScrollPosition) {
                 this.restoreScrollPosition();
             }
         });
-
-        let savedPos = this.savedScrollPosition;
-        let shouldRestoreScrollPosition = savedPos !== null;
 
         while (this.shouldGetPosts()) {
             if (shouldRestoreScrollPosition &&
@@ -215,7 +214,7 @@ export default class InfiniteScroll {
             return;
         }
 
-        if (!this.searchShown) {
+        if (!window.searchIsShown) {
             this.contentScrollPosition = window.scrollY;
 
             let time = Date.now();
