@@ -30,6 +30,10 @@ export default class InfiniteScroll {
     /** Throttle for saving contentScrollPosition to localStorage. */
     scrollPositionThrottle = 100;
 
+    postFeed = document.getElementById("cako-post-feed");
+    postFeedOuter = document.getElementById("cako-post-feed-outer");
+    loadingPostsElem = document.getElementById("loading-posts");
+
     /** Getter for saved contentScrollPosition from localStorage. */
     get savedScrollPosition() {
         let pos = localStorage.getItem("contentScrollPosition")
@@ -66,10 +70,6 @@ export default class InfiniteScroll {
 
         return Date.now() - savedPosTime <= this.restoreScrollPosTTL;
     }
-
-    postFeed = document.getElementById("cako-post-feed");
-    postFeedOuter = document.getElementById("cako-post-feed-outer");
-    loadingPostsElem = document.getElementById("loading-posts");
 
     constructor() {
         this.initialize();
