@@ -219,7 +219,7 @@ export default class InfiniteScroll {
         return true;
     }
 
-    /** Saves both contentScrollPosition and contentScrolPositionTime in localStorage. */
+    /** Saves both contentScrollPosition and contentScrollPositionTime in localStorage. */
     saveScrollPosition() {
         localStorage.setItem("contentScrollPosition", this.contentScrollPosition);
 
