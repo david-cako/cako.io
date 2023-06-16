@@ -3,20 +3,34 @@ import { generatePostLinkHTML } from "./html.js";
 
 /** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
-    /** Ghost API pagination, populated with each request for posts */
-    pagination;
-    newPostsInterval;
-    newPostsIntervalTime = 1000 * 30;
-    isUpdatingPosts = false;
-
-    postsPerRequest = 100;
-    maxRetries = 10;
-
+    /** Current index scroll position managed by InfiniteScroll. */
     contentScrollPosition = 0;
-    lastScrollPositionTime;
-    scrollPositionThrottle = 100;
+
+    /** Increments on every scroll event after InfiniteScroll initialization. */
     scrollEvents = 0;
 
+    /** JS interval ID for new posts fetcher */
+    newPostsInterval;
+    /** Fetcher interval.  New posts are fetched every 30 seconds. */
+    newPostsIntervalTime = 1000 * 30;
+
+    /** Ghost API pagination object, populated with each request for posts */
+    pagination;
+
+    /** True while getAndAppendPosts or getAndAppendNewPosts is called. */
+    isUpdatingPosts = false;
+
+    /** Posts per page in each call to getAndAppendPosts. */
+    postsPerRequest = 100;
+    /** Retry count for fetchPosts. */
+    maxRetries = 10;
+
+    /** Unix timestamp of last save of contentScrollPosition to localStorage. */
+    lastScrollPositionTime;
+    /** Throttle for saving contentScrollPosition to localStorage. */
+    scrollPositionThrottle = 100;
+
+    /** Getter for saved contentScrollPosition from localStorage. */
     get savedScrollPosition() {
         let pos = localStorage.getItem("contentScrollPosition")
 
@@ -27,6 +41,7 @@ export default class InfiniteScroll {
         }
     }
 
+    /** Getter for saved contentScrollPositionTime from localStorage. */
     get savedScrollPositionTime() {
         let time = localStorage.getItem("contentScrollPositionTime")
 
@@ -37,8 +52,11 @@ export default class InfiniteScroll {
         }
     }
 
+    /** TTL for saved contentScrollPosition in localStorage. */
     restoreScrollPosTTL = 1000 * 60 * 30;
 
+    /** Returns true if saved contentScrollPosition in localStorage is
+     * fresher than restoreScrollPosTTL. */
     get savedScrollPosIsFresh() {
         let savedPosTime = this.savedScrollPositionTime;
 
@@ -57,6 +75,7 @@ export default class InfiniteScroll {
         this.initialize();
     }
 
+    /** Starts event handlers and may restore scroll position. */
     initialize = async () => {
         history.scrollRestoration = "manual";
 
@@ -92,6 +111,7 @@ export default class InfiniteScroll {
             this.newPostsIntervalTime);
     }
 
+    /** Main post fetcher with retry logic. */
     async fetchPosts(count, page) {
         let retries = 0;
 
@@ -110,6 +130,7 @@ export default class InfiniteScroll {
         }
     }
 
+    /** Fetch next page given current pagination and InfiniteScroll.postsPerRequest */
     async fetchNextPage() {
         let page;
 
@@ -124,13 +145,14 @@ export default class InfiniteScroll {
         return posts
     }
 
+    /** Append posts to index using HTML helpers from html.js */
     appendPostsToFeed(posts, position = "beforeend") {
         const postHtml = posts.map(p => generatePostLinkHTML(p));
 
         this.postFeed.insertAdjacentHTML(position, postHtml.join("\n"));
     }
 
-
+    /** Fetch and insert post HTML for next page. */
     async getAndAppendPosts() {
         this.isUpdatingPosts = true;
 
@@ -147,7 +169,7 @@ export default class InfiniteScroll {
         this.isUpdatingPosts = false;
     }
 
-
+    /** Fetch and insert new posts if available. */
     getAndAppendNewPosts = async () => {
         this.isUpdatingPosts = true;
 
@@ -183,6 +205,8 @@ export default class InfiniteScroll {
         this.isUpdatingPosts = false;
     }
 
+    /** Returns true if more posts are available from Ghost pagination and
+     * we are not currently updating posts. */
     shouldGetPosts() {
         if (this.isUpdatingPosts) {
             return false;
@@ -195,6 +219,7 @@ export default class InfiniteScroll {
         return true;
     }
 
+    /** Saves both contentScrollPosition and contentScrolPositionTime in localStorage. */
     saveScrollPosition() {
         localStorage.setItem("contentScrollPosition", this.contentScrollPosition);
 
@@ -202,6 +227,7 @@ export default class InfiniteScroll {
         localStorage.setItem("contentScrollPositionTime", this.lastScrollPositionTime);
     }
 
+    /** Sets page scroll position from saved value in localStorage. */
     restoreScrollPosition() {
         const pos = this.savedScrollPosition;
 
@@ -210,6 +236,8 @@ export default class InfiniteScroll {
         }
     }
 
+    /** Saves scroll position to localStorage when user scrolls, search is not shown,
+     * and InfiniteScroll.scrollPositionThrottle has elapsed since last save. */
     maybeSaveScrollPosition = () => {
         this.scrollEvents++;
 
@@ -229,6 +257,7 @@ export default class InfiniteScroll {
         }
     }
 
+    /** Jumps to bottom of post index.  This was too many buttons. */
     scrollToBottom() {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
