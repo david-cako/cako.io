@@ -1,8 +1,9 @@
 import { Api } from "./api.js";
 import { generatePostLinkHTML } from "./html.js";
 
+/** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
-    // Ghost API pagination, populated with each request for posts
+    /** Ghost API pagination, populated with each request for posts */
     pagination;
     newPostsInterval;
     newPostsIntervalTime = 1000 * 30;
@@ -63,20 +64,22 @@ export default class InfiniteScroll {
         document.addEventListener("click", this.maybeSaveScrollPosition);
 
         let savedPos = this.savedScrollPosition;
-        let shouldRestoreScrollPosition = savedPos !== null && !window.searchIsShown;
 
-        // restore scroll position on iOS back navigation
+        let shouldRestoreScrollPosition = savedPos !== null &&
+            this.savedScrollPosIsFresh && !window.searchIsShown;
+
+        // restore scroll position on persisted back navigation
         window.addEventListener("pageshow", (e) => {
-            if (e.persisted &&
-                this.savedScrollPosIsFresh && shouldRestoreScrollPosition) {
+            if (e.persisted && shouldRestoreScrollPosition) {
                 this.restoreScrollPosition();
             }
         });
 
+        // restore scroll position after sufficient posts are fetched
         while (this.shouldGetPosts()) {
-            if (shouldRestoreScrollPosition &&
-                this.scrollEvents <= 1 &&
-                this.savedScrollPosIsFresh &&
+            const userHasScrolled = this.scrollEvents > 1;
+
+            if (shouldRestoreScrollPosition && !userHasScrolled &&
                 savedPos <= document.body.clientHeight - window.innerHeight) {
                 this.restoreScrollPosition();
                 shouldRestoreScrollPosition = false;
@@ -216,8 +219,8 @@ export default class InfiniteScroll {
 
         if (!window.searchIsShown) {
             this.contentScrollPosition = window.scrollY;
-
             let time = Date.now();
+
             if (this.contentScrollPosition === 0 ||
                 !this.lastScrollPositionTime ||
                 time - this.lastScrollPositionTime >= this.scrollPositionThrottle) {
