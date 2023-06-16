@@ -1,3 +1,4 @@
+/** Setup scroll handler for CAKO logo. */
 (() => {
     const cakoHeader = document.getElementById('cako-header-text');
     const cakoHeaderLink = document.getElementById('cako-site-nav-link');

@@ -1,3 +1,6 @@
+// Global functions for lights.
+// This loads immediately for smooth layout.
+
 const LIGHTS_ON_CALLBACKS = [];
 const LIGHTS_OFF_CALLBACKS = [];
 

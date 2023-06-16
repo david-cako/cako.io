@@ -1,3 +1,5 @@
+// Spinner animation manager for post elements.
+
 import { Spinner } from './spin.js';
 
 const LIGHT_ACCENT = "#0070e6";
