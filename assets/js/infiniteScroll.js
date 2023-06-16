@@ -231,8 +231,8 @@ export default class InfiniteScroll {
     restoreScrollPosition() {
         const pos = this.savedScrollPosition;
 
-        if (pos !== null && Number(pos) !== NaN) {
-            window.scroll(0, Number(pos));
+        if (pos !== null) {
+            window.scroll(0, pos);
         }
     }
 
