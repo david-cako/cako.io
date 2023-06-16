@@ -2668,9 +2668,7 @@ Usage (In Ghost editor):
 
 .error-description {
     margin: 0;
-    color: var(--midgrey);
     font-size: 3rem;
-    line-height: 1.3em;
     font-weight: 400;
 }
 

@@ -1,9 +1,3 @@
-{{!--
-This error template is used for all 400/500 errors, except 404, which might occur on your site.
-It's a good idea to keep this template as minimal as possible in terms of both file size and complexity.
-You'll notice that we *don't* use any JavsScript, or ghost_head / ghost_foot in this file.
---}}
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,32 +6,17 @@ You'll notice that we *don't* use any JavsScript, or ghost_head / ghost_foot in 
     <title>{{meta_title}}</title>
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}" />
+    <link rel="stylesheet" type="text/css" href="{{asset "css/screen.css"}}" />
 </head>
 <body class="error-template">
     <div class="site-wrapper">
-
-        <header class="site-header outer {{#if feature_image}}" style="background-image: url({{feature_image}}){{else}}no-cover{{/if}}">
-            <div class="inner">
-                <nav class="site-nav-center">
-                    {{#if @site.logo}}
-                        <a class="site-nav-logo" href="{{@site.url}}"><img src="{{@site.logo}}" alt="{{@site.title}}" /></a>
-                    {{else}}
-                        <a class="site-nav-logo" href="{{@site.url}}">{{@site.title}}</a>
-                    {{/if}}
-                </nav>
-            </div>
-        </header>
-
+        {{> "site-nav"}}
         <main id="site-main" class="site-main outer" role="main">
             <div class="inner">
-
                 <section class="error-message">
                     <h1 class="error-code">{{error.statusCode}}</h1>
                     <p class="error-description">{{message}}</p>
-                    <a class="error-link" href="{{@site.url}}">Go to the front page →</a>
                 </section>
-
                 {{#if errorDetails}}
                 <section class="error-stack">
                     <h3>Theme errors</h3>
@@ -55,7 +34,6 @@ You'll notice that we *don't* use any JavsScript, or ghost_head / ghost_foot in 
                     </ul>
                 </section>
                 {{/if}}
-
             </div>
         </main>
     </div>
