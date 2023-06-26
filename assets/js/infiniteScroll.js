@@ -87,6 +87,8 @@ export default class InfiniteScroll {
         let shouldRestoreScrollPosition = savedPos !== null &&
             this.savedScrollPosIsFresh && !window.searchIsShown;
 
+        let hasRestoredScrollPosition = false;
+
         // restore scroll position on persisted back navigation
         window.addEventListener("pageshow", (e) => {
             if (e.persisted && shouldRestoreScrollPosition) {
@@ -97,11 +99,13 @@ export default class InfiniteScroll {
         // restore scroll position after sufficient posts are fetched
         while (this.shouldGetPosts()) {
             const userHasScrolled = this.scrollEvents > 1;
+            const savedPosHasLoaded =
+                savedPos <= document.body.clientHeight - window.innerHeight;
 
-            if (shouldRestoreScrollPosition && !userHasScrolled &&
-                savedPos <= document.body.clientHeight - window.innerHeight) {
+            if (shouldRestoreScrollPosition && !hasRestoredScrollPosition &&
+                !userHasScrolled && savedPosHasLoaded) {
                 this.restoreScrollPosition();
-                shouldRestoreScrollPosition = false;
+                hasRestoredScrollPosition = true;
             }
 
             await this.getAndAppendPosts();
