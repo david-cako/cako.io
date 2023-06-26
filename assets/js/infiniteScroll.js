@@ -6,7 +6,8 @@ export default class InfiniteScroll {
     /** Current index scroll position managed by InfiniteScroll. */
     contentScrollPosition = 0;
 
-    /** Increments on every scroll event after InfiniteScroll initialization. */
+    /** Increments on every scroll event after InfiniteScroll initialization.
+     * Resets on pageShow event. */
     scrollEvents = 0;
 
     /** JS interval ID for new posts fetcher */
@@ -83,33 +84,23 @@ export default class InfiniteScroll {
         document.addEventListener("click", this.maybeSaveScrollPosition);
 
         let savedPos = this.savedScrollPosition;
+        const savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: savedPos });
 
-        let shouldRestoreScrollPosition = savedPos !== null &&
-            this.savedScrollPosIsFresh && !window.searchIsShown;
+        window.addEventListener("pageshow", async () => {
+            this.scrollEvents = 0;
 
-        let hasRestoredScrollPosition = false;
+            await savedPosHasLoaded;
 
-        // restore scroll position on persisted back navigation
-        window.addEventListener("pageshow", (e) => {
+            const userHasScrolled = this.scrollEvents > 1;
+
+            const shouldRestoreScrollPosition =
+                savedPos !== null && this.savedScrollPosIsFresh &&
+                !window.searchIsShown && !userHasScrolled;
+
             if (shouldRestoreScrollPosition) {
                 this.restoreScrollPosition();
             }
         });
-
-        // restore scroll position after sufficient posts are fetched
-        while (this.shouldGetPosts()) {
-            const userHasScrolled = this.scrollEvents > 1;
-            const savedPosHasLoaded =
-                savedPos <= document.body.clientHeight - window.innerHeight;
-
-            if (shouldRestoreScrollPosition && !hasRestoredScrollPosition &&
-                !userHasScrolled && savedPosHasLoaded) {
-                this.restoreScrollPosition();
-                hasRestoredScrollPosition = true;
-            }
-
-            await this.getAndAppendPosts();
-        }
 
         this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
             this.newPostsIntervalTime);
@@ -156,21 +147,32 @@ export default class InfiniteScroll {
         this.postFeed.insertAdjacentHTML(position, postHtml.join("\n"));
     }
 
-    /** Fetch and insert post HTML for next page. */
-    async getAndAppendPosts() {
-        this.isUpdatingPosts = true;
+    /** Fetch and insert all posts, resolving on completion or 
+     * when optional resolveAt position has loaded. */
+    getAndAppendPosts({ resolveAt }) {
+        return new Promise(async (resolve, reject) => {
+            this.isUpdatingPosts = true;
 
-        try {
-            const posts = await this.fetchNextPage();
-            this.pagination = posts.meta.pagination;
+            while (!this.pagination || this.pagination.next !== null) {
+                try {
+                    const posts = await this.fetchNextPage();
+                    this.pagination = posts.meta.pagination;
 
-            this.appendPostsToFeed(posts);
-        } catch (e) {
+                    this.appendPostsToFeed(posts);
+                } catch (e) {
+                    this.isUpdatingPosts = false;
+                    reject(e);
+                }
+
+                if (resolveAt !== undefined &&
+                    resolveAt <= document.body.clientHeight - window.innerHeight) {
+                    resolve();
+                }
+            }
+
             this.isUpdatingPosts = false;
-            throw e;
-        }
-
-        this.isUpdatingPosts = false;
+            resolve();
+        })
     }
 
     /** Fetch and insert new posts if available. */
@@ -180,10 +182,10 @@ export default class InfiniteScroll {
         const newPosts = [];
 
         let page = 1;
-        let shouldFetchPosts = true;
+        let shouldGetNewPosts = true;
 
         // fetch posts until we reach newest shown post on page
-        while (shouldFetchPosts) {
+        while (shouldGetNewPosts) {
             let posts;
 
             try {
@@ -198,7 +200,7 @@ export default class InfiniteScroll {
                 if (!this.postFeed.querySelector(`[href="/${p.slug}/"]`)) {
                     newPosts.push(p);
                 } else {
-                    shouldFetchPosts = false;
+                    shouldGetNewPosts = false;
                     break;
                 }
             }
@@ -207,20 +209,6 @@ export default class InfiniteScroll {
         this.appendPostsToFeed(newPosts, "afterbegin");
 
         this.isUpdatingPosts = false;
-    }
-
-    /** Returns true if more posts are available from Ghost pagination and
-     * we are not currently updating posts. */
-    shouldGetPosts() {
-        if (this.isUpdatingPosts) {
-            return false;
-        }
-        if (this.pagination && this.pagination.next === null) {
-            // we've already requested posts and no more are available
-            return false;
-        }
-
-        return true;
     }
 
     /** Saves both contentScrollPosition and contentScrollPositionTime in localStorage. */
