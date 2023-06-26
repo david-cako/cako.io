@@ -91,7 +91,7 @@ export default class InfiniteScroll {
 
         // restore scroll position on persisted back navigation
         window.addEventListener("pageshow", (e) => {
-            if (e.persisted && shouldRestoreScrollPosition) {
+            if (shouldRestoreScrollPosition) {
                 this.restoreScrollPosition();
             }
         });
