@@ -27,6 +27,28 @@
     margin-bottom: 0.5em;
 }
 
+@keyframes shake {
+    8%, 41% {
+        transform: translateX(-10px);
+    }
+    25%, 58% {
+        transform: translateX(10px);
+    }
+    75% {
+        transform: translateX(-5px);
+    }
+    92% {
+        transform: translateX(5px);
+    }
+    0%, 100% {
+        transform: translateX(0);
+    }
+}
+
+.gh-signin .password.form-group.error {
+    animation: shake 0.4s linear;
+}
+
 .gh-input {
     border-radius: 10px;
     color: #fff;
