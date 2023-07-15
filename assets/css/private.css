@@ -2,18 +2,8 @@
     background: #000;
 }
 
-.gh-flow-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.8em;
-    text-align: center;
-    color: #fff;
-}
-
-.gh-flow-content #logo {
-    height: 3.5rem;
-    position: absolute;
-    top: 0.6em;
-    left: 0.7em;
+.gh-app {
+    justify-content: center;
 }
 
 .gh-signin {
@@ -21,6 +11,22 @@
     border-radius: 20px;
     margin: 10px auto;
     padding: 0.8em 0.7em;
+    font-size: 1.9rem;
+}
+
+.gh-signin h1 {
+    font-size: 2.5rem;
+    font-weight: 100;
+    margin-bottom: 0.8em;
+    text-align: center;
+    color: #fff;
+}
+
+.gh-signin #logo {
+    height: 3.5rem;
+    position: absolute;
+    top: 0.6em;
+    left: 0.7em;
 }
 
 .gh-signin .form-group {
@@ -28,19 +34,27 @@
 }
 
 @keyframes shake {
-    8%, 41% {
+
+    8%,
+    41% {
         transform: translateX(-10px);
     }
-    25%, 58% {
+
+    25%,
+    58% {
         transform: translateX(10px);
     }
+
     75% {
         transform: translateX(-5px);
     }
+
     92% {
         transform: translateX(5px);
     }
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(0);
     }
 }
@@ -61,7 +75,7 @@
     border-color: initial;
 }
 
-.gh-flow-content input {
+.gh-signin input {
     border: 1px solid #fff;
 }
 
@@ -73,7 +87,7 @@
     fill: #fff;
 }
 
-.gh-flow-content {
+.gh-signin {
     color: #fff;
 }
 
@@ -91,17 +105,21 @@
     border-color: #27d7ff;
 }
 
-.gh-btn-blue:hover, .gh-btn-blue:active, .gh-btn-blue:focus {
+.gh-btn-blue:hover,
+.gh-btn-blue:active,
+.gh-btn-blue:focus {
     color: #27d7ff;
 }
 
-.gh-btn-blue:active, .gh-btn-blue:focus {
+.gh-btn-blue:active,
+.gh-btn-blue:focus {
     border-color: #27d7ff;
     color: #27d7ff;
     background: transparent;
 }
 
-.gh-btn-blue:active span, .gh-btn-blue:focus span {
+.gh-btn-blue:active span,
+.gh-btn-blue:focus span {
     background: transparent;
 }
 
