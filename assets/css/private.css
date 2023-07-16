@@ -3,11 +3,13 @@
 }
 
 .gh-app {
-    justify-content: center;
+    display: block;
+    padding: 15px;
 }
 
 .gh-signin {
     background: transparent;
+    top: 25vh;
     border-radius: 20px;
     margin: 10px auto;
     padding: 0.8em 0.7em;
