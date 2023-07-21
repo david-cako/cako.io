@@ -62,7 +62,7 @@
 }
 
 .gh-signin .password.form-group.error {
-    animation: shake 0.4s linear;
+    animation: shake 0.5s linear;
 }
 
 .gh-input {
