@@ -1,3 +1,5 @@
+import { Api } from "./api.js";
+
 const GHOST_API = new GhostContentAPI({
     url: "https://cako.io",
     key: "723c108685f2d6fba50c68a511",
@@ -127,11 +129,7 @@ class CakoSearch {
     /** Resolves all posts from Ghost API. */
     async getOrFetchPosts() {
         if (!this.posts) {
-            this.posts = await GHOST_API.posts.browse({
-                limit: "all",
-                fields: "title,html,published_at,slug",
-                include: "tags"
-            });
+            this.posts = await Api.getPosts("all", 1, { includeBody: true });
         }
 
         return this.posts;
