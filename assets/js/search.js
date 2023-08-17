@@ -478,8 +478,10 @@ function onKeyDown(e) {
     const firstResult = searchResults.querySelector(".cako-post-link");
     const searchFeed = document.getElementById("cako-search-feed");
 
+    const hasModifier = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
+
     // if search shown and up or down pressed, prevent scrolling
-    if (searchFeed.style.display === "block" &&
+    if (searchFeed.style.display === "block" && !hasModifier &&
         (e.key == "ArrowUp" || e.key == "ArrowDown")) {
         e.preventDefault();
     }
@@ -519,7 +521,7 @@ function onKeyDown(e) {
         // already focused on a result
         const current = document.activeElement;
 
-        if (e.key == "ArrowUp") {
+        if (e.key == "ArrowUp" && !hasModifier) {
             if (current && current.parentElement
                 && current.parentElement.previousElementSibling) {
                 const prev = current.parentElement.previousElementSibling;
@@ -531,7 +533,7 @@ function onKeyDown(e) {
                 // currently at the top, focus back to search
                 focusSearch();
             }
-        } else if (e.key == "ArrowDown") {
+        } else if (e.key == "ArrowDown" && !hasModifier) {
             if (current && current.parentElement &&
                 current.parentElement.nextElementSibling) {
                 const next = current.parentElement.nextElementSibling;
@@ -541,7 +543,7 @@ function onKeyDown(e) {
                 }
             }
         }
-    } else if (e.key == "ArrowDown") {
+    } else if (e.key == "ArrowDown" && !hasModifier) {
         // down pressed, no result focused yet
         if (firstResult) {
             firstResult.focus();
