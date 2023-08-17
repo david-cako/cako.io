@@ -1,4 +1,34 @@
 <div class="post-nav-outer">
+    <script>
+        /** Returns true if no modifier key is pressed and search is not shown
+            for given keyboard event. */
+        window.shouldNavigatePosts = (keyEvent) => {
+            const searchShown = document.activeElement && 
+                document.activeElement.classList.contains("cako-post-link");
+            const modifier = keyEvent.altKey || keyEvent.ctrlKey ||
+                keyEvent.metaKey || keyEvent.shiftKey;
+
+            return !searchShown && !modifier;
+        }
+
+        /** Focuses post nav link element for given direction "left" or "right".
+            if a post link is shown in that chronological direction. */
+        window.focusPostNavLink = (direction) => {
+            const navLinks = document.querySelectorAll(".post-nav-link");
+
+            if (direction === "left") {
+                if (navLinks[0]) {
+                    navLinks[0].focus({preventScroll: true});
+                }
+            } else if (direction === "right") {
+                if (navLinks[1]) {
+                    navLinks[1].focus({preventScroll: true});
+                }
+            } else {
+                throw new Error("Invalid direction passed to focusPostNavLink.")
+            }
+        }
+    </script>
     <div id="post-nav-inner" class="post-nav inner">
         {{#prev_post}}
             <a href="{{url}}" class="cako-post-link post-nav-link">
@@ -11,16 +41,9 @@
             </a>
             <script>
                 document.addEventListener("keydown", e => {
-                    // don't navigate if currently searching
-                    if (e.key == "ArrowLeft" && 
-                    (!document.activeElement || !document.activeElement.classList.contains("cako-post-link"))) {
+                    if (e.key == "ArrowLeft" && shouldNavigatePosts(e)) {
                         window.location = "{{url}}";
-
-                        const navLinks = document.querySelectorAll(".post-nav-link");
-
-                        if (navLinks[0]) {
-                            navLinks[0].focus({preventScroll: true});
-                        }
+                        focusPostNavLink("left");
                     }
                 });
             </script>
@@ -41,16 +64,9 @@
 
         <script>
             document.addEventListener("keydown", e => {
-                // don't navigate if currently searching
-                if (e.key == "ArrowRight" && 
-                (!document.activeElement || !document.activeElement.classList.contains("cako-post-link"))) {
+                if (e.key == "ArrowRight" && shouldNavigatePosts(e)) {
                     window.location = "{{url}}";
-
-                    const navLinks = document.querySelectorAll(".post-nav-link");
-
-                    if (navLinks[1]) {
-                        navLinks[1].focus({preventScroll: true});
-                    }
+                    focusPostNavLink("right");
                 }
             });
         </script>
