@@ -32,6 +32,14 @@ into the {body} of the default.hbs template --}}
 
         </article>
     </div>
+    <script>
+        // replaces double spaces with an en-space to fix wrapping
+        const content = document.getElementsByTagName("p");
+
+        for (let p of content) {
+            p.innerHTML = p.innerHTML.replace(/ &nbsp;/g, "&ensp;")
+        }
+    </script>
     <div class="site-footer-content inner">
         <section class="copyright"><a href="https://davidcako.com">{{@site.title}}</a> &copy; {{date format="YYYY"}}</section>
         <div id="email-address-outer">
@@ -40,16 +48,6 @@ into the {body} of the default.hbs template --}}
     </div>
     {{> "post-nav"}}
 </main>
-
 {{/post}}
-
-<script>
-    // replaces double spaces with an en-space to fix wrapping
-    const content = document.getElementsByTagName("p");
-
-    for (let p of content) {
-        p.innerHTML = p.innerHTML.replace(/ &nbsp;/g, "&ensp;")
-    }
-</script>
 <link rel="stylesheet" href="{{asset "css/atom-one-dark.min.css"}}" >
 {{!-- <script type="module" src="{{asset "js/feature.js"}}"></script> --}}
