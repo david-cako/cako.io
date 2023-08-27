@@ -30,9 +30,6 @@ const spinnerOpts = {
   position: 'absolute', // Element positioning
 };
 
-let SPIN_BEGIN;
-let SPIN_CLEAR_INTERVAL;
-
 function removeSpinners() {
   const elements = document.getElementsByClassName('spinner');
 
@@ -70,17 +67,6 @@ window.onPostClicked = (e) => {
 
   const spinner = new Spinner(opts).spin();
   e.currentTarget.querySelector('.cako-post-title').appendChild(spinner.el);
-
-  SPIN_BEGIN = Date.now();
-
-  // set an interval here that will continue after browser-back
-  // to remove the spinner
-  SPIN_CLEAR_INTERVAL = setInterval(() => {
-    if (Date.now() - SPIN_BEGIN > 1000) {
-      removeSpinners();
-      clearInterval(SPIN_CLEAR_INTERVAL);
-    }
-  }, 10);
 }
 
 (() => {
@@ -94,4 +80,6 @@ window.onPostClicked = (e) => {
 
     e.addEventListener('click', onPostClicked);
   }
+
+  window.addEventListener("pageshow", removeSpinners);
 })();
