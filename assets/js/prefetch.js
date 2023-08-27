@@ -17,7 +17,17 @@ function insertFeaturesPrefetchLink() {
     link.rel = "prefetch";
     link.href = "/features/";
 
-    document.head.append(link);    
+    document.head.append(link);
+}
+
+function insertPostNavPrefetchLinks() {
+    document.querySelectorAll(".post-nav-link").forEach(l => {
+        const link = document.createElement("link");
+        link.rel = "prefetch";
+        link.href = l.href;
+
+        document.head.append(link);
+    });
 }
 
 /** Accepts article click event and adds pageshow handler to 
@@ -29,7 +39,7 @@ function prefetchFeatureArticles(e) {
 
     const featureArticles = e.target.closest(".cako-featured")
         .querySelectorAll(".cako-post-link");
-    
+
     const newLinks = [];
 
     for (const a of featureArticles) {
@@ -66,5 +76,7 @@ function setupFeaturePrefetchHandlers() {
         insertFeaturesPrefetchLink();
     } else if (window.location.pathname === "/features/") {
         setupFeaturePrefetchHandlers();
+    } else {
+        insertPostNavPrefetchLinks();
     }
 })();
