@@ -18,12 +18,12 @@
                         e.metaKey || e.shiftKey;
 
                     if (e.key == "ArrowLeft" && !searchShown && !modifier) {
-                        window.location = "{{url}}";
-
                         const navLinks = document.querySelectorAll(".post-nav-link");
                         if (navLinks[0]) {
                             navLinks[0].focus({preventScroll: true});
                         }
+
+                        window.location = "{{url}}";
                     }
                 });
             </script>
@@ -51,12 +51,12 @@
                     e.metaKey || e.shiftKey;
 
                 if (e.key == "ArrowRight" && !searchShown && !modifier) {
-                    window.location = "{{url}}";
-                    
                     const navLinks = document.querySelectorAll(".post-nav-link");
                     if (navLinks[1]) {
                         navLinks[1].focus({preventScroll: true});
                     }
+
+                    window.location = "{{url}}";
                 }
             });
         </script>
