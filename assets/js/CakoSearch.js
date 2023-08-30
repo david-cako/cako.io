@@ -1,11 +1,5 @@
 import { Api } from "./api.js";
 
-const GHOST_API = new GhostContentAPI({
-    url: "https://cako.io",
-    key: "723c108685f2d6fba50c68a511",
-    version: "v3"
-});
-
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
@@ -42,13 +36,13 @@ class CakoSearch {
     }
 
     constructor() {
-        searchElement.addEventListener("focus", () => {
+        this.searchElement.addEventListener("focus", () => {
             this.getOrFetchPosts();
         });
 
-        searchElement.addEventListener("input", this.onInput);
+        this.searchElement.addEventListener("input", this.onInput);
 
-        searchElement.addEventListener("keydown", (e) => {
+        this.searchElement.addEventListener("keydown", (e) => {
             // prevents arrow left/right post navigation while
             // search is focused
             e.stopPropagation();
@@ -56,9 +50,9 @@ class CakoSearch {
         });
         document.addEventListener("keydown", this.onKeyDown);
 
-        searchClear.addEventListener("click", () => {
-            this.clearSearch();
-            this.focusSearch();
+        this.searchClear.addEventListener("click", () => {
+            this.clear();
+            this.focus();
         });
 
         document.addEventListener("scroll", this.onScroll);
@@ -78,7 +72,7 @@ class CakoSearch {
             && !containsNumber(query)) {
             posts = this.previousResults;
         } else {
-            posts = await getOrFetchPosts();
+            posts = await this.getOrFetchPosts();
         }
 
         const tokens = tokenizeString(query, true);
@@ -89,11 +83,11 @@ class CakoSearch {
             let matches = [];
 
             for (const t of tokens) {
-                if (getTitleMatch(t, p)) {
+                if (this.getTitleMatch(t, p)) {
                     matches.push({ in: "title", token: t });
-                } else if (getDateMatch(t, p)) {
+                } else if (this.getDateMatch(t, p)) {
                     matches.push({ in: "date" });
-                } else if (getHtmlMatch(t, p)) {
+                } else if (this.getHtmlMatch(t, p)) {
                     matches.push({ in: "html", token: t });
                 }
             }
@@ -107,7 +101,7 @@ class CakoSearch {
                     }
                 });
             } else if (matches.length > 0 && matches.length / tokens.length >= .6) {
-                const strong = getStrongTextMatch(matches, p, query);
+                const strong = this.getStrongTextMatch(matches, p, query);
                 results.push({ post: p, strong: strong });
             }
         }
@@ -141,7 +135,7 @@ class CakoSearch {
 
         if (normalizedHtml.toLowerCase().indexOf(token) !== -1) {
             return true;
-        } else if (isNumericMatch(token, normalizedHtml)) {
+        } else if (this.isNumericMatch(token, normalizedHtml)) {
             return true;
         }
 
@@ -154,7 +148,7 @@ class CakoSearch {
 
         if (normalizedTitle.indexOf(token) !== -1) {
             return true
-        } else if (isNumericMatch(token, normalizedTitle)) {
+        } else if (this.isNumericMatch(token, normalizedTitle)) {
             return true;
         }
 
@@ -258,7 +252,8 @@ class CakoSearch {
                 for (const m of matches) {
                     if (m.token !== undefined
                         && m.token.length > 1
-                        && (word.toLowerCase().indexOf(m.token) !== -1 || isNumericMatch(m.token, word) ||
+                        && (word.toLowerCase().indexOf(m.token) !== -1 || 
+                            this.isNumericMatch(m.token, word) ||
                             normalizeString(word, true).indexOf(m.token) !== -1)
                         && htmlMatchIdxs.findIndex(m => m.idx == i) === -1
                     ) {
@@ -355,27 +350,27 @@ class CakoSearch {
     clearResults() {
         this.previousResults = undefined;
 
-        searchFeed.style.display = "none";
-        searchResults.innerHTML = "";
+        this.searchFeed.style.display = "none";
+        this.searchResults.innerHTML = "";
 
-        if (postFeed) {
-            postFeed.style.display = 'block';
+        if (this.postFeed) {
+            this.postFeed.style.display = 'block';
         }
 
         if (this.postContent) {
             this.postContent.style.display = "block";
         }
 
-        window.scrollTo({ top: CONTENT_SCROLL_POSITION });
+        window.scrollTo({ top: this.contentScrollPosition });
 
         this.searchIsShown = false;
     }
 
-    focusSearch() {
+    focus() {
         this.searchElement.focus();
     }
 
-    clearSearch() {
+    clear() {
         this.searchElement.value = "";
         this.previousQuery = "";
         this.clearResults();
@@ -395,7 +390,7 @@ class CakoSearch {
 
         this.inputThrottleTimeout = setTimeout(() => {
             this.inputThrottleTimeout = undefined;
-            onSearchChange(e.target.value);
+            this.onSearchChange(e.target.value);
         }, this.inputThrottleTime);
     }
 
@@ -408,7 +403,7 @@ class CakoSearch {
             return;
         }
 
-        clearIcon.style.display = "block";
+        this.clearIcon.style.display = "block";
 
         const searchWasShown = this.searchIsShown;
 
@@ -425,10 +420,12 @@ class CakoSearch {
     }
 
     onKeyDown = (e) => {
-        const firstResult = searchResults.querySelector(".cako-post-link");
+        const firstResult = this.searchResults.querySelector(".cako-post-link");
+
+        const hasModifier = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
 
         // if search shown and up or down pressed, prevent scrolling
-        if (this.searchFeed.style.display === "block" &&
+        if (this.searchFeed.style.display === "block" && !hasModifier && 
             (e.key == "ArrowUp" || e.key == "ArrowDown")) {
             e.preventDefault();
         }
@@ -449,7 +446,7 @@ class CakoSearch {
                 toggleMenu();
             }
 
-            this.focusSearch();
+            this.focus();
 
             return;
         }
@@ -466,7 +463,7 @@ class CakoSearch {
         if (this.focusedResult) {
             const current = this.focusedResult;
 
-            if (e.key == "ArrowUp") {
+            if (e.key == "ArrowUp" && !hasModifier) {
                 if (current && current.parentElement
                     && current.parentElement.previousElementSibling) {
                     const prev = current.parentElement.previousElementSibling;
@@ -476,9 +473,9 @@ class CakoSearch {
                     }
                 } else {
                     // currently at the top, focus back to search
-                    focusSearch();
+                    focus();
                 }
-            } else if (e.key == "ArrowDown") {
+            } else if (e.key == "ArrowDown" && !hasModifier) {
                 if (current && current.parentElement &&
                     current.parentElement.nextElementSibling) {
                     const next = current.parentElement.nextElementSibling;
@@ -488,7 +485,7 @@ class CakoSearch {
                     }
                 }
             }
-        } else if (e.key == "ArrowDown") {
+        } else if (e.key == "ArrowDown" && !hasModifier) {
             // down pressed, no result focused yet
             if (firstResult) {
                 firstResult.focus();
@@ -586,7 +583,7 @@ function generateResultHTML(result) {
     }
 
     return `<div class="cako-post">
-        <a class="cako-post-link" href="/${r.slug}/" onclick="onPostClicked(event)">
+        <a class="cako-post-link" href="/${r.slug}/" onclick="window.PostLoadingSpinner.onPostClicked(event)">
             <div class="cako-post-title">${r.title}</div>
             <div class="cako-post-date-outer">
                 <time class="cako-post-date">${date} ${monthName} ${year}</time>
