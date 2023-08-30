@@ -1,4 +1,5 @@
 import { Api } from "./api.js";
+import { generatePostLinkHTML } from "./html.js";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -341,7 +342,9 @@ class CakoSearch {
         }
 
         for (const result of results) {
-            const resultHtml = generateResultHTML(result);
+            const resultHtml = generatePostLinkHTML(result.post, {
+                searchResult: result
+            });
 
             this.searchResults.insertAdjacentHTML("beforeend", resultHtml);
         }
@@ -530,69 +533,6 @@ function normalizeNumber(string) {
 function removePunctuation(string) {
     return string.replace(/[$%,]/gi, "")
 }
-
-function generatePreviewHTML(result) {
-    if (result.strong === undefined || result.strong.in !== "html") {
-        return ``
-    }
-
-    const words = result.strong.preview.split(" ");
-
-    for (let i = 0; i < words.length; i++) {
-        const w = words[i];
-
-        for (let m of result.strong.matches) {
-            let matchIdx = w.indexOf(m.word);
-
-            if (matchIdx !== -1) {
-                let before, match, after;
-
-                const tokenIdx = m.word.toLowerCase().indexOf(m.token);
-
-                if (tokenIdx !== -1) {
-                    before = w.slice(0, tokenIdx);
-                    match = w.slice(tokenIdx, tokenIdx + m.token.length);
-                    after = w.slice(tokenIdx + m.token.length);
-                } else {
-                    before = "";
-                    match = w;
-                    after = "";
-                }
-
-                words[i] = `${before}<span class="match">${match}</span>${after}`;
-            }
-        }
-    }
-
-    return `<div class="cako-post-preview">${words.join(" ")}</div>`;
-}
-
-function generateResultHTML(result) {
-    const r = result.post;
-    const d = new Date(r.published_at);
-
-    const date = d.getDate();
-    const month = d.getMonth();
-    const monthName = MONTH_NAMES[month];
-    const year = d.getFullYear();
-
-    let preview = ``;
-
-    if (result.strong !== undefined && result.strong.in === "html") {
-        preview = generatePreviewHTML(result);
-    }
-
-    return `<div class="cako-post">
-        <a class="cako-post-link" href="/${r.slug}/" onclick="window.PostLoadingSpinner.onPostClicked(event)">
-            <div class="cako-post-title">${r.title}</div>
-            <div class="cako-post-date-outer">
-                <time class="cako-post-date">${date} ${monthName} ${year}</time>
-            </div>
-            </a>
-            ${preview}
-    </div>`
-}
-
 
 (async () => {
     window.CakoSearch = new CakoSearch();
