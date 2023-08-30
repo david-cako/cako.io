@@ -5,49 +5,19 @@ const LIGHTS_ON_CALLBACKS = [];
 const LIGHTS_OFF_CALLBACKS = [];
 
 function lightsOn() {
-    const link = document.getElementById("dark-mode");
-
-    if (link) {
-        link.remove();
-    }
+    removeDarkCss();
 
     document.documentElement.classList.remove("dark");
 
-    const tc = document.getElementById("theme-color");
-    if (tc) {
-        tc.remove();
-    }
-
-    const themeColor = document.createElement("meta");
-    themeColor.id = "theme-color";
-    themeColor.name = "theme-color";
-    themeColor.content = "#fff";
-
-    document.head.appendChild(themeColor);
+    setThemeColor("light");
 }
 
 function lightsOff() {
-    const link = document.createElement("link");
-    link.id = "dark-mode";
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = DARK_CSS_PATH;
-
-    document.head.appendChild(link);
+    insertDarkCss();
 
     document.documentElement.classList.add("dark");
 
-    const tc = document.getElementById("theme-color");
-    if (tc) {
-        tc.remove();
-    }
-
-    const themeColor = document.createElement("meta");
-    themeColor.id = "theme-color";
-    themeColor.name = "theme-color";
-    themeColor.content = "#000";
-
-    document.head.appendChild(themeColor);
+    setThemeColor("dark");
 }
 
 function lightsStatus() {
@@ -65,17 +35,60 @@ function toggleLights() {
 
     if (lights === "off") {
         lightsOn();
-
         localStorage.setItem("lights", "on");
     } else {
         lightsOff();
-
         localStorage.setItem("lights", "off");
+    }
+}
+
+function initLights() {
+    const lights = lightsStatus();
+
+    if (lights === "off") {
+        lightsOff();
+    } else {
+        lightsOn();
     }
 }
 
 function prefetchDarkCss() {
     return fetch(DARK_CSS_PATH);
+}
+
+function insertDarkCss() {
+    const existing = document.getElementById("dark-mode");
+    if (existing) {
+        return;
+    }
+
+    const link = document.createElement("link");
+    link.id = "dark-mode";
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = DARK_CSS_PATH;
+
+    document.head.appendChild(link);
+}
+
+function removeDarkCss() {
+    const link = document.getElementById("dark-mode");
+
+    if (link) {
+        link.remove();
+    }
+}
+
+function setThemeColor(color) {
+    const themeColor = document.getElementById("theme-color");
+
+    if (color === "light") {
+        themeColor.content = "#fff";
+    } else if (color === "dark") {
+        themeColor.content = "#000";
+    } else {
+        throw new Error("Invalid color passed to setThemeColor")
+    }
 }
 
 function addLightsOnCallback(callback) {
@@ -99,9 +112,6 @@ function removeLightsOffCallback(callback) {
 }
 
 (() => {
-    const lights = lightsStatus();
-
-    if (lights === "off") {
-        lightsOff();
-    }
+    initLights();
+    window.addEventListener("focus", initLights);
 })();
