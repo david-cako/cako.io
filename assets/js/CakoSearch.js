@@ -6,8 +6,8 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
 ];
 
 class CakoSearch {
-    /** Populated on input focus with all posts from Ghost API. */
-    posts;
+    /** Populated on input focus with promise from Ghost API. */
+    postsResponse;
 
     /** Updates from this.search() after successful query. */
     previousQuery = "";
@@ -121,13 +121,13 @@ class CakoSearch {
         return sorted;
     }
 
-    /** Resolves all posts from Ghost API. */
+    /** Resolves all posts from Ghost API and populates this.postsResponse */
     async getOrFetchPosts() {
-        if (!this.posts) {
-            this.posts = await Api.getPosts("all", 1, { includeBody: true });
+        if (!this.postsResponse) {
+            this.postsResponse = Api.getPosts("all", 1, { includeBody: true });
         }
 
-        return this.posts;
+        return await this.postsResponse;
     }
 
     /** Gets match in HTML content for token and post. */
@@ -253,7 +253,7 @@ class CakoSearch {
                 for (const m of matches) {
                     if (m.token !== undefined
                         && m.token.length > 1
-                        && (word.toLowerCase().indexOf(m.token) !== -1 || 
+                        && (word.toLowerCase().indexOf(m.token) !== -1 ||
                             this.isNumericMatch(m.token, word) ||
                             normalizeString(word, true).indexOf(m.token) !== -1)
                         && htmlMatchIdxs.findIndex(m => m.idx == i) === -1
@@ -428,7 +428,7 @@ class CakoSearch {
         const hasModifier = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
 
         // if search shown and up or down pressed, prevent scrolling
-        if (this.searchFeed.style.display === "block" && !hasModifier && 
+        if (this.searchFeed.style.display === "block" && !hasModifier &&
             (e.key == "ArrowUp" || e.key == "ArrowDown")) {
             e.preventDefault();
         }
