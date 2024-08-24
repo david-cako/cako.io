@@ -31,7 +31,7 @@ export default class PostLoadingSpinner {
         position: 'absolute', // Element positioning
     };
 
-    spinner = new Spinner(this.spinnerOpts); 
+    spinner = new Spinner(this.spinnerOpts);
 
     constructor() {
         this.addEventListenersForPosts();
@@ -47,7 +47,7 @@ export default class PostLoadingSpinner {
             if (e.classList.contains("post-nav-link")) {
                 return;
             }
-        
+
             e.addEventListener('click', this.onPostClicked);
         }
     }
@@ -55,27 +55,43 @@ export default class PostLoadingSpinner {
     setSpinnerColor(postElem) {
         const lights = window.lightsStatus();
         const activeAccent = lights === "off" ? DARK_ACCENT : LIGHT_ACCENT;
-      
+
         const isFeatured = postElem.parentElement.parentElement
-          .classList.contains("cako-featured");
-      
+            .classList.contains("cako-featured");
+
         if (postElem.classList.contains("blue") ||
-          (lights === "on" && isFeatured)) {
-          this.spinner.opts.color = BLUE_ACCENT;
+            (lights === "on" && isFeatured)) {
+            this.spinner.opts.color = BLUE_ACCENT;
         } else if (postElem.classList.contains("yellow") ||
-          (lights === "off" && isFeatured)) {
-          this.spinner.opts.color = YELLOW_ACCENT;
+            (lights === "off" && isFeatured)) {
+            this.spinner.opts.color = YELLOW_ACCENT;
         } else if (postElem.classList.contains("red")) {
-          this.spinner.opts.color = RED_ACCENT;
+            this.spinner.opts.color = RED_ACCENT;
         } else if (postElem.classList.contains("green")) {
-          this.spinner.opts.color = GREEN_ACCENT;
+            this.spinner.opts.color = GREEN_ACCENT;
         } else if (postElem.classList.contains("purple")) {
-          this.spinner.opts.color = PURPLE_ACCENT;
+            this.spinner.opts.color = PURPLE_ACCENT;
         } else {
-          this.spinner.opts.color = activeAccent;
+            this.spinner.opts.color = activeAccent;
         }
     }
 
+    shouldSpin = (postElem) => {
+        const featureElem = postElem.closest(".cako-featured");
+        if (!featureElem) {
+            return true;
+        }
+
+        const postElemWidth = postElem.getBoundingClientRect().width;
+        const featureElemWidth = featureElem.getBoundingClientRect().width;
+        const spinnerClearance = 50;
+
+        if (featureElemWidth - postElemWidth > spinnerClearance) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     spin = (postElem) => {
         this.spinner.spin();
@@ -88,11 +104,13 @@ export default class PostLoadingSpinner {
 
     onPostClicked = (e) => {
         this.stop();
-        
-        this.setSpinnerColor(e.currentTarget);
-        this.spin(e.currentTarget);
-      
-        setTimeout(this.stop, 5000);
+
+        if (this.shouldSpin(e.currentTarget)) {
+            this.setSpinnerColor(e.currentTarget);
+            this.spin(e.currentTarget);
+
+            setTimeout(this.stop, 5000);
+        }
     }
 }
 
