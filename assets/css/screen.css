@@ -220,7 +220,7 @@ code.hljs {
 
 .cako-featured {
     border: 1px solid #000;
-    padding: 1.4rem 1.4rem 1.5rem;
+    padding: 1.3rem 1.4rem 1.5rem;
     border-radius: 7px;
     max-width: 750px;
     line-height: 1.6rem;
@@ -611,6 +611,7 @@ ion-icon#cako-search-clear {
     -webkit-mask: url(/assets/menu-outline.svg) no-repeat center;
     mask: url(/assets/menu-outline.svg) no-repeat center;
 }
+
 #cako-menu-inner {
     display: none;
     background: #fff;
