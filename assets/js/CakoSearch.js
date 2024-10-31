@@ -72,7 +72,7 @@ class CakoSearch {
          * 
          * Date results are not idempotent due to exact integer matching, 
          * and require a new full search. */
-        if (this.previousQuery
+        if (this.previousQuery && this.previousResults
             && normalizeString(query, true).indexOf(this.previousQuery) !== -1
             && !containsNumber(query)) {
             posts = this.previousResults;
