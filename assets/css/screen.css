@@ -205,6 +205,10 @@ code.hljs {
     margin-bottom: 2em;
 }
 
+#loading-posts.error {
+    color: red;
+}
+
 #cako-search-feed {
     display: none;
     padding: 1.1em 15px;
@@ -216,6 +220,15 @@ code.hljs {
     font-size: 3.5rem;
     font-weight: 600;
     margin-bottom: 0.8em;
+}
+
+#search-status {
+    display: none;
+    margin-bottom: 2em;
+}
+
+#search-status.error {
+    color: red;
 }
 
 .cako-featured {

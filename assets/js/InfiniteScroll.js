@@ -150,8 +150,11 @@ export default class InfiniteScroll {
     /** Fetch and insert all posts, resolving on completion or 
      * when optional resolveAt position has loaded. */
     getAndAppendPosts({ resolveAt }) {
+        let isResolved = false;
+
         return new Promise(async (resolve, reject) => {
             this.isUpdatingPosts = true;
+            this.loadingPostsElem.style.display = "block";
 
             while (!this.pagination || this.pagination.next !== null) {
                 try {
@@ -161,17 +164,27 @@ export default class InfiniteScroll {
                     this.appendPostsToFeed(posts);
                 } catch (e) {
                     this.isUpdatingPosts = false;
+                    this.loadingPostsElem.innerText = "Could not finish loading posts.  Try refreshing cako.io.";
+                    this.loadingPostsElem.className = "error";
+
                     reject(e);
+                    return;
                 }
 
-                if (resolveAt !== undefined &&
+                if (!isResolved && resolveAt !== undefined &&
                     resolveAt <= document.body.clientHeight - window.innerHeight) {
+                    // resolves and continues execution to finish loading posts.
                     resolve();
+                    isResolved = true;
                 }
             }
 
+            this.loadingPostsElem.style.display = "none";
             this.isUpdatingPosts = false;
+
             resolve();
+            isResolved = true;
+            return;
         })
     }
 

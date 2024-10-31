@@ -9,6 +9,9 @@ class CakoSearch {
     /** Populated on input focus with promise from Ghost API. */
     postsResponse;
 
+    /** Retry count for posts request. */
+    maxRetries = 10;
+
     /** Updates from this.search() after successful query. */
     previousQuery = "";
     previousResults;
@@ -26,6 +29,7 @@ class CakoSearch {
     searchClear = document.getElementById("cako-search-clear");
     searchResults = document.getElementById("cako-search-results");
     searchFeed = document.getElementById("cako-search-feed");
+    searchStatusElem = document.getElementById("search-status");
     postFeed = document.getElementById("cako-post-feed-outer");
     postContent = document.querySelector(".post-full");
 
@@ -124,7 +128,24 @@ class CakoSearch {
     /** Resolves all posts from Ghost API and populates this.postsResponse */
     async getOrFetchPosts() {
         if (!this.postsResponse) {
-            this.postsResponse = Api.getPosts("all", 1, { includeBody: true });
+            this.postsResponse = (async () => {
+                let retries = 0;
+
+                while (retries < this.maxRetries) {
+                    retries++;
+
+                    try {
+                        let posts = await Api.getPosts("all", 1, { includeBody: true });
+                        return posts;
+                    } catch (e) {
+                        console.log(`Error fetching posts for search, attempt ${retries}`, e);
+                        if (retries >= this.maxRetries) {
+                            this.postsResponse = undefined;
+                            throw e;
+                        }
+                    }
+                }
+            })();
         }
 
         return await this.postsResponse;
@@ -327,12 +348,9 @@ class CakoSearch {
         }
     }
 
-    showResults(results) {
+    showSearch() {
         this.searchIsShown = true;
-
-        this.searchResults.innerHTML = "";
         this.searchFeed.style.display = "block";
-
         if (this.postFeed) {
             this.postFeed.style.display = "none";
         }
@@ -340,6 +358,10 @@ class CakoSearch {
         if (this.postContent) {
             this.postContent.style.display = "none";
         }
+    }
+
+    showResults(results) {
+        this.searchResults.innerHTML = "";
 
         for (const result of results) {
             const resultHtml = generatePostLinkHTML(result.post, {
@@ -350,11 +372,8 @@ class CakoSearch {
         }
     }
 
-    clearResults() {
-        this.previousResults = undefined;
-
+    hideSearch() {
         this.searchFeed.style.display = "none";
-        this.searchResults.innerHTML = "";
 
         if (this.postFeed) {
             this.postFeed.style.display = 'block';
@@ -369,6 +388,11 @@ class CakoSearch {
         this.searchIsShown = false;
     }
 
+    clearResults() {
+        this.previousResults = undefined;
+        this.searchResults.innerHTML = "";
+    }
+
     focus() {
         this.searchElement.focus();
     }
@@ -377,6 +401,7 @@ class CakoSearch {
         this.searchElement.value = "";
         this.previousQuery = "";
         this.clearResults();
+        this.hideSearch();
         this.clearIcon.style.display = "none";
     }
 
@@ -400,8 +425,9 @@ class CakoSearch {
     onSearchChange = async (value) => {
         if (value.length < 1) {
             this.previousQuery = "";
-            this.clearResults();
             this.clearIcon.style.display = "none";
+            this.clearResults();
+            this.hideSearch();
 
             return;
         }
@@ -410,7 +436,30 @@ class CakoSearch {
 
         const searchWasShown = this.searchIsShown;
 
-        const results = await this.search(value);
+        this.showSearch();
+        this.searchStatusElem.innerText = "Searching...";
+        this.searchStatusElem.className = "";
+        this.searchStatusElem.style.display = "block";
+
+        this.searchResults.innerHTML = "";
+
+        let results;
+
+        try {
+            results = await this.search(value);
+        } catch (e) {
+            this.searchStatusElem.innerText = `Could not load results.`
+            this.searchStatusElem.className = "error";
+            throw e;
+        }
+
+        if (results.length === 0) {
+            this.searchStatusElem.innerText = "No results found.";
+        } else {
+            this.searchStatusElem.innerText = "";
+            this.searchStatusElem.display = "none";
+        }
+
         this.showResults(results);
 
         // Scroll to top on initial transition to search results.
