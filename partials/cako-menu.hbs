@@ -75,8 +75,8 @@
                     'iPhone',
                     'iPod'
                 ].includes(navigator.platform)
-                || (navigator.userAgent.includes("Mac") && "ontouchend" in document)) &&
-                window.CakoSearch.focus();
+                    || (navigator.userAgent.includes("Mac") && "ontouchend" in document)) &&
+                    window.CakoSearch.focus();
             }
             if (prefetchDarkCss !== undefined) {
                 prefetchDarkCss();
@@ -87,10 +87,6 @@
             const menuInner = document.getElementById("cako-menu-inner");
 
             menuInner.style.display = "none";
-
-            if (window.CakoSearch !== undefined) {
-                window.CakoSearch.clear();
-            }
 
             if (document.activeElement) {
                 document.activeElement.blur();
