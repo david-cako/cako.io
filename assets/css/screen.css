@@ -557,6 +557,7 @@ code.hljs {
 #cako-menu-inner .cako-menu-item:hover,
 .cako-menu-item:active,
 .cako-menu-item:hover {
+    z-index: 1000;
     color: #fff;
     background-color: #000;
     transform: scale(1.02);
@@ -639,6 +640,7 @@ ion-icon#cako-search-clear {
 }
 
 .cako-menu-item {
+    position: relative;
     padding: 0.4em 0.5em;
     border-radius: 0.5em;
     display: flex;
