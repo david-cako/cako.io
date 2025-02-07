@@ -384,13 +384,13 @@ code.hljs {
 
 .post-nav-outer {
     width: 100%;
-    height: 75px;
+    height: 60px;
 }
 
 @media (max-width: 850px) {
     .post-nav-outer {
         position: absolute;
-        bottom: calc(150px + env(safe-area-inset-bottom));
+        bottom: calc(165px + env(safe-area-inset-bottom));
     }
 }
 
@@ -2908,12 +2908,12 @@ Usage (In Ghost editor):
     justify-content: space-between;
     align-items: center;
     font-size: 1.3rem;
-    padding: 10px 15px 20px;
+    padding: 5px 15px 20px;
 }
 
 @media (max-width: 850px) {
     .site-footer-content {
-        padding: 5px 15px 10px;
+        padding: 0px 15px 10px;
     }
 }
 
