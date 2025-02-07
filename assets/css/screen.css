@@ -191,6 +191,12 @@ code.hljs {
     padding: 0 15px;
 }
 
+@media (max-width: 850px) {
+    #cako-post-feed-outer {
+        margin-top: 0.25em;
+    }
+}
+
 #cako-post-feed {
     padding: 0 0 2em;
 }
@@ -211,9 +217,15 @@ code.hljs {
 
 #cako-search-feed {
     display: none;
-    padding: 1.1em 15px;
+    padding: 1.1em 15px 1.1em;
     max-width: 750px;
     margin: 0 auto;
+}
+
+@media (max-width: 850px) {
+    #cako-search-feed {
+        padding: .25em 15px 1.1em;
+    }
 }
 
 #cako-search-header {
@@ -224,7 +236,6 @@ code.hljs {
 
 #search-status {
     display: none;
-    margin-bottom: 2em;
 }
 
 #search-status.error {
@@ -296,9 +307,14 @@ code.hljs {
 }
 
 #cako-search-results>.cako-post:not(:nth-of-type(1)) {
-    margin-top: 1.8em;
+    margin-top: 1.7em;
 }
 
+@media (max-width: 850px) {
+    #cako-search-results>.cako-post:not(:nth-of-type(1)) {
+        margin-top: 1.4em;
+    }
+}
 
 #cako-search-results .cako-post-link:focus .cako-post-date,
 .post-nav .cako-post-link:focus .cako-post-date,
@@ -767,7 +783,7 @@ body {
 
 @media (max-width: 850px) {
     .outer {
-        padding-bottom: 230px;
+        padding-bottom: calc(230px + env(safe-area-inset-bottom));
     }
 }
 
@@ -775,9 +791,8 @@ body {
 .inner {
     margin: 0 auto;
     width: 100%;
-    max-width: 775px;
+    max-width: 1000px;
     z-index: 100;
-    background: #fff;
 }
 
 @media (max-height: 1100px) {
@@ -1366,6 +1381,12 @@ The first (most recent) post in the list is styled to be bigger than the others 
     padding-top: 0.5em;
 }
 
+@media (max-width: 850px) {
+    .post-full {
+        padding-top: 0;
+    }
+}
+
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
@@ -1436,7 +1457,6 @@ The first (most recent) post in the list is styled to be bigger than the others 
     margin: 0 auto;
     font-size: 1.9rem;
     line-height: 1.5em;
-    background: #fff;
     border-radius: 10px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Arial, sans-serif;
     font-weight: 300;
@@ -2889,6 +2909,12 @@ Usage (In Ghost editor):
     align-items: center;
     font-size: 1.3rem;
     padding: 10px 15px 20px;
+}
+
+@media (max-width: 850px) {
+    .site-footer-content {
+        padding: 5px 15px 10px;
+    }
 }
 
 .site-footer-nav {

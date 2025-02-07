@@ -457,7 +457,7 @@ class CakoSearch {
             this.searchStatusElem.innerText = "No results found.";
         } else {
             this.searchStatusElem.innerText = "";
-            this.searchStatusElem.display = "none";
+            this.searchStatusElem.style.display = "none";
         }
 
         this.showResults(results);

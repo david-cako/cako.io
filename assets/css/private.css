@@ -16,6 +16,12 @@
     font-size: 1.9rem;
 }
 
+@media (max-width: 850px) {
+    .gh-signin {
+        top: 19vh;
+    }
+}
+
 .gh-signin h1 {
     font-size: 2.5rem;
     font-weight: 100;
