@@ -250,6 +250,7 @@ code.hljs {
     line-height: 1.6rem;
     margin: 0.8em -8px;
     transition: max-height 0.3s ease-in-out;
+    overflow-x: hidden;
 }
 
 .post-full-content .cako-featured {
@@ -271,6 +272,16 @@ code.hljs {
 
 .cako-featured .cako-post {
     margin-top: 1em;
+}
+
+@media (max-width: 500px) {
+    .cako-featured-header {
+        font-size: 1.8rem;
+    }
+
+    .cako-featured .cako-post {
+        font-size: 0.8em;
+    }
 }
 
 .cako-featured>.cako-post:nth-of-type(2) {
