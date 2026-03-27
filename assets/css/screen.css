@@ -504,20 +504,14 @@ code.hljs {
     color: #0c76e6 !important;
 }
 
-#cako-header {
-    position: fixed;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
+@keyframes opacity {
+    from {
+        opacity: 1;
+    }
 
-#david-cako-link {
-    color: #fff;
-    text-align: right;
-}
-
-#david-cako-link a:hover {
-    text-decoration: none;
+    to {
+        opacity: 0;
+    }
 }
 
 #cako-header-text {
@@ -529,7 +523,17 @@ code.hljs {
     text-align: center;
     margin: 15px 0 20px 15px;
     line-height: 75%;
+    position: fixed;
     display: inline-block;
+}
+
+@supports (animation-timeline: scroll()) and (animation-range: 0px 35px) {
+    #cako-header-text {
+        animation: opacity;
+        animation-timeline: scroll();
+        animation-range: 0px 35px;
+        animation-fill-mode: forwards;
+    }
 }
 
 #last-name-c {
