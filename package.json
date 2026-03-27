@@ -21,7 +21,7 @@
         "url": "https://github.com/david-cako/cako.io"
     },
     "config": {
-        "posts_per_page": 100
+        "posts_per_page": 25 
     },
     "dependencies": {}
 }

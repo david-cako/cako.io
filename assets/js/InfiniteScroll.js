@@ -22,7 +22,7 @@ export default class InfiniteScroll {
     isUpdatingPosts = false;
 
     /** Posts per page in each call to getAndAppendPosts. */
-    postsPerRequest = 100;
+    postsPerRequest = 25;
     /** Retry count for fetchPosts. */
     maxRetries = 10;
 
