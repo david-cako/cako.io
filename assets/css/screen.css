@@ -2951,3 +2951,7 @@ Usage (In Ghost editor):
 .site-footer-nav a:first-of-type:before {
     display: none;
 }
+
+.kg-width-wide {}
+
+.kg-width-full {}
