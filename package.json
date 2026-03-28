@@ -1,7 +1,7 @@
 {
     "name": "cako-io-ghost",
     "description": "cako.io theme for ghost",
-    "version": "2.2.0",
+    "version": "2.2.1",
     "engines": {
         "ghost": ">=1.2.0"
     },
@@ -21,7 +21,7 @@
         "url": "https://github.com/david-cako/cako.io"
     },
     "config": {
-        "posts_per_page": 25 
+        "posts_per_page": 25
     },
     "dependencies": {}
 }

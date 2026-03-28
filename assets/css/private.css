@@ -11,9 +11,12 @@
     background: transparent;
     top: 25vh;
     border-radius: 20px;
+    position: relative;
     margin: 10px auto;
+    max-width: 500px;
     padding: 0.8em 0.7em;
     font-size: 1.9rem;
+    border: 1px solid;
 }
 
 @media (max-width: 850px) {
@@ -71,23 +74,20 @@
     animation: shake 0.5s linear;
 }
 
-.gh-input {
+.gh-signin .gh-input {
     border-radius: 10px;
     color: #fff;
     background-color: #000;
     transition: none;
     height: 3.8rem;
-}
-
-.gh-input:focus {
-    border-color: initial;
-}
-
-.gh-signin input {
     border: 1px solid #fff;
 }
 
-.gh-input::placeholder {
+.gh-signin .gh-input:focus {
+    border-color: initial;
+}
+
+.gh-signin .gh-input::placeholder {
     color: #fff;
 }
 
@@ -109,7 +109,7 @@
     box-shadow: none;
 }
 
-.gh-btn:hover {
+.gh-signin .gh-btn:hover {
     border-color: #27d7ff;
 }
 
@@ -131,13 +131,16 @@
     background: transparent;
 }
 
-.gh-btn {
+.gh-signin .gh-btn {
+    margin-top: 0px;
+    background: initial;
     border-radius: 10px;
     text-shadow: none;
     height: 3.8rem;
 }
 
-.gh-btn span {
+.gh-signin .gh-btn span {
+    color: initial;
     height: initial;
     line-height: initial;
     font-size: 1.4rem;
