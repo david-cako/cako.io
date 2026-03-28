@@ -10,12 +10,11 @@ export class Api {
 
     /** Static variable caching all fetched posts. */
     static #posts
-
     /** Ghost API pagination object, populated with each request for posts */
     static #pagination;
 
+    /** Set true while getting all posts. */
     static #gettingPosts = false
-
     /** Promise that will resolve when all posts are retrieved, or reject
      * if an error occurs on retreival. */
     static #hasFinishedGettingPosts;
@@ -25,13 +24,9 @@ export class Api {
     /** Retry count for getPosts. */
     static #maxRetries = 10;
 
-    /** Array of objects containing a page number and a promise 
-     * to resolve with posts.
-     */
+    /** Array of objects containing a page number and a promise to resolve with posts. */
     static #pageAwaiters = [];
-    /** Array of objects containing a post ID and a promise 
-     * to resolve with desired post.
-     */
+    /** Array of objects containing a post ID and a promise to resolve with desired post. */
     static #postAwaiters = [];
 
     constructor() {

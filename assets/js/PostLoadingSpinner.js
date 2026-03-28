@@ -1,5 +1,5 @@
 
-import { Spinner } from './spin.js';
+import { Spinner } from './lib/spin.js';
 
 const LIGHT_ACCENT = "#0070e6";
 const DARK_ACCENT = "#27d7ff";
