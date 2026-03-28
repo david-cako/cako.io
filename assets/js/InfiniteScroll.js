@@ -1,8 +1,10 @@
 import { Api } from "./Api.js";
-import { generatePostLinkHTML } from "./html.js";
+import { Html } from "./Html.js";
 
 /** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
+    api = new Api();
+
     /** Current index scroll position managed by InfiniteScroll. */
     contentScrollPosition = 0;
 
@@ -15,7 +17,6 @@ export default class InfiniteScroll {
     /** Fetcher interval.  New posts are fetched every 30 seconds. */
     newPostsIntervalTime = 1000 * 30;
 
-
     /** True while getAndAppendPosts or getAndAppendNewPosts is called. */
     isUpdatingPosts = false;
 
@@ -27,8 +28,6 @@ export default class InfiniteScroll {
     /** TTL for saved contentScrollPosition in localStorage. */
     restoreScrollPosTTL = 1000 * 60 * 30;
 
-    postFeed = document.getElementById("cako-post-feed");
-    postFeedOuter = document.getElementById("cako-post-feed-outer");
     loadingPostsElem = document.getElementById("loading-posts");
 
     /** Getter for saved contentScrollPosition from localStorage. */
@@ -100,12 +99,6 @@ export default class InfiniteScroll {
     }
 
 
-    /** Append posts to index using HTML helpers from html.js */
-    appendPostsToFeed(posts, position = "beforeend") {
-        const postHtml = posts.map(p => generatePostLinkHTML(p));
-
-        this.postFeed.insertAdjacentHTML(position, postHtml.join("\n"));
-    }
 
     /** Fetch and insert all posts, resolving on completion or 
      * when optional resolveAt position has loaded. */
@@ -118,10 +111,10 @@ export default class InfiniteScroll {
 
             while (!this.pagination || this.pagination.next !== null) {
                 try {
-                    const posts = await this.fetchNextPage();
+                    const posts = await this.api.getNextPage();
                     this.pagination = posts.meta.pagination;
 
-                    this.appendPostsToFeed(posts);
+                    Html.appendPostsToFeed(posts);
                 } catch (e) {
                     this.isUpdatingPosts = false;
                     this.loadingPostsElem.innerText = "Could not finish loading posts.  Try refreshing cako.io.";
@@ -162,7 +155,7 @@ export default class InfiniteScroll {
             let posts;
 
             try {
-                posts = await this.fetchPosts(10, page);
+                posts = await this.api.getPage(page);
                 page++;
             } catch (e) {
                 this.isUpdatingPosts = false;
@@ -170,7 +163,7 @@ export default class InfiniteScroll {
             }
 
             for (const p of posts) {
-                if (!this.postFeed.querySelector(`[href="/${p.slug}/"]`)) {
+                if (!Html.postsFeedContains(p)) {
                     newPosts.push(p);
                 } else {
                     shouldGetNewPosts = false;
@@ -179,7 +172,7 @@ export default class InfiniteScroll {
             }
         }
 
-        this.appendPostsToFeed(newPosts, "afterbegin");
+        Html.appendPostsToBeginningOfFeed(newPosts);
 
         this.isUpdatingPosts = false;
     }

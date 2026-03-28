@@ -2,68 +2,71 @@ const MonthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
-function generateSearchPreviewHTML(result) {
-    if (result.strong === undefined || result.strong.in !== "html") {
-        return ``
-    }
+export class Html {
+    static postFeed = document.getElementById("cako-post-feed");
 
-    const words = result.strong.preview.split(" ");
+    static generateSearchPreviewHTML(result) {
+        if (result.strong === undefined || result.strong.in !== "html") {
+            return ``
+        }
 
-    for (let i = 0; i < words.length; i++) {
-        const w = words[i];
+        const words = result.strong.preview.split(" ");
 
-        for (let m of result.strong.matches) {
-            let matchIdx = w.indexOf(m.word);
+        for (let i = 0; i < words.length; i++) {
+            const w = words[i];
 
-            if (matchIdx !== -1) {
-                let before, match, after;
+            for (let m of result.strong.matches) {
+                let matchIdx = w.indexOf(m.word);
 
-                const tokenIdx = m.word.toLowerCase().indexOf(m.token);
+                if (matchIdx !== -1) {
+                    let before, match, after;
 
-                if (tokenIdx !== -1) {
-                    before = w.slice(0, tokenIdx);
-                    match = w.slice(tokenIdx, tokenIdx + m.token.length);
-                    after = w.slice(tokenIdx + m.token.length);
-                } else {
-                    before = "";
-                    match = w;
-                    after = "";
+                    const tokenIdx = m.word.toLowerCase().indexOf(m.token);
+
+                    if (tokenIdx !== -1) {
+                        before = w.slice(0, tokenIdx);
+                        match = w.slice(tokenIdx, tokenIdx + m.token.length);
+                        after = w.slice(tokenIdx + m.token.length);
+                    } else {
+                        before = "";
+                        match = w;
+                        after = "";
+                    }
+
+                    words[i] = `${before}<span class="match">${match}</span>${after}`;
                 }
-
-                words[i] = `${before}<span class="match">${match}</span>${after}`;
             }
         }
+
+        return `<div class="cako-post-preview">${words.join(" ")}</div>`;
     }
 
-    return `<div class="cako-post-preview">${words.join(" ")}</div>`;
-}
+    static generatePostLinkHTML(post, {
+        isCurrentPost,
+        searchResult
+    } = {}) {
+        const d = new Date(post.published_at);
+        const year = d.getFullYear();
+        const month = d.getMonth();
+        const date = d.getDate();
+        const monthName = MonthNames[month];
+        const monthStr = String(month + 1).padStart(2, "0");
 
-export function generatePostLinkHTML(post, { 
-    isCurrentPost, 
-    searchResult
-} = {}) {
-    const d = new Date(post.published_at);
-    const year = d.getFullYear();
-    const month = d.getMonth();
-    const date = d.getDate();
-    const monthName = MonthNames[month];
-    const monthStr = String(month + 1).padStart(2, "0");
+        const datetime = `${year}-${monthStr}-${String(date).padStart(2, "0")}`;
 
-    const datetime = `${year}-${monthStr}-${String(date).padStart(2, "0")}`;
-
-    let body;
-    if (searchResult !== undefined) {
-        if (searchResult.strong !== undefined && 
-            searchResult.strong.in === "html") {
-            body = generateSearchPreviewHTML(searchResult);
-        }
-    } else if (post.html !== undefined) {
-        body = `<section class="post-full-content">
+        let body;
+        if (searchResult !== undefined) {
+            if (searchResult.strong !== undefined &&
+                searchResult.strong.in === "html") {
+                body = generateSearchPreviewHTML(searchResult);
+            }
+        } else if (post.html !== undefined) {
+            body = `<section class="post-full-content">
             ${post.html}
         </section>`;
-    }
+        }
 
-    return `<div class="cako-post${isCurrentPost ? " current" : ""}">
+        return `<div class="cako-post${isCurrentPost ? " current" : ""}">
         ${isCurrentPost ? '<div class="current-post-marker">◆</div>' : ""}
         <a href="/${post.slug}/" class="cako-post-link" onclick="window.PostLoadingSpinner.onPostClicked(event)">
             <div class="cako-post-title">${post.title}</div>
@@ -72,48 +75,22 @@ export function generatePostLinkHTML(post, {
             </div>
         </a>
         ${body !== undefined ? body : ""}
-    </div>`;
-}
+        </div>`;
+    }
 
-export function generateFeatureHTML(feature, { includeDescription, closed } = {}) {
-    let postsHtml = (feature.posts.map(p => {
-        const isCurrentPost = p.slug === window.location.pathname.replaceAll("/", "");
+    static appendPostsToFeed(posts, atEnd = true) {
+        const postHtml = posts.map(p => Html.generatePostLinkHTML(p));
 
-        return generatePostLinkHTML(p, { isCurrentPost })
-    })).join("");
+        Html.postFeed.insertAdjacentHTML("beforeend", postHtml.join("\n"));
+    }
 
-    if (includeDescription) {
-        const featureMetadata = JSON.parse(feature.tag.description);
+    static appendPostsToBeginningOfFeed(posts) {
+        const postHtml = posts.map(p => Html.generatePostLinkHTML(p));
 
-        let featureDate;
-        let featureMonth;
-        let featureYear;
+        Html.postFeed.insertAdjacentHTML("afterbegin", postHtml.join("\n"));
+    }
 
-        if (featureMetadata?.date) {
-            const d = new Date(featureMetadata?.date);
-            featureDate = d.getDate();
-            featureMonth = MonthNames[d.getMonth()];
-            featureYear = d.getFullYear();
-        }
-
-        return `<div class="cako-featured${closed ? " closed" : ""}">
-        <div class="arrow">▸</div>
-        <div class="cako-featured-header">${feature.tag.name}
-            ${featureMetadata.description
-                ? `<div class="cako-featured-description">${featureMetadata.description}</div>`
-                : ""
-            }
-            <div class="cako-featured-date">${featureDate} ${featureMonth} ${featureYear}</div>
-        </div>
-        <div class="posts">
-            ${postsHtml}
-        </div>
-        </div>`
-    } else {
-        return `<div class="cako-featured">
-        <div class="cako-featured-header">${feature.tag.name}
-        </div>
-        ${postsHtml}
-        </div>`
+    static postsFeedContains(post) {
+        return Html.postFeed.querySelector(`[href="/${p.slug}/"]`) !== null;
     }
 }

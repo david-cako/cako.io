@@ -1,5 +1,5 @@
 import { Api } from "./Api.js";
-import { generatePostLinkHTML } from "./html.js";
+import { generatePostLinkHTML } from "./Html.js";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"

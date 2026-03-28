@@ -6,7 +6,7 @@ const GHOST_API = new GhostContentAPI({
 
 export class Api {
     /** Current page for API instance. */
-    page = 0;
+    page = 1;
 
     /** Static variable caching all fetched posts. */
     static #posts
