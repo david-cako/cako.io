@@ -15,16 +15,9 @@ export default class InfiniteScroll {
     /** Fetcher interval.  New posts are fetched every 30 seconds. */
     newPostsIntervalTime = 1000 * 30;
 
-    /** Ghost API pagination object, populated with each request for posts */
-    pagination;
 
     /** True while getAndAppendPosts or getAndAppendNewPosts is called. */
     isUpdatingPosts = false;
-
-    /** Posts per page in each call to getAndAppendPosts. */
-    postsPerRequest = 25;
-    /** Retry count for fetchPosts. */
-    maxRetries = 10;
 
     /** Unix timestamp of last save of contentScrollPosition to localStorage. */
     lastScrollPositionTime;
@@ -106,39 +99,6 @@ export default class InfiniteScroll {
             this.newPostsIntervalTime);
     }
 
-    /** Main post fetcher with retry logic. */
-    async fetchPosts(count, page) {
-        let retries = 0;
-
-        while (retries < this.maxRetries) {
-            retries++;
-
-            try {
-                let posts = await Api.getPosts(count, page);
-                return posts;
-            } catch (e) {
-                console.log(`Error fetching posts, attempt ${retries}`, e);
-                if (retries >= this.maxRetries) {
-                    throw e;
-                }
-            }
-        }
-    }
-
-    /** Fetch next page given current pagination and InfiniteScroll.postsPerRequest */
-    async fetchNextPage() {
-        let page;
-
-        if (this.pagination) { // next page populated by previous request
-            page = this.pagination.next;
-        } else { // otherwise, continue from server-rendered posts
-            page = 2;
-        }
-
-        let posts = await this.fetchPosts(this.postsPerRequest, page);
-
-        return posts
-    }
 
     /** Append posts to index using HTML helpers from html.js */
     appendPostsToFeed(posts, position = "beforeend") {
