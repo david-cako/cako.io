@@ -5,7 +5,7 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
-class CakoSearch {
+class Search {
     /** Populated on input focus with promise from Ghost API. */
     postsResponse;
 
@@ -584,5 +584,5 @@ function removePunctuation(string) {
 }
 
 (async () => {
-    window.CakoSearch = new CakoSearch();
+    window.Search = new Search();
 })();

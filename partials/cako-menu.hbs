@@ -20,7 +20,6 @@
             <ion-icon id="cako-search-clear" name="close-circle-outline"></ion-icon>
         </div>
     </div>
-    <script type="module" src="{{asset "js/CakoSearch.js"}}"></script>
     <script>
         function showMenuIndicator() {
             const menu = document.getElementById("cako-menu");
@@ -59,7 +58,7 @@
             menuInner.style.display = "block";
             clearMenuIndicator();
 
-            if (window.CakoSearch !== undefined) {
+            if (window.Search !== undefined) {
                 // autofocus unless on iOS, prevents scroll jump
                 !([
                     'iPad Simulator',
@@ -70,7 +69,7 @@
                     'iPod'
                 ].includes(navigator.platform)
                     || (navigator.userAgent.includes("Mac") && "ontouchend" in document)) &&
-                    window.CakoSearch.focus();
+                    window.Search.focus();
             }
             if (prefetchDarkCss !== undefined) {
                 prefetchDarkCss();

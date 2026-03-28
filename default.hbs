@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{@site.locale}}">
+
 <head>
 
     {{!-- Document Settings --}}
@@ -13,16 +14,16 @@
     <meta name="google-site-verification" content="CZuJBVbmjQdYaKUXQ6pDcDQ1Y9dH13s1oeZmN_AZpu4" />
 
     {{!-- Styles'n'Scripts --}}
-    <link rel="stylesheet" type="text/css" href="{{asset "css/screen.css"}}" />
-    <link rel="stylesheet" type="text/css" href="{{asset "css/spin.css"}}" />
-    
+    <link rel="stylesheet" type="text/css" href="{{asset " css/screen.css"}}" />
+    <link rel="stylesheet" type="text/css" href="{{asset " css/spin.css"}}" />
+
     <meta id="theme-color" name="theme-color" content="#fff">
 
     {{!-- Set dark css path from template to enable cache-busting in lights.js --}}
     <script>
         const DARK_CSS_PATH = '{{asset "css/dark.css"}}';
     </script>
-    <script src="{{asset "js/lights.js"}}"></script>
+    <script src="{{asset " js/lights.js"}}"></script>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
@@ -35,6 +36,7 @@
     {{ghost_head}}
 
 </head>
+
 <body class="{{body_class}}">
     <div class="site-wrapper">
         {{> "cako-menu"}}
@@ -42,14 +44,18 @@
         {{{body}}}
     </div>
 
-    <script type="module" src="{{asset "js/PostLoadingSpinner.js"}}"></script>
-    <script type="module" src="{{asset "js/prefetch.js"}}"></script>
-    <script src="{{asset "js/lib/content-api.min.js"}}"></script>
+    <script type="module" src="{{asset " js/PostLoadingSpinner.js"}}"></script>
+    <script type="module" src="{{asset " js/prefetch.js"}}"></script>
+    <script src="{{asset " js/lib/content-api.min.js"}}"></script>
 
-    {{!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. --}}
+    {{!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some
+    JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already
+    loaded. --}}
     {{{block "scripts"}}}
 
-    {{!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the closing body tag --}}
+    {{!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the
+    closing body tag --}}
     {{ghost_foot}}
 </body>
+<script type="module" src="{{asset "js/CakoApp.js"}}"></script>
 </html>
