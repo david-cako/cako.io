@@ -13,7 +13,7 @@
     border-radius: 20px;
     position: relative;
     margin: 10px auto;
-    max-width: 500px;
+    max-width: 400px;
     padding: 0.8em 0.7em;
     font-size: 1.9rem;
     border: 1px solid;
@@ -80,15 +80,19 @@
     background-color: #000;
     transition: none;
     height: 3.8rem;
+    font-size: initial;
     border: 1px solid #fff;
+    padding: 12px 30px;
 }
 
 .gh-signin .gh-input:focus {
     border-color: initial;
+    box-shadow: unset;
 }
 
 .gh-signin .gh-input::placeholder {
     color: #fff;
+    font-weight: 300;
 }
 
 .gh-input-icon svg {
@@ -133,15 +137,15 @@
 
 .gh-signin .gh-btn {
     margin-top: 0px;
-    background: initial;
+    background: unset;
     border-radius: 10px;
     text-shadow: none;
     height: 3.8rem;
 }
 
 .gh-signin .gh-btn span {
-    color: initial;
-    height: initial;
+    height: unset;
     line-height: initial;
     font-size: 1.4rem;
+    color: unset;
 }
