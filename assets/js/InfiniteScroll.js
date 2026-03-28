@@ -1,4 +1,4 @@
-import { Api } from "./api.js";
+import { Api } from "./Api.js";
 import { generatePostLinkHTML } from "./html.js";
 
 /** Service for managing and restoring scroll position on cako.io index */
