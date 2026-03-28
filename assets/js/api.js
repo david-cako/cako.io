@@ -70,10 +70,6 @@ export class Api {
         }
     }
 
-    static getTag(id) {
-        return GHOST_API.tags.read({ slug: id })
-    }
-
     static hasPage(n) {
         return Api.#posts.length >= n * Api.#postsPerPage
     }
@@ -151,7 +147,7 @@ export class Api {
         }
 
         Api.#hasFinishedGettingPosts.resolve(true);
-        Api.#rejectAwaiters(new Error("All available posts already retrieved."))
+        Api.#finalizeAwaiters()
     }
 
     static #resolveAwaiters() {
@@ -182,8 +178,26 @@ export class Api {
             a.reject(error);
         }
 
+        Api.#postAwaiters = [];
+
         for (a of Api.#pageAwaiters) {
             a.reject(error);
         }
+
+        Api.#pageAwaiters = []
+    }
+
+    static #finalizeAwaiters() {
+        for (a of Api.#postAwaiters) {
+            a.reject(new Error("Post not found."));
+        }
+
+        Api.#postAwaiters = [];
+
+        for (a of Api.#pageAwaiters) {
+            a.resolve(null);
+        }
+
+        Api.#pageAwaiters = [];
     }
 }
