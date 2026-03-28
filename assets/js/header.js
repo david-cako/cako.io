@@ -1,7 +1,8 @@
 /** Setup scroll handler for CAKO logo. */
-if (!window.CSS.supports("animation-timeline", "scroll()") ||
-    !window.CSS.supports("animation-range", "0px 35px")) {
-    (() => {
+(() => {
+    if (!window.CSS.supports("animation-timeline", "scroll()") ||
+        !window.CSS.supports("animation-range", "0px 35px")) {
+
         const cakoHeader = document.getElementById('cako-header-text');
         const cakoHeaderLink = document.getElementById('cako-site-nav-link');
         const cakoHeaderMaxScroll = 35;
@@ -33,5 +34,5 @@ if (!window.CSS.supports("animation-timeline", "scroll()") ||
         cakoHeaderLink.addEventListener('click', () => {
             localStorage.setItem("contentScrollPosition", 0);
         });
-    })();
-}
+    }
+})();
