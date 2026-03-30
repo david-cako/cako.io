@@ -4,7 +4,7 @@ const GHOST_API = new GhostContentAPI({
     version: "v3"
 });
 
-export class Api {
+export default class Api {
     /** Current page for API instance. */
     page = 1;
 

@@ -1,11 +1,12 @@
-import { Api } from "./Api.js";
-import { generatePostLinkHTML } from "./Html.js";
+import Api from "./Api.js";
+import Html from "./Html.js";
+import Menu from "./Menu.js";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
-class Search {
+export default class Search {
     /** Populated on input focus with promise from Ghost API. */
     postsResponse;
 
@@ -22,16 +23,16 @@ class Search {
     inputThrottleTimeout;
     inputThrottleTime = 100;
 
-    searchIsShown = false;
+    static searchIsShown = false;
 
-    searchElement = document.getElementById("cako-search");
-    clearIcon = document.getElementById("cako-search-clear");
-    searchClear = document.getElementById("cako-search-clear");
-    searchResults = document.getElementById("cako-search-results");
-    searchFeed = document.getElementById("cako-search-feed");
-    searchStatusElem = document.getElementById("search-status");
-    postFeed = document.getElementById("cako-post-feed-outer");
-    postContent = document.querySelector(".post-full");
+    static searchElement = document.getElementById("cako-search");
+    static clearIcon = document.getElementById("cako-search-clear");
+    static searchClear = document.getElementById("cako-search-clear");
+    static searchResults = document.getElementById("cako-search-results");
+    static searchFeed = document.getElementById("cako-search-feed");
+    static searchStatusElem = document.getElementById("search-status");
+    static postFeed = document.getElementById("cako-post-feed-outer");
+    static postContent = document.querySelector(".post-full");
 
     get focusedResult() {
         if (document.activeElement &&
@@ -41,13 +42,13 @@ class Search {
     }
 
     constructor() {
-        this.searchElement.addEventListener("focus", () => {
+        Search.searchElement.addEventListener("focus", () => {
             this.getOrFetchPosts();
         });
 
-        this.searchElement.addEventListener("input", this.onInput);
+        Search.searchElement.addEventListener("input", this.onInput);
 
-        this.searchElement.addEventListener("keydown", (e) => {
+        Search.searchElement.addEventListener("keydown", (e) => {
             // prevents arrow left/right post navigation while
             // search is focused
             e.stopPropagation();
@@ -55,7 +56,7 @@ class Search {
         });
         document.addEventListener("keydown", this.onKeyDown);
 
-        this.searchClear.addEventListener("click", () => {
+        Search.searchClear.addEventListener("click", () => {
             this.clear();
             this.focus();
         });
@@ -349,64 +350,64 @@ class Search {
     }
 
     showSearch() {
-        this.searchIsShown = true;
-        this.searchFeed.style.display = "block";
-        if (this.postFeed) {
-            this.postFeed.style.display = "none";
+        Search.searchIsShown = true;
+        Search.searchFeed.style.display = "block";
+        if (Search.postFeed) {
+            Search.postFeed.style.display = "none";
         }
 
-        if (this.postContent) {
-            this.postContent.style.display = "none";
+        if (Search.postContent) {
+            Search.postContent.style.display = "none";
         }
     }
 
     showResults(results) {
-        this.searchResults.innerHTML = "";
+        Search.searchResults.innerHTML = "";
 
         for (const result of results) {
-            const resultHtml = generatePostLinkHTML(result.post, {
+            const resultHtml = Html.generatePostLinkHTML(result.post, {
                 searchResult: result
             });
 
-            this.searchResults.insertAdjacentHTML("beforeend", resultHtml);
+            Search.searchResults.insertAdjacentHTML("beforeend", resultHtml);
         }
     }
 
     hideSearch() {
-        this.searchFeed.style.display = "none";
+        Search.searchFeed.style.display = "none";
 
-        if (this.postFeed) {
-            this.postFeed.style.display = 'block';
+        if (Search.postFeed) {
+            Search.postFeed.style.display = 'block';
         }
 
-        if (this.postContent) {
-            this.postContent.style.display = "block";
+        if (Search.postContent) {
+            Search.postContent.style.display = "block";
         }
 
         window.scrollTo({ top: this.contentScrollPosition });
 
-        this.searchIsShown = false;
+        Search.searchIsShown = false;
     }
 
     clearResults() {
         this.previousResults = undefined;
-        this.searchResults.innerHTML = "";
+        Search.searchResults.innerHTML = "";
     }
 
     focus() {
-        this.searchElement.focus();
+        Search.searchElement.focus();
     }
 
     clear() {
-        this.searchElement.value = "";
+        Search.searchElement.value = "";
         this.previousQuery = "";
         this.clearResults();
         this.hideSearch();
-        this.clearIcon.style.display = "none";
+        Search.clearIcon.style.display = "none";
     }
 
     onScroll = () => {
-        if (!this.searchIsShown) {
+        if (!Search.searchIsShown) {
             this.contentScrollPosition = window.scrollY;
         }
     }
@@ -425,39 +426,39 @@ class Search {
     onSearchChange = async (value) => {
         if (value.length < 1) {
             this.previousQuery = "";
-            this.clearIcon.style.display = "none";
+            Search.clearIcon.style.display = "none";
             this.clearResults();
             this.hideSearch();
 
             return;
         }
 
-        this.clearIcon.style.display = "block";
+        Search.clearIcon.style.display = "block";
 
-        const searchWasShown = this.searchIsShown;
+        const searchWasShown = Search.searchIsShown;
 
         this.showSearch();
-        this.searchStatusElem.innerText = "Searching...";
-        this.searchStatusElem.className = "";
-        this.searchStatusElem.style.display = "block";
+        Search.searchStatusElem.innerText = "Searching...";
+        Search.searchStatusElem.className = "";
+        Search.searchStatusElem.style.display = "block";
 
-        this.searchResults.innerHTML = "";
+        Search.searchResults.innerHTML = "";
 
         let results;
 
         try {
             results = await this.search(value);
         } catch (e) {
-            this.searchStatusElem.innerText = `Could not load results.`
-            this.searchStatusElem.className = "error";
+            Search.searchStatusElem.innerText = `Could not load results.`
+            Search.searchStatusElem.className = "error";
             throw e;
         }
 
         if (results.length === 0) {
-            this.searchStatusElem.innerText = "No results found.";
+            Search.searchStatusElem.innerText = "No results found.";
         } else {
-            this.searchStatusElem.innerText = "";
-            this.searchStatusElem.style.display = "none";
+            Search.searchStatusElem.innerText = "";
+            Search.searchStatusElem.style.display = "none";
         }
 
         this.showResults(results);
@@ -472,12 +473,12 @@ class Search {
     }
 
     onKeyDown = (e) => {
-        const firstResult = this.searchResults.querySelector(".cako-post-link");
+        const firstResult = Search.searchResults.querySelector(".cako-post-link");
 
         const hasModifier = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
 
         // if search shown and up or down pressed, prevent scrolling
-        if (this.searchFeed.style.display === "block" && !hasModifier &&
+        if (Search.searchFeed.style.display === "block" && !hasModifier &&
             (e.key == "ArrowUp" || e.key == "ArrowDown")) {
             e.preventDefault();
         }
@@ -494,9 +495,7 @@ class Search {
         if (e.key.toLowerCase() == "f" && (e.ctrlKey || e.metaKey) && e.shiftKey) {
             e.preventDefault();
 
-            if (toggleMenu) {
-                toggleMenu();
-            }
+            Menu.toggle();
 
             this.focus();
 
@@ -505,9 +504,7 @@ class Search {
 
         // escape closes menu
         if (e.key == "Escape") {
-            if (closeMenu) {
-                closeMenu();
-            }
+            Menu.close();
 
             return;
         }
@@ -582,7 +579,3 @@ function normalizeNumber(string) {
 function removePunctuation(string) {
     return string.replace(/[$%,]/gi, "")
 }
-
-(async () => {
-    window.Search = new Search();
-})();

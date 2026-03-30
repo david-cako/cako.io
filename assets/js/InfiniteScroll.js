@@ -1,5 +1,6 @@
-import { Api } from "Api.js";
-import { Html } from "Html.js";
+import Api from "Api.js";
+import Html from "Html.js";
+import Search from "Search.js";
 
 /** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
@@ -87,7 +88,7 @@ export default class InfiniteScroll {
 
             const shouldRestoreScrollPosition =
                 savedPos !== null && this.savedScrollPosIsFresh &&
-                !window.searchIsShown && !userHasScrolled;
+                !Search.searchIsShown && !userHasScrolled;
 
             if (shouldRestoreScrollPosition) {
                 this.restoreScrollPosition();
@@ -203,7 +204,7 @@ export default class InfiniteScroll {
             return;
         }
 
-        if (!window.searchIsShown) {
+        if (!Search.searchIsShown) {
             this.contentScrollPosition = window.scrollY;
             let time = Date.now();
 

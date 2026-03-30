@@ -1,15 +1,15 @@
 <div id="cako-menu">
     <div class="nav-icon-outer">
-        <div id="menu-icon" class="nav-icon" onclick="toggleMenu()"></div>
+        <div id="menu-icon" class="nav-icon"></div>
     </div>
     <div id="cako-menu-inner">
-        <script type="module" src="{{asset "js/lib/ionicons/ionicons.esm.js"}}"></script>
-        <div class="cako-menu-item" onclick="toggleLights()">
+        <script type="module" src="{{asset " js/lib/ionicons/ionicons.esm.js"}}"></script>
+        <div id="cako-menu-lights" class="cako-menu-item">
             <ion-icon name="bulb-outline"></ion-icon>
             Lights
         </div>
-        <a href="/features/">
-            <div class="cako-menu-item">
+        <a id="cako-menu-features-link" href="/features/">
+            <div id="cako-menu-features" class="cako-menu-item">
                 <ion-icon name="star-outline"></ion-icon>
                 Features
             </div>
@@ -20,102 +20,4 @@
             <ion-icon id="cako-search-clear" name="close-circle-outline"></ion-icon>
         </div>
     </div>
-    <script>
-        function showMenuIndicator() {
-            const menu = document.getElementById("cako-menu");
-
-            const i = document.createElement("div");
-            i.id = "cako-menu-indicator";
-
-            menu.appendChild(i);
-        }
-
-        function clearMenuIndicator() {
-            const i = document.getElementById("cako-menu-indicator");
-
-            if (i) {
-                i.remove();
-
-                localStorage.setItem("menuIndicatorCleared", String(Date.now()));
-            }
-        }
-
-        function toggleMenu() {
-            const menuInner = document.getElementById("cako-menu-inner");
-
-            if (menuInner) {
-                if (menuInner.style.display === "block") {
-                    closeMenu();
-                } else {
-                    openMenu();
-                }
-            }
-        }
-
-        function openMenu() {
-            const menuInner = document.getElementById("cako-menu-inner");
-
-            menuInner.style.display = "block";
-            clearMenuIndicator();
-
-            if (window.Search !== undefined) {
-                // autofocus unless on iOS, prevents scroll jump
-                !([
-                    'iPad Simulator',
-                    'iPhone Simulator',
-                    'iPod Simulator',
-                    'iPad',
-                    'iPhone',
-                    'iPod'
-                ].includes(navigator.platform)
-                    || (navigator.userAgent.includes("Mac") && "ontouchend" in document)) &&
-                    window.Search.focus();
-            }
-            if (prefetchDarkCss !== undefined) {
-                prefetchDarkCss();
-            }
-        }
-
-        function closeMenu() {
-            const menuInner = document.getElementById("cako-menu-inner");
-
-            menuInner.style.display = "none";
-
-            if (document.activeElement) {
-                document.activeElement.blur();
-            }
-        }
-
-        (() => {
-            const menuItems = document.getElementsByClassName("cako-menu-item");
-
-            for (const i of menuItems) {
-                i.addEventListener("click", toggleMenu);
-            }
-
-            // show indicator for new features
-            /**
-            const indicatorCleared = localStorage.getItem("menuIndicatorCleared");
-
-            if (!indicatorCleared || (Number(indicatorCleared) < 1633046530235)) {
-                showMenuIndicator();
-            }
-            **/
-
-            document.addEventListener("click", e => {
-                const menuInner = document.getElementById("cako-menu-inner");
-                const menuIcon = document.getElementById("menu-icon");
-                const cakoSearchFeed = document.getElementById("cako-search-feed");
-
-                if (menuInner.style.display === "block") {
-                    if (e.target !== menuIcon &&
-                        e.target !== menuInner &&
-                        !cakoSearchFeed.contains(e.target) &&
-                        !menuInner.contains(e.target)) {
-                        closeMenu();
-                    }
-                }
-            })
-        })();
-    </script>
 </div>

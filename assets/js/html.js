@@ -2,7 +2,7 @@ const MonthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
-export class Html {
+export default class Html {
     static postFeed = document.getElementById("cako-post-feed");
 
     static generateSearchPreviewHTML(result) {
