@@ -1,5 +1,3 @@
-import Search from "./Search.js";
-
 export default class Menu {
     static menu = document.getElementById("cako-menu");
     static menuIcon = document.getElementById("menu-icon");
@@ -9,25 +7,37 @@ export default class Menu {
     static menuFeatures = document.getElementById("cako-menu-features");
     static menuFeaturesLink = document.getElementById("cako-menu-features-link");
 
-    newFeatureDate = 1633046530235;
+    static newFeatureDate = 1633046530235;
 
     static get menuIndicator() {
         return document.getElementById("cako-menu-indicator");
     }
 
+    static get menuIndicatorCleared() {
+        return localStorage.getItem("menuIndicatorCleared");
+    }
+
+    static set menuIndicatorCleared(value) {
+        localStorage.setItem("menuIndicatorCleared", String(value));
+    }
+
+    constructor() {
+        Menu.setupListeners()
+    }
+
     static toggle() {
         if (Menu.menuInner) {
             if (Menu.menuInner.style.display === "block") {
-                close();
+                Menu.close();
             } else {
-                open();
+                Menu.open();
             }
         }
     }
 
     static open() {
         Menu.menuInner.style.display = "block";
-        clearMenuIndicator();
+        Menu.clearMenuIndicator();
 
         if (window.Search !== undefined) {
             // autofocus unless on iOS, prevents scroll jump
@@ -43,7 +53,7 @@ export default class Menu {
                 window.Search.focus();
         }
         if (prefetchDarkCss !== undefined) {
-            prefetchDarkCss();
+            window.Lights.prefetchDarkCss();
         }
     }
 
@@ -66,7 +76,7 @@ export default class Menu {
         if (Menu.menuIndicator) {
             Menu.menuIndicator.remove();
 
-            localStorage.setItem("menuIndicatorCleared", String(Date.now()));
+            Menu.menuIndicatorCleared = String(Date.now());
         }
     }
 
@@ -76,16 +86,16 @@ export default class Menu {
                 e.target !== Menu.menuInner &&
                 !window.Search.searchFeed.contains(e.target) &&
                 !Menu.menuInner.contains(e.target)) {
-                close();
+                Menu.close();
             }
         }
     }
 
     static maybeShowMenuIndicator() {
-        const indicatorCleared = localStorage.getItem("menuIndicatorCleared");
+        const indicatorCleared = Menu.menuIndicatorCleared;
 
         if (!indicatorCleared || (Number(indicatorCleared) < Menu.newFeatureDate)) {
-            showMenuIndicator();
+            Menu.showMenuIndicator();
         }
     }
 
@@ -96,6 +106,6 @@ export default class Menu {
 
         Menu.menuLights.addEventListener("click", window.Lights.toggle);
 
-        document.addEventListener("click", maybeClose);
+        document.addEventListener("click", Menu.maybeClose);
     }
 }

@@ -1,6 +1,5 @@
 import Api from "Api.js";
 import Html from "Html.js";
-import Search from "Search.js";
 
 /** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
@@ -8,24 +7,19 @@ export default class InfiniteScroll {
 
     /** Current index scroll position managed by InfiniteScroll. */
     contentScrollPosition = 0;
-
     /** Increments on every scroll event after InfiniteScroll initialization.
      * Resets on pageShow event. */
     scrollEvents = 0;
-
     /** JS interval ID for new posts fetcher */
     newPostsInterval;
     /** Fetcher interval.  New posts are fetched every 30 seconds. */
     newPostsIntervalTime = 1000 * 30;
-
     /** True while getAndAppendPosts or getAndAppendNewPosts is called. */
     isUpdatingPosts = false;
-
     /** Unix timestamp of last save of contentScrollPosition to localStorage. */
     lastScrollPositionTime;
     /** Throttle for saving contentScrollPosition to localStorage. */
     scrollPositionThrottle = 100;
-
     /** TTL for saved contentScrollPosition in localStorage. */
     restoreScrollPosTTL = 1000 * 60 * 30;
 
@@ -33,7 +27,7 @@ export default class InfiniteScroll {
 
     /** Getter for saved contentScrollPosition from localStorage. */
     get savedScrollPosition() {
-        let pos = localStorage.getItem("contentScrollPosition")
+        let pos = InfiniteScroll.contentScrollPosition;
 
         if (pos !== null && Number(pos) !== NaN) {
             return Number(pos);
@@ -44,7 +38,7 @@ export default class InfiniteScroll {
 
     /** Getter for saved contentScrollPositionTime from localStorage. */
     get savedScrollPositionTime() {
-        let time = localStorage.getItem("contentScrollPositionTime")
+        let time = InfiniteScroll.contentScrollPositionTime;
 
         if (time !== null && Number(time) !== NaN) {
             return Number(time);
@@ -63,6 +57,22 @@ export default class InfiniteScroll {
         }
 
         return Date.now() - savedPosTime <= this.restoreScrollPosTTL;
+    }
+
+    static get contentScrollPosition() {
+        return localStorage.getItem("contentScrollPosition");
+    }
+
+    static set contentScrollPosition(value) {
+        return localStorage.setItem("contentScrollPosition", value);
+    }
+
+    static get contentScrollPositionTime() {
+        return localStorage.getItem("contentScrollPositionTime")
+    }
+
+    static set contentScrollPositionTime(value) {
+        return localStorage.setItem("contentScrollPositionTime", value)
     }
 
     constructor() {
@@ -88,7 +98,7 @@ export default class InfiniteScroll {
 
             const shouldRestoreScrollPosition =
                 savedPos !== null && this.savedScrollPosIsFresh &&
-                !Search.searchIsShown && !userHasScrolled;
+                !window.Search.searchIsShown && !userHasScrolled;
 
             if (shouldRestoreScrollPosition) {
                 this.restoreScrollPosition();
@@ -180,10 +190,10 @@ export default class InfiniteScroll {
 
     /** Saves both contentScrollPosition and contentScrollPositionTime in localStorage. */
     saveScrollPosition() {
-        localStorage.setItem("contentScrollPosition", this.contentScrollPosition);
+        InfiniteScroll.contentScrollPosition = this.contentScrollPosition;
 
         this.lastScrollPositionTime = Date.now();
-        localStorage.setItem("contentScrollPositionTime", this.lastScrollPositionTime);
+        InfiniteScroll.contentScrollPositionTime = this.lastScrollPositionTime;
     }
 
     /** Sets page scroll position from saved value in localStorage. */
@@ -204,7 +214,7 @@ export default class InfiniteScroll {
             return;
         }
 
-        if (!Search.searchIsShown) {
+        if (!window.Search.searchIsShown) {
             this.contentScrollPosition = window.scrollY;
             let time = Date.now();
 

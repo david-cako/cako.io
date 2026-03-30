@@ -12,25 +12,22 @@ export default class Api {
     static #posts
     /** Ghost API pagination object, populated with each request for posts */
     static #pagination;
-
     /** Set true while getting all posts. */
     static #gettingPosts = false
     /** Promise that will resolve when all posts are retrieved, or reject
      * if an error occurs on retreival. */
     static #hasFinishedGettingPosts;
-
     /** Posts per page in each call to getNextPage. */
     static #postsPerPage = 25;
     /** Retry count for getPosts. */
     static #maxRetries = 10;
-
     /** Array of objects containing a page number and a promise to resolve with posts. */
     static #pageAwaiters = [];
     /** Array of objects containing a post ID and a promise to resolve with desired post. */
     static #postAwaiters = [];
 
     constructor() {
-        if (!Api.#gettingPosts) {
+        if (!Api.#gettingPosts && !Api.#hasFinishedGettingPosts) {
             Api.#getAllPosts();
         }
     }

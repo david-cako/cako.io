@@ -1,25 +1,21 @@
 import Api from "./Api.js";
 import Html from "./Html.js";
-import Menu from "./Menu.js";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
 export default class Search {
+    menu;
     /** Populated on input focus with promise from Ghost API. */
     postsResponse;
-
     /** Retry count for posts request. */
     maxRetries = 10;
-
     /** Updates from this.search() after successful query. */
     previousQuery = "";
     previousResults;
-
     /** Position in document from when search is hidden. */
     contentScrollPosition;
-
     inputThrottleTimeout;
     inputThrottleTime = 100;
 
@@ -41,7 +37,9 @@ export default class Search {
         }
     }
 
-    constructor() {
+    constructor(menu) {
+        this.menu = menu;
+
         Search.searchElement.addEventListener("focus", () => {
             this.getOrFetchPosts();
         });
@@ -495,7 +493,7 @@ export default class Search {
         if (e.key.toLowerCase() == "f" && (e.ctrlKey || e.metaKey) && e.shiftKey) {
             e.preventDefault();
 
-            Menu.toggle();
+            this.menu.toggle();
 
             this.focus();
 
@@ -504,7 +502,7 @@ export default class Search {
 
         // escape closes menu
         if (e.key == "Escape") {
-            Menu.close();
+            this.menu.close();
 
             return;
         }
