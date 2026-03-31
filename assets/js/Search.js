@@ -52,7 +52,9 @@ export default class Search {
         window.Search = Search;
 
         Search.searchElement.addEventListener("focus", async () => {
-            await this.fetchPosts();
+            if (this.postsLoadingComplete == undefined) {
+                await this.fetchPosts();
+            }
         });
 
         Search.searchElement.addEventListener("input", this.onInput);
@@ -79,8 +81,9 @@ export default class Search {
 
             while (more) {
                 const posts = await this.api.getNextPage();
+
                 if (posts) {
-                    this.posts.concat(posts);
+                    this.posts = this.posts.concat(posts);
                     this.callPostCallbacks(posts);
                 } else {
                     more = false;
@@ -116,6 +119,8 @@ export default class Search {
 
             this.showResults(results);
         }
+
+        callback(posts);
 
         this.onPosts(callback);
         await this.postsLoadingComplete;
@@ -426,9 +431,11 @@ export default class Search {
 
         Search.clearIcon.style.display = "block";
 
-        const searchWasShown = Search.searchIsShown;
+        if (!Search.searchIsShown) {
+            this.showSearch();
+        }
 
-        this.showSearch();
+        const searchWasShown = Search.searchIsShown;
         Search.searchResults.innerHTML = "";
 
         let results;
@@ -491,8 +498,8 @@ export default class Search {
 
         // escape closes menu
         if (e.key == "Escape") {
+            this.clear();
             this.menu.close();
-            this.hideSearch();
 
             return;
         }

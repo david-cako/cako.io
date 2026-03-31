@@ -113,11 +113,20 @@ export default class CakoApp {
             e.preventDefault();
 
             const postElem = postLinkElem.parentElement;
-            const id = postElem.dataset.postId;
+
+            let id;
+            if (postElem.dataset.postId) {
+                id = postElem.dataset.postId;
+            } else if (postLinkElem.href) {
+                const url = URL.parse(postLinkElem.href);
+                id = url.pathname.replaceAll("/", "");
+            } else {
+                throw new Error("Missing post id or href in post link!");
+            }
 
             await this.navigateToPost(id);
 
-            this.state = { page: `/${id}/` };
+            this.state = { page: `${id}` };
             history.pushState(this.state, "", `/${id}/`);
         }
 
@@ -126,7 +135,7 @@ export default class CakoApp {
             e.preventDefault();
 
             await this.navigateToFeatures();
-            this.state = { page: "/features/" };
+            this.state = { page: "features" };
             history.pushState(this.state, "", "/features/");
         }
     }
@@ -159,7 +168,7 @@ export default class CakoApp {
             case "/":
                 await this.navigateToIndex();
                 break;
-            case "/features/":
+            case "features":
                 await this.navigateToFeatures();
                 break;
             default:
@@ -175,9 +184,11 @@ export default class CakoApp {
     onSearchState = (shown) => {
         if (shown) {
             this.navigateToSearch();
-            this.searchBackgroundState = this.state;
+            this.searchBackgroundState = Object.assign({}, this.state);
+            console.log(this.searchBackgroundState);
             this.state = { page: "search" };
         } else {
+            console.log(this.searchBackgroundState);
             this.navigateToState(this.searchBackgroundState);
             this.state = this.searchBackgroundState;
             this.searchBackgroundState = undefined;

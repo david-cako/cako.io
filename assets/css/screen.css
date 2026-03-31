@@ -428,6 +428,7 @@ code.hljs {
     font-size: 10px;
 }
 
+.post-nav .cako-post.right,
 .post-nav .cako-post-link.right {
     text-align: right;
 }

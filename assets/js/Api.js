@@ -129,7 +129,12 @@ export default class Api {
 
     static postForId(id) {
         const postIdx = Api.posts.findIndex(p => p.slug == id);
+        if (postIdx == -1) {
+            return null;
+        }
+
         const post = Object.assign({}, Api.posts[postIdx]);
+
         if (postIdx + 1 < Api.posts.length) {
             post.prev = Object.assign({}, Api.posts[postIdx + 1]);
         }
