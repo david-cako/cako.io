@@ -1,5 +1,5 @@
 const GHOST_API = new GhostContentAPI({
-    url: "https://138.197.110.84",
+    url: "https://cako.io",
     key: "cd0baa38f66654ecac76e61d72",
     version: "v3"
 });
