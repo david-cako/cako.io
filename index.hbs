@@ -2,25 +2,18 @@
 {{!-- The tag above means: insert everything in this file
 into the {body} of the default.hbs template --}}
 
-{{> "site-nav"}}
-
-<script type="module" src="{{asset "js/InfiniteScroll.js"}}"></script>
+{{> "header"}}
 
 {{!-- The big featured header, it uses blog cover image as a BG if available --}}
 {{!-- The main content area --}}
-<main id="site-main" class="site-main outer" role="main">
-    <div class="index inner">
-        {{> "cako-search-feed"}}
-       <div id="cako-post-feed-outer">
-            {{!--{{> "featured"}}--}}
-           <div id="cako-post-feed">
-                {{#foreach posts}}
-                    {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
-                    {{> "post-card"}}
-                {{/foreach}}
-            </div>
-            <div id="loading-posts">Loading posts...</div>
-            <section class="copyright"><a href="https://davidcako.com">{{@site.title}}</a> &copy; {{date format="YYYY"}}</section>
+<main id="site-main" class="site-main index outer" role="main">
+    {{> "index-inner"}}
+    {{> "search-inner"}}
+    <div id="post-inner" class="post inner">
+        <article id="post-article" class="post-full post"></article>
+        {{> "post-footer"}}
+        <div class="post-nav-outer">
+            <div id="post-nav-inner" class="post-nav inner"></div>
         </div>
     </div>
 </main>

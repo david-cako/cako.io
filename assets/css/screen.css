@@ -113,9 +113,17 @@ production stylesheet in assets/built/screen.css
 
 */
 
-.index {
+.index.inner {
     position: relative;
     padding-bottom: 4em;
+}
+
+.outer:not(.post) #post-inner {
+    display: none;
+}
+
+.outer:not(.index) #index-inner {
+    display: none;
 }
 
 blockquote a {
@@ -202,7 +210,6 @@ code.hljs {
 }
 
 .index #cako-search-feed {
-    display: none;
     padding: 0.5em 15px 2em;
 }
 
@@ -236,6 +243,7 @@ code.hljs {
 
 #search-status {
     display: none;
+    margin-bottom: 1em;
 }
 
 #search-status.error {
@@ -337,10 +345,6 @@ code.hljs {
     font-size: 14px;
 }
 
-.cako-post.right {
-    text-align: right;
-}
-
 #cako-post-feed>.cako-post:not(:nth-of-type(1)) {
     margin-top: 1.5em;
 }
@@ -413,18 +417,25 @@ code.hljs {
 
 .post-nav.inner {
     padding: 0 15px;
+    align-items: start;
 }
 
 .post-nav .cako-post {
+    flex: 1;
+    max-width: 40%;
     margin: 0;
     padding: 0;
     font-size: 10px;
 }
 
+.post-nav .cako-post.right,
+.post-nav .cako-post-link.right {
+    text-align: right;
+}
+
 .post-nav .cako-post-link {
-    align-items: center;
+    max-width: 100%;
     transition: transform ease-in-out 0.1s;
-    max-width: 40%;
 }
 
 .post-nav .cako-post-link:hover {
@@ -1496,7 +1507,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     padding: 0 15px;
 }
 
-.index .post-full-content>* {
+.index.inner .post-full-content>* {
     padding: 0;
 }
 

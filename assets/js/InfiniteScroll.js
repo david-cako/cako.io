@@ -1,46 +1,38 @@
-import { Api } from "./api.js";
-import { generatePostLinkHTML } from "./html.js";
+import Api from "./Api.js";
+import Html from "./Html.js";
 
 /** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
+    api = new Api({ page: 2 });
+
     /** Current index scroll position managed by InfiniteScroll. */
     contentScrollPosition = 0;
-
     /** Increments on every scroll event after InfiniteScroll initialization.
      * Resets on pageShow event. */
     scrollEvents = 0;
-
     /** JS interval ID for new posts fetcher */
     newPostsInterval;
     /** Fetcher interval.  New posts are fetched every 30 seconds. */
     newPostsIntervalTime = 1000 * 30;
-
-    /** Ghost API pagination object, populated with each request for posts */
-    pagination;
-
     /** True while getAndAppendPosts or getAndAppendNewPosts is called. */
     isUpdatingPosts = false;
+    /** True until no more posts are returned from API. */
+    hasMorePosts;
 
-    /** Posts per page in each call to getAndAppendPosts. */
-    postsPerRequest = 25;
-    /** Retry count for fetchPosts. */
-    maxRetries = 10;
-
+    /** Promise that resolves once posts have loaded up to saved position. */
+    savedPosHasLoaded;
     /** Unix timestamp of last save of contentScrollPosition to localStorage. */
     lastScrollPositionTime;
     /** Throttle for saving contentScrollPosition to localStorage. */
     scrollPositionThrottle = 100;
-
     /** TTL for saved contentScrollPosition in localStorage. */
     restoreScrollPosTTL = 1000 * 60 * 30;
 
-    postFeed = document.getElementById("cako-post-feed");
-    postFeedOuter = document.getElementById("cako-post-feed-outer");
     loadingPostsElem = document.getElementById("loading-posts");
 
     /** Getter for saved contentScrollPosition from localStorage. */
     get savedScrollPosition() {
-        let pos = localStorage.getItem("contentScrollPosition")
+        let pos = InfiniteScroll.contentScrollPosition;
 
         if (pos !== null && Number(pos) !== NaN) {
             return Number(pos);
@@ -51,7 +43,7 @@ export default class InfiniteScroll {
 
     /** Getter for saved contentScrollPositionTime from localStorage. */
     get savedScrollPositionTime() {
-        let time = localStorage.getItem("contentScrollPositionTime")
+        let time = InfiniteScroll.contentScrollPositionTime;
 
         if (time !== null && Number(time) !== NaN) {
             return Number(time);
@@ -72,6 +64,22 @@ export default class InfiniteScroll {
         return Date.now() - savedPosTime <= this.restoreScrollPosTTL;
     }
 
+    static get contentScrollPosition() {
+        return localStorage.getItem("contentScrollPosition");
+    }
+
+    static set contentScrollPosition(value) {
+        return localStorage.setItem("contentScrollPosition", value);
+    }
+
+    static get contentScrollPositionTime() {
+        return localStorage.getItem("contentScrollPositionTime")
+    }
+
+    static set contentScrollPositionTime(value) {
+        return localStorage.setItem("contentScrollPositionTime", value)
+    }
+
     constructor() {
         this.initialize();
     }
@@ -82,70 +90,15 @@ export default class InfiniteScroll {
 
         document.addEventListener("scroll", this.maybeSaveScrollPosition);
         document.addEventListener("click", this.maybeSaveScrollPosition);
+        window.addEventListener("pageshow", this.loadScrollPosition);
 
-        let savedPos = this.savedScrollPosition;
-        const savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: savedPos });
-
-        window.addEventListener("pageshow", async () => {
-            this.scrollEvents = 0;
-
-            await savedPosHasLoaded;
-
-            const userHasScrolled = this.scrollEvents > 1;
-
-            const shouldRestoreScrollPosition =
-                savedPos !== null && this.savedScrollPosIsFresh &&
-                !window.searchIsShown && !userHasScrolled;
-
-            if (shouldRestoreScrollPosition) {
-                this.restoreScrollPosition();
-            }
-        });
+        this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedScrollPosition });
 
         this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
             this.newPostsIntervalTime);
     }
 
-    /** Main post fetcher with retry logic. */
-    async fetchPosts(count, page) {
-        let retries = 0;
 
-        while (retries < this.maxRetries) {
-            retries++;
-
-            try {
-                let posts = await Api.getPosts(count, page);
-                return posts;
-            } catch (e) {
-                console.log(`Error fetching posts, attempt ${retries}`, e);
-                if (retries >= this.maxRetries) {
-                    throw e;
-                }
-            }
-        }
-    }
-
-    /** Fetch next page given current pagination and InfiniteScroll.postsPerRequest */
-    async fetchNextPage() {
-        let page;
-
-        if (this.pagination) { // next page populated by previous request
-            page = this.pagination.next;
-        } else { // otherwise, continue from server-rendered posts
-            page = 2;
-        }
-
-        let posts = await this.fetchPosts(this.postsPerRequest, page);
-
-        return posts
-    }
-
-    /** Append posts to index using HTML helpers from html.js */
-    appendPostsToFeed(posts, position = "beforeend") {
-        const postHtml = posts.map(p => generatePostLinkHTML(p));
-
-        this.postFeed.insertAdjacentHTML(position, postHtml.join("\n"));
-    }
 
     /** Fetch and insert all posts, resolving on completion or 
      * when optional resolveAt position has loaded. */
@@ -154,16 +107,20 @@ export default class InfiniteScroll {
 
         return new Promise(async (resolve, reject) => {
             this.isUpdatingPosts = true;
+            this.hasMorePosts = true;
             this.loadingPostsElem.style.display = "block";
 
-            while (!this.pagination || this.pagination.next !== null) {
+            while (this.hasMorePosts) {
                 try {
-                    const posts = await this.fetchNextPage();
-                    this.pagination = posts.meta.pagination;
-
-                    this.appendPostsToFeed(posts);
+                    const posts = await this.api.getNextPage();
+                    if (posts) {
+                        Html.appendPostsToFeed(posts);
+                    } else {
+                        this.hasMorePosts = false;
+                    }
                 } catch (e) {
                     this.isUpdatingPosts = false;
+                    this.hasMorePosts = undefined;
                     this.loadingPostsElem.innerText = "Could not finish loading posts.  Try refreshing cako.io.";
                     this.loadingPostsElem.className = "error";
 
@@ -185,7 +142,7 @@ export default class InfiniteScroll {
             resolve();
             isResolved = true;
             return;
-        })
+        });
     }
 
     /** Fetch and insert new posts if available. */
@@ -202,7 +159,7 @@ export default class InfiniteScroll {
             let posts;
 
             try {
-                posts = await this.fetchPosts(10, page);
+                posts = await this.api.getPage(page);
                 page++;
             } catch (e) {
                 this.isUpdatingPosts = false;
@@ -210,7 +167,7 @@ export default class InfiniteScroll {
             }
 
             for (const p of posts) {
-                if (!this.postFeed.querySelector(`[href="/${p.slug}/"]`)) {
+                if (!Html.postsFeedContains(p)) {
                     newPosts.push(p);
                 } else {
                     shouldGetNewPosts = false;
@@ -219,17 +176,17 @@ export default class InfiniteScroll {
             }
         }
 
-        this.appendPostsToFeed(newPosts, "afterbegin");
+        Html.appendPostsToBeginningOfFeed(newPosts);
 
         this.isUpdatingPosts = false;
     }
 
     /** Saves both contentScrollPosition and contentScrollPositionTime in localStorage. */
     saveScrollPosition() {
-        localStorage.setItem("contentScrollPosition", this.contentScrollPosition);
+        InfiniteScroll.contentScrollPosition = this.contentScrollPosition;
 
         this.lastScrollPositionTime = Date.now();
-        localStorage.setItem("contentScrollPositionTime", this.lastScrollPositionTime);
+        InfiniteScroll.contentScrollPositionTime = this.lastScrollPositionTime;
     }
 
     /** Sets page scroll position from saved value in localStorage. */
@@ -250,7 +207,7 @@ export default class InfiniteScroll {
             return;
         }
 
-        if (!window.searchIsShown) {
+        if (!window.Search.searchIsShown) {
             this.contentScrollPosition = window.scrollY;
             let time = Date.now();
 
@@ -262,12 +219,24 @@ export default class InfiniteScroll {
         }
     }
 
+    loadScrollPosition = async () => {
+        this.scrollEvents = 0;
+
+        await this.savedPosHasLoaded;
+
+        const userHasScrolled = this.scrollEvents > 1;
+
+        const shouldRestoreScrollPosition =
+            this.savedScrollPosition !== null && this.savedScrollPosIsFresh &&
+            !window.Search.searchIsShown && !userHasScrolled;
+
+        if (shouldRestoreScrollPosition) {
+            this.restoreScrollPosition();
+        }
+    }
+
     /** Jumps to bottom of post index.  This was too many buttons. */
     scrollToBottom() {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 }
-
-(() => {
-    window.InfiniteScroll = new InfiniteScroll();
-})();

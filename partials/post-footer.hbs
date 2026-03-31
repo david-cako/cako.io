@@ -1,0 +1,15 @@
+<div class="site-footer-content inner">
+    <script>
+        // replaces double spaces with an en-space to fix wrapping
+        const content = document.getElementsByTagName("p");
+
+        for (let p of content) {
+            p.innerHTML = p.innerHTML.replace(/ &nbsp;/g, "&ensp;")
+        }
+    </script>
+    <link rel="stylesheet" href="{{asset "css/atom-one-dark.min.css"}}" >
+    <section class="copyright"><a href="https://davidcako.com">{{@site.title}}</a> &copy; {{date format="YYYY"}}</section>
+    <div id="email-address-outer">
+        <a id="email-address" href="mailto:dc@cako.io">dc@cako.io</a>
+    </div>
+</div>

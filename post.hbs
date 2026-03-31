@@ -3,16 +3,15 @@
 {{!-- The tag above means: insert everything in this file
 into the {body} of the default.hbs template --}}
 
-{{> "site-nav"}}
+{{> "header"}}
 
 {{!-- Everything inside the #post tags pulls data from the post --}}
 {{#post}}
-<main id="site-main" class="site-main outer" role="main">
-    <div class="inner">
-        {{> "cako-search-feed"}}
-
-        <article class="post-full {{post_class}} {{#unless feature_image}}no-image{{/unless}}">
-
+<main id="site-main" class="site-main post outer" role="main">
+    {{> "index-inner"}}
+    {{> "search-inner"}}
+    <div id="post-inner" class="post inner">
+        <article id="post-article" lass="post-full {{post_class}} {{#unless feature_image}}no-image{{/unless}}">
             <header class="post-full-header">
                 <h1 class="post-full-title">{{title}}</h1>
                 <section class="post-full-meta">
@@ -29,25 +28,9 @@ into the {body} of the default.hbs template --}}
             <section class="post-full-content">
                 {{content}}
             </section>
-
         </article>
+        {{> "post-footer"}}
+        {{> "post-nav"}}
     </div>
-    <script>
-        // replaces double spaces with an en-space to fix wrapping
-        const content = document.getElementsByTagName("p");
-
-        for (let p of content) {
-            p.innerHTML = p.innerHTML.replace(/ &nbsp;/g, "&ensp;")
-        }
-    </script>
-    <div class="site-footer-content inner">
-        <section class="copyright"><a href="https://davidcako.com">{{@site.title}}</a> &copy; {{date format="YYYY"}}</section>
-        <div id="email-address-outer">
-            <a id="email-address" href="mailto:dc@cako.io">dc@cako.io</a>
-        </div>
-    </div>
-    {{> "post-nav"}}
 </main>
 {{/post}}
-<link rel="stylesheet" href="{{asset "css/atom-one-dark.min.css"}}" >
-{{!-- <script type="module" src="{{asset "js/feature.js"}}"></script> --}}

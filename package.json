@@ -1,7 +1,7 @@
 {
     "name": "cako-io-ghost",
     "description": "cako.io theme for ghost",
-    "version": "2.2.1",
+    "version": "3.0",
     "engines": {
         "ghost": ">=1.2.0"
     },
