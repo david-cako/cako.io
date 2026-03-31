@@ -1,14 +1,12 @@
 import Menu from "./Menu";
 import InfiniteScroll from "./InfiniteScroll";
-import PostLoadingSpinner from "./PostLoadingSpinner";
 import Api from "./Api";
-import Html from "./html";
+import Html from "./Html";
 
 export default class CakoApp {
     menu;
     search;
     infiniteScroll;
-    postLoadingSpinner
     api;
 
     static indexInner = document.getElementById("index-inner");
@@ -18,7 +16,6 @@ export default class CakoApp {
         this.menu = new Menu();
         this.search = new Search(Menu);
         this.infiniteScroll = new InfiniteScroll();
-        this.postLoadingSpinner = new PostLoadingSpinner();
         this.api = new Api();
 
         document.addEventListener("click", this.onClick);
