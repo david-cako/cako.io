@@ -163,17 +163,16 @@ export default class CakoApp {
             if (e.key == "ArrowLeft") {
                 if (CakoApp.navLinkLeft) {
                     CakoApp.navLinkLeft.focus({ preventScroll: true });
-                }
 
-                this.navigateToPost(CakoApp.navLinkLeft.dataset.postId);;
+                    this.navigateToPost(CakoApp.navLinkLeft.dataset.postId);;
+                }
             }
 
             if (e.key == "ArrowRight") {
                 if (CakoApp.navLinkRight) {
                     CakoApp.navLinkRight.focus({ preventScroll: true });
+                    this.navigateToPost(CakoApp.navLinkRight.dataset.postId);;
                 }
-
-                this.navigateToPost(CakoApp.navLinkRight.dataset.postId);;
             }
         }
     }
