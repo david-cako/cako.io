@@ -231,7 +231,3 @@ export default class InfiniteScroll {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 }
-
-(() => {
-    window.InfiniteScroll = new InfiniteScroll();
-})();

@@ -113,9 +113,17 @@ production stylesheet in assets/built/screen.css
 
 */
 
-.index {
+.index.inner {
     position: relative;
     padding-bottom: 4em;
+}
+
+.outer:not(.post) #post-inner {
+    display: none;
+}
+
+.outer:not(.index) #index-inner {
+    display: none;
 }
 
 blockquote a {
@@ -202,7 +210,6 @@ code.hljs {
 }
 
 .index #cako-search-feed {
-    display: none;
     padding: 0.5em 15px 2em;
 }
 
@@ -1496,7 +1503,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     padding: 0 15px;
 }
 
-.index .post-full-content>* {
+.index.inner .post-full-content>* {
     padding: 0;
 }
 

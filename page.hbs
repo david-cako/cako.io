@@ -10,12 +10,11 @@ into the {body} of the default.hbs template --}}
 {{#match @page.show_title_and_feature_image}}
 {{/match}}
 
-<main id="site-main" class="site-main outer" role="main">
-    <div class="inner">
+<main id="site-main" class="site-main post outer" role="main">
+    <div id="index-inner" class="index inner"></div>
+    <div id="post-inner" class="post inner">
         {{> "cako-search-feed"}}
-
         <article class="post-full {{post_class}} {{#unless feature_image}}no-image{{/unless}}">
-
             <header class="post-full-header">
                 <h1 class="post-full-title">{{title}}</h1>
             </header>
@@ -28,23 +27,16 @@ into the {body} of the default.hbs template --}}
             <section class="post-full-content">
                 {{content}}
             </section>
-
         </article>
+        {{> "post-footer"}}
+        <script>
+            // replaces double spaces with an en-space to fix wrapping
+            const content = document.getElementsByTagName("p");
 
-    </div>
-    <script>
-        // replaces double spaces with an en-space to fix wrapping
-        const content = document.getElementsByTagName("p");
-
-        for (let p of content) {
-            p.innerHTML = p.innerHTML.replace(/ &nbsp;/g, "&ensp;")
-        }
-    </script>
-    <div class="site-footer-content inner">
-        <section class="copyright"><a href="https://davidcako.com">{{@site.title}}</a> &copy; {{date format="YYYY"}}</section>
-        <div id="email-address-outer">
-            <a id="email-address" href="mailto:dc@cako.io">dc@cako.io</a>
-        </div>
+            for (let p of content) {
+                p.innerHTML = p.innerHTML.replace(/ &nbsp;/g, "&ensp;")
+            }
+        </script>
     </div>
 </main>
 {{/post}}

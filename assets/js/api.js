@@ -18,13 +18,16 @@ export default class Api {
      * if an error occurs on retreival. */
     static #hasFinishedGettingPosts;
     /** Posts per page in each call to getNextPage. */
-    static #postsPerPage = 25;
+    static #postsPerPage = 100;
     /** Retry count for getPosts. */
     static #maxRetries = 10;
     /** Array of objects containing a page number and a promise to resolve with posts. */
     static #pageAwaiters = [];
     /** Array of objects containing a post ID and a promise to resolve with desired post. */
     static #postAwaiters = [];
+
+    static baseUri = "https://cako.io"
+    static featuresPath = "/features/"
 
     constructor() {
         if (!Api.#gettingPosts && !Api.#hasFinishedGettingPosts) {
@@ -60,6 +63,24 @@ export default class Api {
 
             return await p;
         }
+    }
+
+    static async getFeaturesContent() {
+        const r = await fetch(Html.baseUri + Html.featuresPath);
+        if (!r.ok) {
+            throw new Error(`Response status: ${r.status}`);
+        }
+
+        const html = await r.text();
+        const parser = new DOMParser()
+        const d = parser.parseFromString(html, "text/html")
+
+        const article = d.querySelector("article");
+        if (!article) {
+            throw new Error("Could not get features article from response.")
+        }
+
+        return article;
     }
 
     static hasPage(n) {
@@ -112,7 +133,7 @@ export default class Api {
             page = 2;
         }
 
-        let posts = await Api.getPosts(Api.#postsPerPage, page);
+        let posts = await Api.#getPosts(Api.#postsPerPage, page, { includeBody: true });
 
         Api.#pagination = posts.meta.pagination;
 

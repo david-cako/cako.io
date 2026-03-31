@@ -5,6 +5,9 @@ const MonthNames = ["January", "February", "March", "April", "May", "June",
 export default class Html {
     static postFeed = document.getElementById("cako-post-feed");
 
+    static postTemplate = document.querySelector("#cako-post-template");
+    static postLinkTemplate = document.querySelector("#cako-post-link-template");
+
     static generateSearchPreviewHTML(result) {
         if (result.strong === undefined || result.strong.in !== "html") {
             return ``
@@ -41,51 +44,97 @@ export default class Html {
         return `<div class="cako-post-preview">${words.join(" ")}</div>`;
     }
 
-    static generatePostLinkHTML(post, {
-        isCurrentPost,
-        searchResult
-    } = {}) {
+    static getPostDateObject(post) {
         const d = new Date(post.published_at);
-        const year = d.getFullYear();
-        const month = d.getMonth();
-        const date = d.getDate();
-        const monthName = MonthNames[month];
-        const monthStr = String(month + 1).padStart(2, "0");
+        return {
+            d: d,
+            year: d.getFullYear(),
+            month: d.getMonth(),
+            date: d.toLocaleString(undefined, {
+                date: "2-digit"
+            }),
+            monthName: MonthNames[month],
+            monthStr: d.toLocaleString(undefined, {
+                month: "2-digit"
+            }),
+            datetime: `${year}-${monthStr}-${date}`,
+            time: d.toLocaleTimeString(undefined, {
+                hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+            })
+        }
+    }
 
-        const datetime = `${year}-${monthStr}-${String(date).padStart(2, "0")}`;
+    static generatePostLinkHtml(post, { searchResult } = {}) {
+        const {
+            d,
+            year,
+            month,
+            date,
+            monthName,
+            monthStr,
+            datetime,
+            time
+        } = Html.getPostDateObject(post);
 
-        let body;
         if (searchResult !== undefined) {
             if (searchResult.strong !== undefined &&
                 searchResult.strong.in === "html") {
                 body = generateSearchPreviewHTML(searchResult);
             }
-        } else if (post.html !== undefined) {
-            body = `<section class="post-full-content">
-            ${post.html}
-        </section>`;
         }
 
-        return `<div class="cako-post${isCurrentPost ? " current" : ""}">
-        ${isCurrentPost ? '<div class="current-post-marker">◆</div>' : ""}
-        <a href="/${post.slug}/" class="cako-post-link" onclick="window.PostLoadingSpinner.onPostClicked(event)">
-            <div class="cako-post-title">${post.title}</div>
-            <div class="cako-post-date-outer">
-                <time class="cako-post-date" datetime="${datetime}">${date} ${monthName} ${year}</time>
-            </div>
-        </a>
-        ${body !== undefined ? body : ""}
-        </div>`;
+        const postLinkElem = document.importNode(Html.postLinkTemplate.content, true);
+        postLinkElem.dataset.postId = post.slug;
+
+        let aElem = postLinkElem.querySelector("a");
+        aElem.href = `/${post.slug}/`
+
+        let titleElem = postLinkElem.querySelector(".cako-post-title");
+        titleElem.innerText = post.title;
+
+        let dateElem = postLinkElem.querySelector(".cako-post-date");
+        dateElem.setAttribute("datetime", datetime);
+        dateElem.innerText = `${date} ${monthName} ${year}`;
+
+        return postLinkElem;
+    }
+
+    static generatePostHtml(post) {
+        const {
+            d,
+            year,
+            month,
+            date,
+            monthName,
+            monthStr,
+            datetime,
+            time
+        } = Html.getPostDateObject(post);
+
+        const postElem = document.importNode(Html.postTemplate.content, true);
+        postElem.dataset.postId = post.slug;
+
+        let titleElem = postElem.querySelector(".post-full-title");
+        titleElem.innerText = post.title;
+
+        let dateElem = postElem.querySelector(".post-full-meta-date");
+        dateElem.setAttribute("datetime", datetime);
+        dateElem.innerText = `${date} ${monthName} ${year}`;
+
+        let contentElem = postElem.querySelector(".post-full-content");
+        contentElem.innerHTML = post.html;
+
+        return postElem;
     }
 
     static appendPostsToFeed(posts, atEnd = true) {
-        const postHtml = posts.map(p => Html.generatePostLinkHTML(p));
+        const postHtml = posts.map(p => Html.generatePostLinkHtml(p));
 
         Html.postFeed.insertAdjacentHTML("beforeend", postHtml.join("\n"));
     }
 
     static appendPostsToBeginningOfFeed(posts) {
-        const postHtml = posts.map(p => Html.generatePostLinkHTML(p));
+        const postHtml = posts.map(p => Html.generatePostLinkHtml(p));
 
         Html.postFeed.insertAdjacentHTML("afterbegin", postHtml.join("\n"));
     }

@@ -7,6 +7,7 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
 
 export default class Search {
     menu;
+    api;
     /** Populated on input focus with promise from Ghost API. */
     postsResponse;
     /** Retry count for posts request. */
@@ -39,6 +40,7 @@ export default class Search {
 
     constructor(menu) {
         this.menu = menu;
+        this.api = new Api();
 
         Search.searchElement.addEventListener("focus", () => {
             this.getOrFetchPosts();
@@ -134,7 +136,7 @@ export default class Search {
                     retries++;
 
                     try {
-                        let posts = await Api.getPosts("all", 1, { includeBody: true });
+                        let posts = await this.api.getPosts("all", 1, { includeBody: true });
                         return posts;
                     } catch (e) {
                         console.log(`Error fetching posts for search, attempt ${retries}`, e);
@@ -363,7 +365,7 @@ export default class Search {
         Search.searchResults.innerHTML = "";
 
         for (const result of results) {
-            const resultHtml = Html.generatePostLinkHTML(result.post, {
+            const resultHtml = Html.generatePostLinkHtml(result.post, {
                 searchResult: result
             });
 
