@@ -70,7 +70,7 @@ export default class Html {
         }
     }
 
-    static generatePostLink(post, { searchResult } = {}) {
+    static generatePostLink(post, { navLink, searchResult } = {}) {
         const {
             d,
             year,
@@ -94,6 +94,10 @@ export default class Html {
 
         let aElem = postLinkElem.querySelector("a");
         aElem.href = `/${post.slug}/`
+
+        if (navLink) {
+            a.classList.append("post-nav-link");
+        }
 
         let titleElem = postLinkElem.querySelector(".cako-post-title");
         titleElem.innerText = post.title;
@@ -128,7 +132,7 @@ export default class Html {
         dateElem.innerText = `${date} ${monthName} ${year}`;
 
         let contentElem = postElem.querySelector(".post-full-content");
-        contentElem.innerHTML = post.html;
+        contentElem.innerHTML = Html.replaceSpaces(post.html);
 
         return postElem;
     }
@@ -151,5 +155,10 @@ export default class Html {
 
     static postsFeedContains(post) {
         return Html.postFeed.querySelector(`[href="/${post.slug}/"]`) !== null;
+    }
+
+    /** Replace double spaces with en-space to fix wrapping. */
+    static replaceSpaces(htmlText) {
+        return htmlText.replace(/ &nbsp;/g, "&ensp;");
     }
 }

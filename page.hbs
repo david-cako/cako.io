@@ -11,7 +11,7 @@ into the {body} of the default.hbs template --}}
 {{/match}}
 
 <main id="site-main" class="site-main post outer" role="main">
-    <div id="index-inner" class="index inner"></div>
+    {{> "index-inner"}}
     <div id="post-inner" class="post inner">
         {{> "cako-search-feed"}}
         <article class="post-full {{post_class}} {{#unless feature_image}}no-image{{/unless}}">
@@ -29,14 +29,6 @@ into the {body} of the default.hbs template --}}
             </section>
         </article>
         {{> "post-footer"}}
-        <script>
-            // replaces double spaces with an en-space to fix wrapping
-            const content = document.getElementsByTagName("p");
-
-            for (let p of content) {
-                p.innerHTML = p.innerHTML.replace(/ &nbsp;/g, "&ensp;")
-            }
-        </script>
     </div>
 </main>
 {{/post}}

@@ -1,0 +1,16 @@
+<div id="index-inner" class="index inner">
+    {{> "cako-search-feed"}}
+    <div id="cako-post-feed-outer">
+        {{!--{{> "featured"}}--}}
+        <div id="cako-post-feed">
+            {{#get "posts" limit="25"}}
+                {{#foreach posts}}
+                    {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
+                    {{> "post-card"}}
+                {{/foreach}}
+            {{/get}}
+        </div>
+        <div id="loading-posts">Loading posts...</div>
+        <section class="copyright"><a href="https://davidcako.com">{{@site.title}}</a> &copy; {{date format="YYYY"}}</section>
+    </div>
+</div>

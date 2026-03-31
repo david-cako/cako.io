@@ -12,9 +12,8 @@ export default class Api {
     static posts
     /** Set true while getting all posts. */
     static gettingPosts = false
-    /** Promise that will resolve when all posts are retrieved, or reject
-     * if an error occurs on retreival. */
-    static hasFinishedGettingPosts;
+    /** True after all posts have been successfully retrieved. **/
+    static hasFinishedGettingPosts = false;
 
     /** Private page index for requesting all pages. */
     static #page = 1;
@@ -29,8 +28,14 @@ export default class Api {
     /** Array of objects containing a post ID and a promise to resolve with desired post. */
     static #postAwaiters = [];
 
-    static baseUri = "https://cako.io"
+    /** Path to features page. */
     static featuresPath = "/features/"
+    /** Promise that will contain full document element for features page after retrieval. */
+    static featuresDocument;
+    /** True while fetching features. */
+    static fetchingFeatures = false;
+    /** True after features have been retrieved. */
+    static hasFetchedFeatures = false;
 
     static get #hasMorePosts() {
         return !Api.#pagination || Api.#pagination.next !== null
@@ -43,6 +48,10 @@ export default class Api {
             this.#getAllPosts();
         }
 
+        if (!Api.fetchingFeatures && !Api.hasFetchedFeatures) {
+            Api.#prefetchFeatures();
+        }
+
         if (!window.Api) {
             window.Api = Api;
         }
@@ -52,6 +61,10 @@ export default class Api {
         if (Api.hasPage(n)) {
             return Api.postsForPage(n);
         } else {
+            if (Api.hasFinishedGettingPosts) {
+                return null;
+            }
+
             let p = new Promise((resolve, reject) => {
                 Api.#pageAwaiters.push({ pageNumber: n, promise: { resolve, reject } })
             });
@@ -67,11 +80,15 @@ export default class Api {
         return p;
     }
 
-    static async getPost(id) {
+    async getPost(id) {
         const post = Api.postForId(id);
         if (post) {
             return post;
         } else {
+            if (Api.hasFinishedGettingPosts) {
+                throw new Error("Post not found.")
+            }
+
             let p = new Promise((resolve, reject) => {
                 Api.#postAwaiters.push({ id: id, promise: { resolve, reject } });
             });
@@ -80,15 +97,8 @@ export default class Api {
         }
     }
 
-    static async getFeaturesContent() {
-        const r = await fetch(Html.baseUri + Html.featuresPath);
-        if (!r.ok) {
-            throw new Error(`Response status: ${r.status}`);
-        }
-
-        const html = await r.text();
-        const parser = new DOMParser()
-        const d = parser.parseFromString(html, "text/html")
+    async getFeaturesContent() {
+        const d = await Api.featuresDocument;
 
         const article = d.querySelector("article");
         if (!article) {
@@ -103,7 +113,7 @@ export default class Api {
     }
 
     static postForId(id) {
-        return Api.posts.find(p => p.id == id);
+        return Api.posts.find(p => p.slug == id);
     }
 
     static postsForPage(n) {
@@ -129,23 +139,24 @@ export default class Api {
 
     async #getAllPosts() {
         Api.posts = [];
-        Api.hasFinishedGettingPosts = (async () => {
-            try {
-                while (Api.#hasMorePosts) {
-                    const p = await this.#getNextPage();
+        Api.gettingPosts = true;
 
-                    Api.posts = Api.posts.concat(p)
+        try {
+            while (Api.#hasMorePosts) {
+                const p = await this.#getNextPage();
+                Api.posts = Api.posts.concat(p)
 
-                    Api.#resolveAwaiters();
-                }
-            } catch (e) {
-                Api.gettingPosts = false;
-                Api.#rejectAwaiters(e)
-                throw e;
+                Api.#resolveAwaiters();
             }
+        } catch (e) {
+            Api.gettingPosts = false;
+            Api.#rejectAwaiters(e)
+            throw e;
+        }
 
-            Api.#finalizeAwaiters()
-        })();
+        Api.hasFinishedGettingPosts = true;
+
+        Api.#finalizeAwaiters()
     }
 
     static async #getPosts(limit, page, { includeBody } = {}) {
@@ -168,6 +179,31 @@ export default class Api {
                 }
             }
         }
+    }
+
+    static async #prefetchFeatures() {
+        Api.fetchingFeatures = true;
+
+        Api.featuresDocument = (async () => {
+            try {
+                const r = await fetch(Api.featuresPath);
+                if (!r.ok) {
+                    throw new Error(`Response status: ${r.status}`);
+                }
+
+                const html = await r.text();
+                const parser = new DOMParser()
+                const d = parser.parseFromString(html, "text/html")
+
+                Api.fetchingFeatures = false;
+                Api.hasFetchedFeatures = true;
+
+                return d;
+            } catch (e) {
+                Api.fetchingFeatures = false;
+                throw e;
+            }
+        })();
     }
 
     static #resolveAwaiters() {

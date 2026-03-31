@@ -52,9 +52,8 @@ export default class Menu {
                 || (navigator.userAgent.includes("Mac") && "ontouchend" in document)) &&
                 window.Search.focus();
         }
-        if (prefetchDarkCss !== undefined) {
-            window.Lights.prefetchDarkCss();
-        }
+
+        window.Lights.prefetchDarkCss();
     }
 
     static close() {
@@ -100,6 +99,8 @@ export default class Menu {
     }
 
     static setupListeners() {
+        Menu.menuIcon.addEventListener("click", Menu.toggle);
+
         for (const i of Menu.menuItems) {
             i.addEventListener("click", Menu.toggle);
         }
