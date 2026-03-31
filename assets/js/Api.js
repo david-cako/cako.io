@@ -1,24 +1,27 @@
 const GHOST_API = new GhostContentAPI({
-    url: "https://cako.io",
+    url: "https://138.197.110.84",
     key: "cd0baa38f66654ecac76e61d72",
     version: "v3"
 });
 
 export default class Api {
     /** Current page for API instance. */
-    page = 1;
+    page;
 
     /** Static variable caching all fetched posts. */
-    static #posts
-    /** Ghost API pagination object, populated with each request for posts */
-    static #pagination;
+    static posts
     /** Set true while getting all posts. */
-    static #gettingPosts = false
+    static gettingPosts = false
     /** Promise that will resolve when all posts are retrieved, or reject
      * if an error occurs on retreival. */
-    static #hasFinishedGettingPosts;
+    static hasFinishedGettingPosts;
+
+    /** Private page index for requesting all pages. */
+    static #page = 1;
+    /** Ghost API pagination object, populated with each request for posts */
+    static #pagination;
     /** Posts per page in each call to getNextPage. */
-    static #postsPerPage = 100;
+    static #postsPerPage = 25;
     /** Retry count for getPosts. */
     static #maxRetries = 10;
     /** Array of objects containing a page number and a promise to resolve with posts. */
@@ -29,9 +32,19 @@ export default class Api {
     static baseUri = "https://cako.io"
     static featuresPath = "/features/"
 
-    constructor() {
-        if (!Api.#gettingPosts && !Api.#hasFinishedGettingPosts) {
-            Api.#getAllPosts();
+    static get #hasMorePosts() {
+        return !Api.#pagination || Api.#pagination.next !== null
+    }
+
+    constructor(options = { page: 1 }) {
+        this.page = options.page;
+
+        if (!Api.gettingPosts && !Api.hasFinishedGettingPosts) {
+            this.#getAllPosts();
+        }
+
+        if (!window.Api) {
+            window.Api = Api;
         }
     }
 
@@ -39,8 +52,9 @@ export default class Api {
         if (Api.hasPage(n)) {
             return Api.postsForPage(n);
         } else {
-            let p = new Promise()
-            Api.#pageAwaiters.append({ pageNumber: n, promise: p })
+            let p = new Promise((resolve, reject) => {
+                Api.#pageAwaiters.push({ pageNumber: n, promise: { resolve, reject } })
+            });
 
             return await p;
         }
@@ -58,8 +72,9 @@ export default class Api {
         if (post) {
             return post;
         } else {
-            let p = new Promise();
-            Api.#postAwaiters.append({ id: id, promise: p });
+            let p = new Promise((resolve, reject) => {
+                Api.#postAwaiters.push({ id: id, promise: { resolve, reject } });
+            });
 
             return await p;
         }
@@ -84,21 +99,53 @@ export default class Api {
     }
 
     static hasPage(n) {
-        return Api.#posts.length >= n * Api.#postsPerPage
+        return Api.posts.length > (n - 1) * Api.#postsPerPage
     }
 
     static postForId(id) {
-        return Api.#posts.find(p => p.id == id);
+        return Api.posts.find(p => p.id == id);
     }
 
     static postsForPage(n) {
         if (!Api.hasPage(n)) {
             throw new Error("Page number out of bounds!")
         }
-        const start = n * Api.#postsPerPage;
-        const end = (n + 1) * Api.#postsPerPage;
+        const start = (n - 1) * Api.#postsPerPage;
+        const end = n * Api.#postsPerPage;
 
-        return Api.#posts.slice(start, end)
+        return Api.posts.slice(start, end)
+    }
+
+
+    /** Fetch next page given current pagination and Api.postsPerRequest */
+    async #getNextPage() {
+        let posts = await Api.#getPosts(Api.#postsPerPage, Api.#page, { includeBody: true });
+        Api.#page++
+
+        Api.#pagination = posts.meta.pagination;
+
+        return posts
+    }
+
+    async #getAllPosts() {
+        Api.posts = [];
+        Api.hasFinishedGettingPosts = (async () => {
+            try {
+                while (Api.#hasMorePosts) {
+                    const p = await this.#getNextPage();
+
+                    Api.posts = Api.posts.concat(p)
+
+                    Api.#resolveAwaiters();
+                }
+            } catch (e) {
+                Api.gettingPosts = false;
+                Api.#rejectAwaiters(e)
+                throw e;
+            }
+
+            Api.#finalizeAwaiters()
+        })();
     }
 
     static async #getPosts(limit, page, { includeBody } = {}) {
@@ -108,7 +155,7 @@ export default class Api {
             retries++;
 
             try {
-                await GHOST_API.posts.browse({
+                return await GHOST_API.posts.browse({
                     limit: limit || "all",
                     fields: `title,published_at,slug${includeBody ? ',html' : ''}`,
                     include: "tags",
@@ -123,48 +170,8 @@ export default class Api {
         }
     }
 
-    /** Fetch next page given current pagination and Api.postsPerRequest */
-    static async #getNextPage() {
-        let page;
-
-        if (Api.#pagination) { // next page populated by previous request
-            page = Api.#pagination.next;
-        } else { // otherwise, continue from server-rendered posts
-            page = 2;
-        }
-
-        let posts = await Api.#getPosts(Api.#postsPerPage, page, { includeBody: true });
-
-        Api.#pagination = posts.meta.pagination;
-
-        return posts
-    }
-
-    static async #getAllPosts() {
-        Api.#posts = [];
-        Api.#hasFinishedGettingPosts = new Promise();
-
-        try {
-            while (!Api.#pagination || Api.#pagination.next !== null) {
-                const p = await Api.#getNextPage();
-
-                Api.#posts = Api.#posts.concat(p)
-
-                Api.#resolveAwaiters();
-            }
-        } catch (e) {
-            Api.#gettingPosts = false;
-            Api.#hasFinishedGettingPosts.reject(false);
-            Api.#rejectAwaiters(e)
-            throw e;
-        }
-
-        Api.#hasFinishedGettingPosts.resolve(true);
-        Api.#finalizeAwaiters()
-    }
-
     static #resolveAwaiters() {
-        for (a of Api.#postAwaiters) {
+        for (const a of Api.#postAwaiters) {
             const p = Api.postForId(a.id);
 
             if (p) {
@@ -175,7 +182,7 @@ export default class Api {
             }
         }
 
-        for (a of Api.#pageAwaiters) {
+        for (const a of Api.#pageAwaiters) {
             if (Api.hasPage(a.pageNumber)) {
                 const p = Api.postsForPage(a.pageNumber);
                 a.promise.resolve(p);
@@ -187,28 +194,28 @@ export default class Api {
     }
 
     static #rejectAwaiters(error) {
-        for (a of Api.#postAwaiters) {
-            a.reject(error);
+        for (const a of Api.#postAwaiters) {
+            a.promise.reject(error);
         }
 
         Api.#postAwaiters = [];
 
-        for (a of Api.#pageAwaiters) {
-            a.reject(error);
+        for (const a of Api.#pageAwaiters) {
+            a.promise.reject(error);
         }
 
         Api.#pageAwaiters = []
     }
 
     static #finalizeAwaiters() {
-        for (a of Api.#postAwaiters) {
-            a.reject(new Error("Post not found."));
+        for (const a of Api.#postAwaiters) {
+            a.promise.reject(new Error("Post not found."));
         }
 
         Api.#postAwaiters = [];
 
-        for (a of Api.#pageAwaiters) {
-            a.resolve(null);
+        for (const a of Api.#pageAwaiters) {
+            a.promise.resolve(null);
         }
 
         Api.#pageAwaiters = [];

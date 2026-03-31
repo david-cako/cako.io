@@ -46,25 +46,31 @@ export default class Html {
 
     static getPostDateObject(post) {
         const d = new Date(post.published_at);
+        const year = d.getFullYear();
+        const month = d.getMonth();
+        const date = d.toLocaleString(undefined, {
+            day: "2-digit"
+        });
+        const monthStr = d.toLocaleString(undefined, {
+            month: "2-digit"
+        });
+        const time = d.toLocaleTimeString(undefined, {
+            hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+        });
+
         return {
             d: d,
-            year: d.getFullYear(),
-            month: d.getMonth(),
-            date: d.toLocaleString(undefined, {
-                date: "2-digit"
-            }),
+            year: year,
+            month: month,
+            date: date,
             monthName: MonthNames[month],
-            monthStr: d.toLocaleString(undefined, {
-                month: "2-digit"
-            }),
+            monthStr: monthStr,
             datetime: `${year}-${monthStr}-${date}`,
-            time: d.toLocaleTimeString(undefined, {
-                hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
-            })
+            time: time
         }
     }
 
-    static generatePostLinkHtml(post, { searchResult } = {}) {
+    static generatePostLink(post, { searchResult } = {}) {
         const {
             d,
             year,
@@ -84,7 +90,7 @@ export default class Html {
         }
 
         const postLinkElem = document.importNode(Html.postLinkTemplate.content, true);
-        postLinkElem.dataset.postId = post.slug;
+        postLinkElem.firstElementChild.dataset.postId = post.slug;
 
         let aElem = postLinkElem.querySelector("a");
         aElem.href = `/${post.slug}/`
@@ -99,7 +105,7 @@ export default class Html {
         return postLinkElem;
     }
 
-    static generatePostHtml(post) {
+    static generatePost(post) {
         const {
             d,
             year,
@@ -112,7 +118,7 @@ export default class Html {
         } = Html.getPostDateObject(post);
 
         const postElem = document.importNode(Html.postTemplate.content, true);
-        postElem.dataset.postId = post.slug;
+        postElem.firstElementChild.dataset.postId = post.slug;
 
         let titleElem = postElem.querySelector(".post-full-title");
         titleElem.innerText = post.title;
@@ -127,19 +133,23 @@ export default class Html {
         return postElem;
     }
 
-    static appendPostsToFeed(posts, atEnd = true) {
-        const postHtml = posts.map(p => Html.generatePostLinkHtml(p));
+    static appendPostsToFeed(posts) {
+        const postLinks = posts.map(p => Html.generatePostLink(p));
 
-        Html.postFeed.insertAdjacentHTML("beforeend", postHtml.join("\n"));
+        for (const p of postLinks) {
+            Html.postFeed.append(p);
+        }
     }
 
     static appendPostsToBeginningOfFeed(posts) {
-        const postHtml = posts.map(p => Html.generatePostLinkHtml(p));
+        const postLinks = posts.map(p => Html.generatePostLink(p));
 
-        Html.postFeed.insertAdjacentHTML("afterbegin", postHtml.join("\n"));
+        for (const p of postLinks) {
+            Html.postFeed.insertBefore(p, Html.postFeed.firstChild);
+        }
     }
 
     static postsFeedContains(post) {
-        return Html.postFeed.querySelector(`[href="/${p.slug}/"]`) !== null;
+        return Html.postFeed.querySelector(`[href="/${post.slug}/"]`) !== null;
     }
 }

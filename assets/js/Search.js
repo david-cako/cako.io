@@ -1,5 +1,5 @@
-import Api from "./Api";
-import Html from "./Html";
+import Api from "./Api.js";
+import Html from "./Html.js";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -41,6 +41,8 @@ export default class Search {
     constructor(menu) {
         this.menu = menu;
         this.api = new Api();
+
+        window.Search = this;
 
         Search.searchElement.addEventListener("focus", () => {
             this.getOrFetchPosts();
@@ -365,7 +367,7 @@ export default class Search {
         Search.searchResults.innerHTML = "";
 
         for (const result of results) {
-            const resultHtml = Html.generatePostLinkHtml(result.post, {
+            const resultHtml = Html.generatePostLink(result.post, {
                 searchResult: result
             });
 

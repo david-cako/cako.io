@@ -1,7 +1,8 @@
-import Menu from "./Menu";
-import InfiniteScroll from "./InfiniteScroll";
-import Api from "./Api";
-import Html from "./Html";
+import Menu from "./Menu.js";
+import Search from "./Search.js";
+import InfiniteScroll from "./InfiniteScroll.js";
+import Api from "./Api.js";
+import Html from "./Html.js";
 
 export default class CakoApp {
     menu;
@@ -49,7 +50,7 @@ export default class CakoApp {
     async navigateToPost(id) {
         const post = await this.api.getPost(id);
 
-        CakoApp.postInner.innerHTML = Html.generatePostHtml(post);
+        CakoApp.postInner.innerHTML = Html.generatePost(post);
         CakoApp.indexInner.style.display = "none";
         CakoApp.postInner.style.display = "block";
     }
@@ -65,4 +66,4 @@ export default class CakoApp {
 
 (() => {
     window.CakoApp = new CakoApp();
-});
+})();

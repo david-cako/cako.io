@@ -30,19 +30,19 @@ class Lights {
     }
 
     static on() {
-        removeDarkCss();
+        Lights.removeDarkCss();
 
         document.documentElement.classList.remove("dark");
 
-        setThemeColor("light");
+        Lights.setThemeColor("light");
     }
 
     static off() {
-        insertDarkCss();
+        Lights.insertDarkCss();
 
         document.documentElement.classList.add("dark");
 
-        setThemeColor("dark");
+        Lights.setThemeColor("dark");
     }
 
     static toggle() {

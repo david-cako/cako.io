@@ -1,9 +1,9 @@
-import Api from "./Api";
-import Html from "./Html";
+import Api from "./Api.js";
+import Html from "./Html.js";
 
 /** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
-    api = new Api();
+    api = new Api({ page: 2 });
 
     /** Current index scroll position managed by InfiniteScroll. */
     contentScrollPosition = 0;
@@ -16,6 +16,11 @@ export default class InfiniteScroll {
     newPostsIntervalTime = 1000 * 30;
     /** True while getAndAppendPosts or getAndAppendNewPosts is called. */
     isUpdatingPosts = false;
+    /** True until no more posts are returned from API. */
+    hasMorePosts;
+
+    /** Promise that resolves once posts have loaded up to saved position. */
+    savedPosHasLoaded;
     /** Unix timestamp of last save of contentScrollPosition to localStorage. */
     lastScrollPositionTime;
     /** Throttle for saving contentScrollPosition to localStorage. */
@@ -85,25 +90,9 @@ export default class InfiniteScroll {
 
         document.addEventListener("scroll", this.maybeSaveScrollPosition);
         document.addEventListener("click", this.maybeSaveScrollPosition);
+        window.addEventListener("pageshow", this.loadScrollPosition);
 
-        let savedPos = this.savedScrollPosition;
-        const savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: savedPos });
-
-        window.addEventListener("pageshow", async () => {
-            this.scrollEvents = 0;
-
-            await savedPosHasLoaded;
-
-            const userHasScrolled = this.scrollEvents > 1;
-
-            const shouldRestoreScrollPosition =
-                savedPos !== null && this.savedScrollPosIsFresh &&
-                !window.Search.searchIsShown && !userHasScrolled;
-
-            if (shouldRestoreScrollPosition) {
-                this.restoreScrollPosition();
-            }
-        });
+        this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedScrollPosition });
 
         this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
             this.newPostsIntervalTime);
@@ -118,16 +107,20 @@ export default class InfiniteScroll {
 
         return new Promise(async (resolve, reject) => {
             this.isUpdatingPosts = true;
+            this.hasMorePosts = true;
             this.loadingPostsElem.style.display = "block";
 
-            while (!this.pagination || this.pagination.next !== null) {
+            while (this.hasMorePosts) {
                 try {
                     const posts = await this.api.getNextPage();
-                    this.pagination = posts.meta.pagination;
-
-                    Html.appendPostsToFeed(posts);
+                    if (posts) {
+                        Html.appendPostsToFeed(posts);
+                    } else {
+                        this.hasMorePosts = false;
+                    }
                 } catch (e) {
                     this.isUpdatingPosts = false;
+                    this.hasMorePosts = undefined;
                     this.loadingPostsElem.innerText = "Could not finish loading posts.  Try refreshing cako.io.";
                     this.loadingPostsElem.className = "error";
 
@@ -149,7 +142,7 @@ export default class InfiniteScroll {
             resolve();
             isResolved = true;
             return;
-        })
+        });
     }
 
     /** Fetch and insert new posts if available. */
@@ -223,6 +216,22 @@ export default class InfiniteScroll {
                 time - this.lastScrollPositionTime >= this.scrollPositionThrottle) {
                 this.saveScrollPosition();
             }
+        }
+    }
+
+    loadScrollPosition = async () => {
+        this.scrollEvents = 0;
+
+        await this.savedPosHasLoaded;
+
+        const userHasScrolled = this.scrollEvents > 1;
+
+        const shouldRestoreScrollPosition =
+            this.savedScrollPosition !== null && this.savedScrollPosIsFresh &&
+            !window.Search.searchIsShown && !userHasScrolled;
+
+        if (shouldRestoreScrollPosition) {
+            this.restoreScrollPosition();
         }
     }
 

@@ -14,8 +14,7 @@
     <meta name="google-site-verification" content="CZuJBVbmjQdYaKUXQ6pDcDQ1Y9dH13s1oeZmN_AZpu4" />
 
     {{!-- Styles'n'Scripts --}}
-    <link rel="stylesheet" type="text/css" href="{{asset " css/screen.css"}}" />
-    <link rel="stylesheet" type="text/css" href="{{asset " css/spin.css"}}" />
+    <link rel="stylesheet" type="text/css" href="{{asset "css/screen.css"}}" />
 
     <meta id="theme-color" name="theme-color" content="#fff">
 
@@ -45,17 +44,17 @@
     </div>
 
     <script src="{{asset "js/lib/content-api.min.js"}}"></script>
-    <script type="module" src="{{asset "js/lib/CakoApp.js"}}"></script>
+    <script type="module" src="{{asset "js/CakoApp.js"}}"></script>
 
     {{!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some
     JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already
     loaded. --}}
     {{{block "scripts"}}}
-    {{block "templates"}}
+    {{> "templates"}}
 
     {{!-- Ghost outputs important scripts and data with this tag - it should always be the very last thing before the
     closing body tag --}}
     {{ghost_foot}}
 </body>
-<script type="module" src="{{asset "js/CakoApp.js"}}"></script>
+
 </html>
