@@ -8,8 +8,9 @@ into the {body} of the default.hbs template --}}
 {{!-- The main content area --}}
 <main id="site-main" class="site-main index outer" role="main">
     {{> "index-inner"}}
+    {{> "search-inner"}}
     <div id="post-inner" class="post inner">
-        <article class="post-full post"></article>
+        <article id="post-article" class="post-full post"></article>
         {{> "post-footer"}}
         <div class="post-nav-outer">
             <div id="post-nav-inner" class="post-nav inner"></div>

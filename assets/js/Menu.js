@@ -1,4 +1,6 @@
 export default class Menu {
+    search;
+
     static menu = document.getElementById("cako-menu");
     static menuIcon = document.getElementById("menu-icon");
     static menuInner = document.getElementById("cako-menu-inner");

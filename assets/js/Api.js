@@ -27,6 +27,8 @@ export default class Api {
     static #pageAwaiters = [];
     /** Array of objects containing a post ID and a promise to resolve with desired post. */
     static #postAwaiters = [];
+    /** Array of objects containing a promise to resolve with all posts. */
+    static #allPostsAwaiters = [];
 
     /** Path to features page. */
     static featuresPath = "/features/"
@@ -97,6 +99,19 @@ export default class Api {
         }
     }
 
+
+    async getAllPosts() {
+        if (Api.hasFinishedGettingPosts) {
+            return Api.posts;
+        }
+
+        let p = new Promise((resolve, reject) => {
+            Api.#allPostsAwaiters.push({ promise: { resolve, reject } })
+        });
+
+        return await p;
+    }
+
     async getFeaturesContent() {
         const d = await Api.featuresDocument;
 
@@ -113,7 +128,16 @@ export default class Api {
     }
 
     static postForId(id) {
-        return Api.posts.find(p => p.slug == id);
+        const postIdx = Api.posts.findIndex(p => p.slug == id);
+        const post = Object.assign({}, Api.posts[postIdx]);
+        if (postIdx + 1 < Api.posts.length) {
+            post.prev = Object.assign({}, Api.posts[postIdx + 1]);
+        }
+        if (postIdx > 0) {
+            post.next = Object.assign({}, Api.posts[postIdx - 1]);
+        }
+
+        return post;
     }
 
     static postsForPage(n) {
@@ -255,5 +279,11 @@ export default class Api {
         }
 
         Api.#pageAwaiters = [];
+
+        for (const a of Api.#allPostsAwaiters) {
+            a.promise.resolve(Api.posts);
+        }
+
+        Api.#allPostsAwaiters = [];
     }
 }

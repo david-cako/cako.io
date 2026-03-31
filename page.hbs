@@ -12,9 +12,9 @@ into the {body} of the default.hbs template --}}
 
 <main id="site-main" class="site-main post outer" role="main">
     {{> "index-inner"}}
+    {{> "search-inner"}}
     <div id="post-inner" class="post inner">
-        {{> "cako-search-feed"}}
-        <article class="post-full {{post_class}} {{#unless feature_image}}no-image{{/unless}}">
+        <article id="post-article" class="post-full {{post_class}} {{#unless feature_image}}no-image{{/unless}}">
             <header class="post-full-header">
                 <h1 class="post-full-title">{{title}}</h1>
             </header>
