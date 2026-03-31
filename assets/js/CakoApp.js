@@ -80,6 +80,7 @@ export default class CakoApp {
         CakoApp.indexInner.style.display = "none";
         CakoApp.searchInner.style.display = "none";
         this.search.hideSearch();
+        Menu.close();
 
         CakoApp.emailAddress.style.display = "inline-block";
         CakoApp.postNavInner.style.display = "flex";
@@ -90,8 +91,7 @@ export default class CakoApp {
     async navigateToFeatures() {
         const features = await this.api.getFeaturesContent();
 
-        CakoApp.postArticle.innerHTML = "";
-        CakoApp.postArticle.append(features);
+        CakoApp.postArticle.innerHTML = features.innerHTML;
 
         CakoApp.indexInner.style.display = "none";
         CakoApp.searchInner.style.display = "none";
