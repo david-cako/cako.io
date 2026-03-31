@@ -1,5 +1,5 @@
 <div class="post-nav-outer">
-    <div id="post-nav-inner" class="post-nav inner">
+    <div id="post-nav-inner" class="post-nav inner left">
         {{#prev_post}}
             <div class="cako-post">
                 <a href="{{url}}" class="cako-post-link post-nav-link left" data-post-id="{{slug}}">
@@ -14,7 +14,7 @@
         {{/prev_post}}
             
         {{#next_post}}
-        <div class="cako-post">
+        <div class="cako-post right">
             <a href="{{url}}" class="cako-post-link post-nav-link right" data-post-id="{{slug}}">
                 <div class="cako-post-title">{{title}}</div>
                 <div class="cako-post-date-outer">
