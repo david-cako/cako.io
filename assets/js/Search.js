@@ -113,13 +113,13 @@ export default class Search {
         let results = [];
 
         const callback = (posts) => {
-            const r = this.#search(posts, query);
+            const r = Search.search(posts, query);
 
             results = results.concat(r);
-            results = this.sortResults(results);
+            results = Search.sortResults(results);
 
             this.showResults(results);
-            this.updateStatus({ searching: true })
+            Search.updateStatus({ searching: true })
         }
 
         callback(posts);
@@ -133,215 +133,6 @@ export default class Search {
         return results;
     }
 
-    sortResults(results) {
-        return results.sort((a, b) => {
-            const aVal = a.strong !== undefined
-                ? a.strong.rank
-                : 0;
-            const bVal = b.strong !== undefined
-                ? b.strong.rank
-                : 0;
-
-            return bVal - aVal;
-        });
-    }
-
-    /** Gets match in HTML content for token and post. */
-    getHtmlMatch(token, post) {
-        const normalizedHtml = post.html ? normalizeString(post.html, true) : "";
-
-        if (normalizedHtml.toLowerCase().indexOf(token) !== -1) {
-            return true;
-        } else if (this.isNumericMatch(token, normalizedHtml)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /** Gets match in title for token and post. */
-    getTitleMatch(token, post) {
-        const normalizedTitle = normalizeString(post.title, true);
-
-        if (normalizedTitle.indexOf(token) !== -1) {
-            return true
-        } else if (this.isNumericMatch(token, normalizedTitle)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /** Gets match in date for token and post. */
-    getDateMatch(token, post) {
-        const publishDate = new Date(post.published_at);
-        const publishDateStr = post.published_at.split("T")[0];
-
-        const t = token.replace(/,/g, "");
-
-        if (!isNaN(t)) {
-            const tokenInt = parseInt(t);
-
-            if (publishDate.getFullYear() === tokenInt) {
-                return true;
-            }
-
-            if (publishDate.getDate() === tokenInt) {
-                return true;
-            }
-        }
-
-        const monthMatches = [];
-
-        for (let i = 0; i < MONTH_NAMES.length; i++) {
-            if (MONTH_NAMES[i].toLowerCase().indexOf(token.toLowerCase()) !== -1) {
-                monthMatches.push({ month: MONTH_NAMES[i], numeric: String(i + 1).padStart(2, "0") });
-            }
-        }
-
-        for (const m of monthMatches) {
-            if (publishDateStr.indexOf(`-${m.numeric}-`) !== -1) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /** Checks for match with numeric separators removed. */
-    isNumericMatch(token, string) {
-        // check for number without punctuation
-        const normalizedToken = removePunctuation(token)
-        const normalizedString = removePunctuation(string);
-
-        if (normalizedString.indexOf(normalizedToken) !== -1) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /** Gets strong matches for sequential words in title/content. */
-    getStrongTextMatch(matches, post, query) {
-        const previewLength = 42;
-
-        const htmlMatches = matches.filter(m => m.in == "html");
-        const titleWords = post.title.toLowerCase().split(" ");
-        const tokens = tokenizeString(query, true);
-
-        let titleMatches = [];
-
-        for (let i = 0; i < titleWords.length; i++) {
-            const word = titleWords[i];
-
-            for (const m of matches) {
-                if (m.token !== undefined
-                    && m.token.length > 1
-                    && (word.indexOf(m.token) !== -1 ||
-                        normalizeString(word, true).indexOf(m.token) !== -1)
-                    && titleMatches.indexOf(word) === -1
-                ) {
-                    titleMatches.push({ idx: i, word: word, token: m.token });
-                    break;
-                }
-            }
-        }
-
-        const tokensMatched = new Set(titleMatches.map(m => m.token)).size
-        const charsMatched = titleMatches.reduce((prev, cur) => prev + cur.token.length, 0)
-
-        if (tokensMatched / tokens.length > 0.7 || charsMatched / post.title.length > 0.7) {
-            return {
-                in: "title", preview: post.title,
-                rank: 1.4 * ((tokensMatched / tokens.length) + (charsMatched / post.title.length))
-            };
-        }
-
-        if (htmlMatches.length > 0 && post.html) {
-            const strippedHtml = stripHtmlTags(post.html);
-
-            const htmlWords = strippedHtml.split(" ");
-
-            let htmlMatchIdxs = [];
-
-            for (let i = 0; i < htmlWords.length; i++) {
-                const word = htmlWords[i];
-                for (const m of matches) {
-                    if (m.token !== undefined
-                        && m.token.length > 1
-                        && (word.toLowerCase().indexOf(m.token) !== -1 ||
-                            this.isNumericMatch(m.token, word) ||
-                            normalizeString(word, true).indexOf(m.token) !== -1)
-                        && htmlMatchIdxs.findIndex(m => m.idx == i) === -1
-                    ) {
-                        htmlMatchIdxs.push({ idx: i, word: word, token: m.token });
-                    }
-                }
-            }
-
-            if (htmlMatchIdxs.length < 1) {
-                return;
-            }
-
-            htmlMatchIdxs.sort((a, b) => a.idx - b.idx);
-
-            let sequential = [];
-            let maxSequential = sequential;
-            let prev;
-
-            for (const m of htmlMatchIdxs) {
-                if (prev === undefined || m.idx - 1 === prev.idx || m.idx === prev.idx) {
-                    sequential.push(m);
-                } else {
-                    if (sequential.length >= maxSequential.length) {
-                        maxSequential = sequential;
-                    }
-                    sequential = [m];
-                }
-
-                prev = m;
-            }
-
-            if (sequential.length >= maxSequential.length) {
-                maxSequential = sequential;
-            }
-
-            // get surrounding text before returning sequential html match
-            const matchIdxs = maxSequential.map(m => m.idx);
-            const matchMin = Math.min(...matchIdxs);
-            const matchMax = Math.max(...matchIdxs);
-
-            let min = matchMin;
-            let max = matchMax;
-
-            while (max - min < previewLength) {
-                if (min !== 0) {
-                    min--;
-                }
-
-                if (max - min < previewLength && max < htmlWords.length) {
-                    max++;
-                }
-
-                if (min === 0 && max === htmlWords.length) {
-                    break;
-                }
-            }
-
-            const preview = htmlWords.slice(min, max + 1).join(" ");
-
-            const charsMatched = maxSequential.reduce((prev, cur) => prev + cur.token.length, 0)
-            const charsInSeq = maxSequential.reduce((prev, cur) => prev + cur.word.length, 0)
-
-            const tokensMatched = new Set(maxSequential.map(m => m.token)).size
-
-            return {
-                in: "html", preview: preview,
-                rank: (tokensMatched / tokens.length) + (charsMatched / charsInSeq),
-                matches: htmlMatchIdxs
-            };
-        }
-    }
 
     showSearch() {
         Search.searchIsShown = true;
@@ -349,6 +140,17 @@ export default class Search {
 
         this.callSearchStateCallbacks(true);
     }
+
+    /* Clears search input, results, and hides search feed. */
+    hideSearch() {
+        Search.searchFeed.style.display = "none";
+
+        this.clear();
+        window.scrollTo({ top: this.contentScrollPosition });
+
+        Search.searchIsShown = false;
+    }
+
 
     showResults(results) {
         Search.searchResults.innerHTML = "";
@@ -362,53 +164,10 @@ export default class Search {
         }
     }
 
-    updateStatus({ searching, results, error } = {}) {
-        if (error) {
-            Search.searchHeader.innerText = "Search";
-            Search.searchStatusElem.innerText = `Could not load results.`
-            Search.searchStatusElem.className = "error";
-            Search.searchStatusElem.style.display = "block";
-        } else if (results) {
-            Search.searchHeader.innerText = "Search";
-
-            if (results.length === 0) {
-                Search.searchStatusElem.innerText = "No results found.";
-                Search.searchStatusElem.style.display = "block";
-            } else {
-                Search.searchStatusElem.innerText = "";
-                Search.searchStatusElem.style.display = "none";
-            }
-        } else if (searching) {
-            Search.searchHeader.innerText = "Searching...";
-
-            Search.searchStatusElem.innerText = "";
-            Search.searchStatusElem.style.display = "none";
-        } else {
-            Search.searchHeader.innerText = "Search";
-
-            Search.searchStatusElem.innerText = "";
-            Search.searchStatusElem.style.display = "none";
-        }
-    }
-
-    /* Clears search input, results, and hides search feed. */
-    hideSearch() {
-        Search.searchFeed.style.display = "none";
-
-        this.clear();
-        window.scrollTo({ top: this.contentScrollPosition });
-
-        Search.searchIsShown = false;
-    }
-
     /* Clears results. */
     clearResults() {
         this.previousResults = undefined;
         Search.searchResults.innerHTML = "";
-    }
-
-    static focus() {
-        Search.searchElement.focus();
     }
 
     /** Clears search input and results. */
@@ -418,6 +177,7 @@ export default class Search {
         this.clearResults();
         Search.clearIcon.style.display = "none";
     }
+
 
     onScroll = () => {
         if (!Search.searchIsShown) {
@@ -459,12 +219,12 @@ export default class Search {
         try {
             results = await this.search(value);
         } catch (e) {
-            this.updateStatus({ error: error });
+            Search.updateStatus({ error: error });
             console.log(e);
             throw e;
         }
 
-        this.updateStatus({ results: results })
+        Search.updateStatus({ results: results })
 
         // Scroll to top on initial transition to search results.
         if (!searchWasShown) {
@@ -575,7 +335,13 @@ export default class Search {
         }
     }
 
-    #search(posts, query) {
+    /* Private method hides search and calls callbacks to avoid circular callbacks. */
+    #hideSearch() {
+        this.hideSearch();
+        this.callSearchStateCallbacks(false);
+    }
+
+    static search(posts, query) {
         const results = [];
 
         const tokens = tokenizeString(query, true);
@@ -584,11 +350,11 @@ export default class Search {
             let matches = [];
 
             for (const t of tokens) {
-                if (this.getTitleMatch(t, p)) {
+                if (Search.getTitleMatch(t, p)) {
                     matches.push({ in: "title", token: t });
-                } else if (this.getDateMatch(t, p)) {
+                } else if (Search.getDateMatch(t, p)) {
                     matches.push({ in: "date" });
-                } else if (this.getHtmlMatch(t, p)) {
+                } else if (Search.getHtmlMatch(t, p)) {
                     matches.push({ in: "html", token: t });
                 }
             }
@@ -602,7 +368,7 @@ export default class Search {
                     }
                 });
             } else if (matches.length > 0 && matches.length / tokens.length >= .6) {
-                const strong = this.getStrongTextMatch(matches, p, query);
+                const strong = Search.getStrongTextMatch(matches, p, query);
                 results.push({ post: p, strong: strong });
             }
         }
@@ -610,10 +376,247 @@ export default class Search {
         return results;
     }
 
-    /* Private method hides search and calls callbacks to avoid circular callbacks. */
-    #hideSearch() {
-        this.hideSearch();
-        this.callSearchStateCallbacks(false);
+    static focus() {
+        Search.searchElement.focus();
+    }
+
+    static updateStatus({ searching, results, error } = {}) {
+        if (error) {
+            Search.searchHeader.innerText = "Search";
+            Search.searchStatusElem.innerText = `Could not load results.`
+            Search.searchStatusElem.className = "error";
+            Search.searchStatusElem.style.display = "block";
+        } else if (results) {
+            Search.searchHeader.innerText = "Search";
+
+            if (results.length === 0) {
+                Search.searchStatusElem.innerText = "No results found.";
+                Search.searchStatusElem.style.display = "block";
+            } else {
+                Search.searchStatusElem.innerText = "";
+                Search.searchStatusElem.style.display = "none";
+            }
+        } else if (searching) {
+            Search.searchHeader.innerText = "Searching...";
+
+            Search.searchStatusElem.innerText = "";
+            Search.searchStatusElem.style.display = "none";
+        } else {
+            Search.searchHeader.innerText = "Search";
+
+            Search.searchStatusElem.innerText = "";
+            Search.searchStatusElem.style.display = "none";
+        }
+    }
+
+    static sortResults(results) {
+        return results.sort((a, b) => {
+            const aVal = a.strong !== undefined
+                ? a.strong.rank
+                : 0;
+            const bVal = b.strong !== undefined
+                ? b.strong.rank
+                : 0;
+
+            return bVal - aVal;
+        });
+    }
+
+    /** Gets match in HTML content for token and post. */
+    static getHtmlMatch(token, post) {
+        const normalizedHtml = post.html ? normalizeString(post.html, true) : "";
+
+        if (normalizedHtml.toLowerCase().indexOf(token) !== -1) {
+            return true;
+        } else if (Search.isNumericMatch(token, normalizedHtml)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /** Gets match in title for token and post. */
+    static getTitleMatch(token, post) {
+        const normalizedTitle = normalizeString(post.title, true);
+
+        if (normalizedTitle.indexOf(token) !== -1) {
+            return true
+        } else if (Search.isNumericMatch(token, normalizedTitle)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /** Gets match in date for token and post. */
+    static getDateMatch(token, post) {
+        const publishDate = new Date(post.published_at);
+        const publishDateStr = post.published_at.split("T")[0];
+
+        const t = token.replace(/,/g, "");
+
+        if (!isNaN(t)) {
+            const tokenInt = parseInt(t);
+
+            if (publishDate.getFullYear() === tokenInt) {
+                return true;
+            }
+
+            if (publishDate.getDate() === tokenInt) {
+                return true;
+            }
+        }
+
+        const monthMatches = [];
+
+        for (let i = 0; i < MONTH_NAMES.length; i++) {
+            if (MONTH_NAMES[i].toLowerCase().indexOf(token.toLowerCase()) !== -1) {
+                monthMatches.push({ month: MONTH_NAMES[i], numeric: String(i + 1).padStart(2, "0") });
+            }
+        }
+
+        for (const m of monthMatches) {
+            if (publishDateStr.indexOf(`-${m.numeric}-`) !== -1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** Checks for match with numeric separators removed. */
+    static isNumericMatch(token, string) {
+        // check for number without punctuation
+        const normalizedToken = removePunctuation(token)
+        const normalizedString = removePunctuation(string);
+
+        if (normalizedString.indexOf(normalizedToken) !== -1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /** Gets strong matches for sequential words in title/content. */
+    static getStrongTextMatch(matches, post, query) {
+        const previewLength = 42;
+
+        const htmlMatches = matches.filter(m => m.in == "html");
+        const titleWords = post.title.toLowerCase().split(" ");
+        const tokens = tokenizeString(query, true);
+
+        let titleMatches = [];
+
+        for (let i = 0; i < titleWords.length; i++) {
+            const word = titleWords[i];
+
+            for (const m of matches) {
+                if (m.token !== undefined
+                    && m.token.length > 1
+                    && (word.indexOf(m.token) !== -1 ||
+                        normalizeString(word, true).indexOf(m.token) !== -1)
+                    && titleMatches.indexOf(word) === -1
+                ) {
+                    titleMatches.push({ idx: i, word: word, token: m.token });
+                    break;
+                }
+            }
+        }
+
+        const tokensMatched = new Set(titleMatches.map(m => m.token)).size
+        const charsMatched = titleMatches.reduce((prev, cur) => prev + cur.token.length, 0)
+
+        if (tokensMatched / tokens.length > 0.7 || charsMatched / post.title.length > 0.7) {
+            return {
+                in: "title", preview: post.title,
+                rank: 1.4 * ((tokensMatched / tokens.length) + (charsMatched / post.title.length))
+            };
+        }
+
+        if (htmlMatches.length > 0 && post.html) {
+            const strippedHtml = stripHtmlTags(post.html);
+
+            const htmlWords = strippedHtml.split(" ");
+
+            let htmlMatchIdxs = [];
+
+            for (let i = 0; i < htmlWords.length; i++) {
+                const word = htmlWords[i];
+                for (const m of matches) {
+                    if (m.token !== undefined
+                        && m.token.length > 1
+                        && (word.toLowerCase().indexOf(m.token) !== -1 ||
+                            Search.isNumericMatch(m.token, word) ||
+                            normalizeString(word, true).indexOf(m.token) !== -1)
+                        && htmlMatchIdxs.findIndex(m => m.idx == i) === -1
+                    ) {
+                        htmlMatchIdxs.push({ idx: i, word: word, token: m.token });
+                    }
+                }
+            }
+
+            if (htmlMatchIdxs.length < 1) {
+                return;
+            }
+
+            htmlMatchIdxs.sort((a, b) => a.idx - b.idx);
+
+            let sequential = [];
+            let maxSequential = sequential;
+            let prev;
+
+            for (const m of htmlMatchIdxs) {
+                if (prev === undefined || m.idx - 1 === prev.idx || m.idx === prev.idx) {
+                    sequential.push(m);
+                } else {
+                    if (sequential.length >= maxSequential.length) {
+                        maxSequential = sequential;
+                    }
+                    sequential = [m];
+                }
+
+                prev = m;
+            }
+
+            if (sequential.length >= maxSequential.length) {
+                maxSequential = sequential;
+            }
+
+            // get surrounding text before returning sequential html match
+            const matchIdxs = maxSequential.map(m => m.idx);
+            const matchMin = Math.min(...matchIdxs);
+            const matchMax = Math.max(...matchIdxs);
+
+            let min = matchMin;
+            let max = matchMax;
+
+            while (max - min < previewLength) {
+                if (min !== 0) {
+                    min--;
+                }
+
+                if (max - min < previewLength && max < htmlWords.length) {
+                    max++;
+                }
+
+                if (min === 0 && max === htmlWords.length) {
+                    break;
+                }
+            }
+
+            const preview = htmlWords.slice(min, max + 1).join(" ");
+
+            const charsMatched = maxSequential.reduce((prev, cur) => prev + cur.token.length, 0)
+            const charsInSeq = maxSequential.reduce((prev, cur) => prev + cur.word.length, 0)
+
+            const tokensMatched = new Set(maxSequential.map(m => m.token)).size
+
+            return {
+                in: "html", preview: preview,
+                rank: (tokensMatched / tokens.length) + (charsMatched / charsInSeq),
+                matches: htmlMatchIdxs
+            };
+        }
     }
 }
 
