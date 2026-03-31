@@ -48,6 +48,11 @@ export default class CakoApp {
     async navigateToIndex() {
         CakoApp.postInner.style.display = "none";
         CakoApp.postArticle.innerHTML = "";
+
+        CakoApp.searchInner.style.display = "none";
+        this.search.hideSearch();
+        CakoApp.indexInner.style.display = "none";
+
         CakoApp.indexInner.style.display = "block";
     }
 
@@ -73,8 +78,12 @@ export default class CakoApp {
         }
 
         CakoApp.indexInner.style.display = "none";
+        CakoApp.searchInner.style.display = "none";
+        this.search.hideSearch();
+
         CakoApp.emailAddress.style.display = "inline-block";
         CakoApp.postNavInner.style.display = "flex";
+
         CakoApp.postInner.style.display = "block";
     }
 
@@ -85,16 +94,22 @@ export default class CakoApp {
         CakoApp.postArticle.append(features);
 
         CakoApp.indexInner.style.display = "none";
+        CakoApp.searchInner.style.display = "none";
+
         CakoApp.emailAddress.style.display = "none";
         CakoApp.postNavInner.style.display = "none";
+
         CakoApp.postInner.style.display = "block";
     }
 
     async navigateToSearch() {
         CakoApp.indexInner.style.display = "none";
+        CakoApp.postInner.style.display = "none";
+        CakoApp.postArticle.innerHTML = "";
+
         CakoApp.emailAddress.style.display = "none";
         CakoApp.postNavInner.style.display = "none";
-        CakoApp.postInner.style.display = "none";
+
         CakoApp.searchInner.style.display = "block";
     }
 

@@ -32,6 +32,7 @@ export default class Search {
     static searchElement = document.getElementById("cako-search");
     static clearIcon = document.getElementById("cako-search-clear");
     static searchClear = document.getElementById("cako-search-clear");
+    static searchHeader = document.getElementById("cako-search-header");
     static searchResults = document.getElementById("cako-search-results");
     static searchFeed = document.getElementById("cako-search-feed");
     static searchStatusElem = document.getElementById("search-status");
@@ -118,6 +119,7 @@ export default class Search {
             results = this.sortResults(results);
 
             this.showResults(results);
+            this.updateStatus({ searching: true })
         }
 
         callback(posts);
@@ -344,13 +346,6 @@ export default class Search {
     showSearch() {
         Search.searchIsShown = true;
         Search.searchFeed.style.display = "block";
-        if (Search.postFeed) {
-            Search.postFeed.style.display = "none";
-        }
-
-        if (Search.postContent) {
-            Search.postContent.style.display = "none";
-        }
 
         this.callSearchStateCallbacks(true);
     }
@@ -367,24 +362,46 @@ export default class Search {
         }
     }
 
+    updateStatus({ searching, results, error } = {}) {
+        if (error) {
+            Search.searchHeader.innerText = "Search";
+            Search.searchStatusElem.innerText = `Could not load results.`
+            Search.searchStatusElem.className = "error";
+            Search.searchStatusElem.style.display = "block";
+        } else if (results) {
+            Search.searchHeader.innerText = "Search";
+
+            if (results.length === 0) {
+                Search.searchStatusElem.innerText = "No results found.";
+                Search.searchStatusElem.style.display = "block";
+            } else {
+                Search.searchStatusElem.innerText = "";
+                Search.searchStatusElem.style.display = "none";
+            }
+        } else if (searching) {
+            Search.searchHeader.innerText = "Searching...";
+
+            Search.searchStatusElem.innerText = "";
+            Search.searchStatusElem.style.display = "none";
+        } else {
+            Search.searchHeader.innerText = "Search";
+
+            Search.searchStatusElem.innerText = "";
+            Search.searchStatusElem.style.display = "none";
+        }
+    }
+
+    /* Clears search input, results, and hides search feed. */
     hideSearch() {
         Search.searchFeed.style.display = "none";
 
-        if (Search.postFeed) {
-            Search.postFeed.style.display = 'block';
-        }
-
-        if (Search.postContent) {
-            Search.postContent.style.display = "block";
-        }
-
+        this.clear();
         window.scrollTo({ top: this.contentScrollPosition });
 
         Search.searchIsShown = false;
-
-        this.callSearchStateCallbacks(false);
     }
 
+    /* Clears results. */
     clearResults() {
         this.previousResults = undefined;
         Search.searchResults.innerHTML = "";
@@ -394,11 +411,11 @@ export default class Search {
         Search.searchElement.focus();
     }
 
+    /** Clears search input and results. */
     clear() {
         Search.searchElement.value = "";
         this.previousQuery = "";
         this.clearResults();
-        this.hideSearch();
         Search.clearIcon.style.display = "none";
     }
 
@@ -424,7 +441,6 @@ export default class Search {
             this.previousQuery = "";
             Search.clearIcon.style.display = "none";
             this.clearResults();
-            this.hideSearch();
 
             return;
         }
@@ -443,20 +459,12 @@ export default class Search {
         try {
             results = await this.search(value);
         } catch (e) {
-            Search.searchStatusElem.innerText = `Could not load results.`
-            Search.searchStatusElem.className = "error";
-            Search.searchStatusElem.style.display = "block";
+            this.updateStatus({ error: error });
             console.log(e);
             throw e;
         }
 
-        if (results.length === 0) {
-            Search.searchStatusElem.innerText = "No results found.";
-            Search.searchStatusElem.style.display = "block";
-        } else {
-            Search.searchStatusElem.innerText = "";
-            Search.searchStatusElem.style.display = "none";
-        }
+        this.updateStatus({ results: results })
 
         // Scroll to top on initial transition to search results.
         if (!searchWasShown) {
@@ -498,7 +506,7 @@ export default class Search {
 
         // escape closes menu
         if (e.key == "Escape") {
-            this.clear();
+            this.#hideSearch();
             this.menu.close();
 
             return;
@@ -600,6 +608,12 @@ export default class Search {
         }
 
         return results;
+    }
+
+    /* Private method hides search and calls callbacks to avoid circular callbacks. */
+    #hideSearch() {
+        this.hideSearch();
+        this.callSearchStateCallbacks(false);
     }
 }
 
