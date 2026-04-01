@@ -507,11 +507,25 @@ code.hljs {
 
 #cako-site-nav-link:hover {
     text-decoration: none;
+}
+
+@media(hover: hover) {
+    #cako-site-nav-link:hover {
+        border: 1px solid #0c76e6;
+        background: transparent;
+    }
+
+    #cako-site-nav-link:hover>span {
+        color: #0c76e6 !important;
+    }
+}
+
+#cako-site-nav-link:focus {
     border: 1px solid #0c76e6;
     background: transparent;
 }
 
-#cako-site-nav-link:hover>span {
+#cako-site-nav-link:focus>span {
     color: #0c76e6 !important;
 }
 

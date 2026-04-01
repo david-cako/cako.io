@@ -219,11 +219,7 @@ export default class InfiniteScroll {
         }
     }
 
-    loadScrollPosition = async () => {
-        this.scrollEvents = 0;
-
-        await this.savedPosHasLoaded;
-
+    maybeRestoreScrollPosition() {
         const userHasScrolled = this.scrollEvents > 1;
 
         const shouldRestoreScrollPosition =
@@ -233,6 +229,14 @@ export default class InfiniteScroll {
         if (shouldRestoreScrollPosition) {
             this.restoreScrollPosition();
         }
+    }
+
+    loadScrollPosition = async () => {
+        this.scrollEvents = 0;
+
+        await this.savedPosHasLoaded;
+
+        this.maybeRestoreScrollPosition();
     }
 
     /** Jumps to bottom of post index.  This was too many buttons. */

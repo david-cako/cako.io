@@ -14,6 +14,9 @@ export default class CakoApp {
     /** Background state saved to return to after hiding search. */
     searchBackgroundState;
 
+    indexScrollPos;
+
+    static siteNavLink = document.getElementById("cako-site-nav-link");
     static indexInner = document.getElementById("index-inner");
     static postInner = document.getElementById("post-inner");
     static searchInner = document.getElementById("search-inner");
@@ -54,12 +57,16 @@ export default class CakoApp {
         CakoApp.indexInner.style.display = "none";
 
         CakoApp.indexInner.style.display = "block";
+
+        this.restoreIndexScrollPosition();
     }
 
     async navigateToPost(id) {
         if (!id) {
             throw new Error("Missing id in call to navigateToPost(id)");
         }
+
+        this.maybeSaveIndexScrollPosition();
 
         const post = await this.api.getPost(id);
         const generated = Html.generatePost(post);
@@ -86,10 +93,14 @@ export default class CakoApp {
         CakoApp.postNavInner.style.display = "flex";
 
         CakoApp.postInner.style.display = "block";
+
+        window.scrollTo({ top: 0 });
     }
 
     async navigateToFeatures() {
         const features = await this.api.getFeaturesContent();
+
+        this.maybeSaveIndexScrollPosition();
 
         CakoApp.postArticle.innerHTML = features.innerHTML;
 
@@ -100,9 +111,13 @@ export default class CakoApp {
         CakoApp.postNavInner.style.display = "none";
 
         CakoApp.postInner.style.display = "block";
+
+        window.scrollTo({ top: 0 });
     }
 
     async navigateToSearch() {
+        this.maybeSaveIndexScrollPosition();
+
         CakoApp.indexInner.style.display = "none";
         CakoApp.postInner.style.display = "none";
         CakoApp.postArticle.innerHTML = "";
@@ -113,10 +128,44 @@ export default class CakoApp {
         CakoApp.searchInner.style.display = "block";
     }
 
+    async navigateToState(state) {
+        switch (state.page) {
+            case "/":
+                await this.navigateToIndex();
+                break;
+            case "features":
+                await this.navigateToFeatures();
+                break;
+            default:
+                await this.navigateToPost(state.page);
+                break;
+        }
+    }
+
+    maybeSaveIndexScrollPosition() {
+        if (this.state.page = "/") {
+            this.indexScrollPos = window.scrollY;
+        }
+    }
+
+    restoreIndexScrollPosition() {
+        const pos = this.indexScrollPos;
+
+        if (pos !== null) {
+            window.scroll(0, pos);
+        }
+    }
+
     onClick = async (e) => {
         const headerElem = e.target.closest("#cako-site-nav-link");
         if (headerElem) {
             e.preventDefault();
+
+            CakoApp.siteNavLink.focus({ focusVisible: false });
+            setTimeout(() => {
+                CakoApp.siteNavLink.blur()
+            }, 200);
+
             await this.navigateToIndex();
 
             this.state = { page: "/" };
@@ -174,20 +223,6 @@ export default class CakoApp {
                     this.navigateToPost(CakoApp.navLinkRight.dataset.postId);;
                 }
             }
-        }
-    }
-
-    async navigateToState(state) {
-        switch (state.page) {
-            case "/":
-                await this.navigateToIndex();
-                break;
-            case "features":
-                await this.navigateToFeatures();
-                break;
-            default:
-                await this.navigateToPost(state.page);
-                break;
         }
     }
 

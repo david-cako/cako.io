@@ -3,11 +3,21 @@ body {
     background-color: #000;
 }
 
-#cako-site-nav-link:hover {
+@media(hover: hover) {
+    #cako-site-nav-link:hover {
+        border: 1px solid #27d7ff;
+    }
+
+    #cako-site-nav-link:hover>span {
+        color: #27d7ff !important;
+    }
+}
+
+#cako-site-nav-link:focus {
     border: 1px solid #27d7ff;
 }
 
-#cako-site-nav-link:hover>span {
+#cako-site-nav-link:focus>span {
     color: #27d7ff !important;
 }
 
