@@ -18,6 +18,8 @@ export default class InfiniteScroll {
     isUpdatingPosts = false;
     /** True until no more posts are returned from API. */
     hasMorePosts;
+    /** When initialized with noFetch, no posts will be dynamically loaded. */
+    noFetch;
 
     /** Promise that resolves once posts have loaded up to saved position. */
     savedPosHasLoaded;
@@ -80,7 +82,8 @@ export default class InfiniteScroll {
         return localStorage.setItem("contentScrollPositionTime", value)
     }
 
-    constructor() {
+    constructor({ noFetch } = {}) {
+        this.noFetch = noFetch;
         this.initialize();
     }
 
@@ -92,10 +95,12 @@ export default class InfiniteScroll {
         document.addEventListener("click", this.maybeSaveScrollPosition);
         window.addEventListener("pageshow", this.loadScrollPosition);
 
-        this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedScrollPosition });
+        if (!this.noFetch) {
+            this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedScrollPosition });
 
-        this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
-            this.newPostsIntervalTime);
+            this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
+                this.newPostsIntervalTime);
+        }
     }
 
 

@@ -6,7 +6,27 @@ into the {body} of the default.hbs template --}}
 
 {{!-- The big featured header, it uses blog cover image as a BG if available --}}
 {{!-- The main content area --}}
-<main id="site-main" class="site-main outer" role="main">
-    {{> "index-inner"}}
-    <div id="post-inner" class="post inner"></div>
+<main id="site-main" class="site-main outer index" role="main">
+    <div id="index-inner" class="index inner">
+       <div id="cako-post-feed-outer">
+           <div id="cako-post-feed">
+                {{#get "posts" limit="all"}}
+                {{#foreach posts}}
+                    {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
+                    {{> "post-card"}}
+                {{/foreach}}
+                {{/get}}
+            </div>
+            <div id="loading-posts">Loading posts...</div>
+            <section class="copyright"><a href="https://davidcako.com">{{@site.title}}</a> &copy; {{date format="YYYY"}}</section>
+        </div>
+    </div>
+    {{> "search-inner"}}
+    <div id="post-inner" class="post inner">
+        <article id="post-article" class="post-full post"></article>
+        {{> "post-footer"}}
+        <div class="post-nav-outer">
+            <div id="post-nav-inner" class="post-nav inner"></div>
+        </div>
+    </div>
 </main>

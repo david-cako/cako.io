@@ -35,15 +35,23 @@ export default class CakoApp {
     constructor() {
         this.menu = new Menu();
         this.search = new Search(Menu);
-        this.infiniteScroll = new InfiniteScroll();
         this.api = new Api();
 
         this.state = { page: location.pathname };
 
-        document.addEventListener("click", this.onClick);
-        document.addEventListener("keydown", this.onKeyDown);
+        if (this.state.page == "/all/") {
+            this.infiniteScroll = new InfiniteScroll({ noFetch: true });
+        } else {
+            this.infiniteScroll = new InfiniteScroll();
+        }
 
-        window.addEventListener("popstate", this.onPopState);
+        // Do not capture events on static sites hosted from cako cli
+        if (location.host == "cako.io") {
+            document.addEventListener("click", this.onClick);
+            document.addEventListener("keydown", this.onKeyDown);
+
+            window.addEventListener("popstate", this.onPopState);
+        }
 
         this.search.onSearchState(this.onSearchState);
     }
@@ -54,9 +62,10 @@ export default class CakoApp {
 
         CakoApp.searchInner.style.display = "none";
         this.search.hideSearch();
-        CakoApp.indexInner.style.display = "none";
 
         CakoApp.indexInner.style.display = "block";
+
+        document.title = "cako.io";
 
         this.restoreIndexScrollPosition();
     }
@@ -85,6 +94,7 @@ export default class CakoApp {
         }
 
         CakoApp.indexInner.style.display = "none";
+
         CakoApp.searchInner.style.display = "none";
         this.search.hideSearch();
         Menu.close();
@@ -93,6 +103,8 @@ export default class CakoApp {
         CakoApp.postNavInner.style.display = "flex";
 
         CakoApp.postInner.style.display = "block";
+
+        document.title = post.title;
 
         window.scrollTo({ top: 0 });
     }
@@ -111,6 +123,8 @@ export default class CakoApp {
         CakoApp.postNavInner.style.display = "none";
 
         CakoApp.postInner.style.display = "block";
+
+        document.title = "Features";
 
         window.scrollTo({ top: 0 });
     }
@@ -143,7 +157,7 @@ export default class CakoApp {
     }
 
     maybeSaveIndexScrollPosition() {
-        if (this.state.page = "/") {
+        if (this.state.page == "/") {
             this.indexScrollPos = window.scrollY;
         }
     }
@@ -227,20 +241,21 @@ export default class CakoApp {
     }
 
     onPopState = async (e) => {
-        this.navigateToState(e.state)
+        this.navigateToState(e.state);
+        this.state = e.state;
     }
 
     onSearchState = (shown) => {
         if (shown) {
             this.navigateToSearch();
             this.searchBackgroundState = Object.assign({}, this.state);
-            console.log(this.searchBackgroundState);
             this.state = { page: "search" };
         } else {
-            console.log(this.searchBackgroundState);
-            this.navigateToState(this.searchBackgroundState);
-            this.state = this.searchBackgroundState;
-            this.searchBackgroundState = undefined;
+            if (this.searchBackgroundState) {
+                this.navigateToState(this.searchBackgroundState);
+                this.state = this.searchBackgroundState;
+                this.searchBackgroundState = undefined;
+            }
         }
     }
 }

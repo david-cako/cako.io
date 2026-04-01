@@ -146,7 +146,6 @@ export default class Search {
         Search.searchFeed.style.display = "none";
 
         this.clear();
-        window.scrollTo({ top: this.contentScrollPosition });
 
         Search.searchIsShown = false;
     }
@@ -211,7 +210,6 @@ export default class Search {
             this.showSearch();
         }
 
-        const searchWasShown = Search.searchIsShown;
         Search.searchResults.innerHTML = "";
 
         let results;
@@ -226,10 +224,7 @@ export default class Search {
 
         Search.updateStatus({ results: results })
 
-        // Scroll to top on initial transition to search results.
-        if (!searchWasShown) {
-            window.scrollTo({ top: 0 });
-        }
+        window.scrollTo({ top: 0 });
 
         this.previousQuery = normalizeString(value, true);
     }
