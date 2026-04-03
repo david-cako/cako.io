@@ -222,11 +222,13 @@ export default class Search {
             throw e;
         }
 
-        Search.updateStatus({ results: results })
+        if (Search.searchIsShown) {
+            Search.updateStatus({ results: results });
 
-        window.scrollTo({ top: 0 });
+            window.scrollTo({ top: 0 });
 
-        this.previousQuery = normalizeString(value, true);
+            this.previousQuery = normalizeString(value, true);
+        }
     }
 
     onKeyDown = (e) => {
