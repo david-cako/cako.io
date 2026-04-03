@@ -58,6 +58,8 @@ export default class CakoApp {
     }
 
     async navigateToIndex() {
+        this.state = { page: "/" };
+
         this.saveScrollPosition();
 
         CakoApp.postInner.style.display = "none";
@@ -70,8 +72,6 @@ export default class CakoApp {
 
         document.title = "cako.io";
 
-        this.state = { page: "/" };
-
         this.restoreScrollPosition();
     }
 
@@ -79,6 +79,8 @@ export default class CakoApp {
         if (!id) {
             throw new Error("Missing id in call to navigateToPost(id)");
         }
+
+        this.state = { page: id };
 
         this.saveScrollPosition();
 
@@ -111,13 +113,13 @@ export default class CakoApp {
 
         document.title = post.title;
 
-        this.state = { page: post.id };
-
         window.scrollTo({ top: 0 });
         window.Header.resetAnimation();
     }
 
     async navigateToFeatures() {
+        this.state = { page: "features" };
+
         const features = await this.api.getFeaturesContent();
 
         this.saveScrollPosition();
@@ -134,12 +136,12 @@ export default class CakoApp {
 
         document.title = "Features";
 
-        this.state = { page: "features" };
-
         this.restoreScrollPosition();
     }
 
     async navigateToSearch() {
+        this.state = { page: "search" };
+
         this.saveScrollPosition();
 
         CakoApp.indexInner.style.display = "none";
@@ -150,8 +152,6 @@ export default class CakoApp {
         CakoApp.postNavInner.style.display = "none";
 
         CakoApp.searchInner.style.display = "block";
-
-        this.state = { page: "search" };
     }
 
     async navigateToState(state) {
@@ -205,8 +205,7 @@ export default class CakoApp {
             }, 200);
 
             await this.navigateToIndex();
-
-            this.state = { page: "/" };
+        
             history.pushState(this.state, "", "/");
         }
 
@@ -228,7 +227,6 @@ export default class CakoApp {
 
             await this.navigateToPost(id);
 
-            this.state = { page: `${id}` };
             history.pushState(this.state, "", `/${id}/`);
         }
 
@@ -237,7 +235,7 @@ export default class CakoApp {
             e.preventDefault();
 
             await this.navigateToFeatures();
-            this.state = { page: "features" };
+
             history.pushState(this.state, "", "/features/");
         }
     }
@@ -252,7 +250,7 @@ export default class CakoApp {
                     CakoApp.navLinkLeft.focus({ preventScroll: true });
 
                     const id = CakoApp.navLinkLeft.dataset.postId;
-                    this.navigateToPost(id);
+                    await this.navigateToPost(id);
                     history.pushState(this.state, "", `/${id}/`);
                 }
             }
@@ -262,7 +260,7 @@ export default class CakoApp {
                     CakoApp.navLinkRight.focus({ preventScroll: true });
 
                     const id = CakoApp.navLinkRight.dataset.postId;
-                    this.navigateToPost(id);
+                    await this.navigateToPost(id);
                     history.pushState(this.state, "", `/${id}/`);
                 }
             }
@@ -279,7 +277,6 @@ export default class CakoApp {
         if (shown) {
             this.searchBackgroundState = Object.assign({}, this.state);
             this.navigateToSearch();
-            this.state = { page: "search" };
         } else {
             if (this.searchBackgroundState) {
                 this.navigateToState(this.searchBackgroundState);
