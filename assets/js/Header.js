@@ -38,9 +38,18 @@ class Header {
         })
     }
 
+    /** ??? Fixes opacity stuck after navigating to new page when scrolled just 100px. */
+    static resetAnimation() {
+        Header.header.style.animation = "none";
+
+        setTimeout(() => {
+            Header.header.style.animation = "";
+        }, 10);
+    }
 }
 
 /** Setup scroll handler for CAKO logo. */
 (() => {
     Header.init();
+    window.Header = Header;
 })();

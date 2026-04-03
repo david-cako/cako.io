@@ -114,6 +114,7 @@ export default class CakoApp {
         this.state = { page: post.id };
 
         window.scrollTo({ top: 0 });
+        window.Header.resetAnimation();
     }
 
     async navigateToFeatures() {
