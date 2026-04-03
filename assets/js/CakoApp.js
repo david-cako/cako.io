@@ -251,14 +251,19 @@ export default class CakoApp {
                 if (CakoApp.navLinkLeft) {
                     CakoApp.navLinkLeft.focus({ preventScroll: true });
 
-                    this.navigateToPost(CakoApp.navLinkLeft.dataset.postId);;
+                    const id = CakoApp.navLinkLeft.dataset.postId;
+                    this.navigateToPost(id);
+                    history.pushState(this.state, "", `/${id}/`);
                 }
             }
 
             if (e.key == "ArrowRight") {
                 if (CakoApp.navLinkRight) {
                     CakoApp.navLinkRight.focus({ preventScroll: true });
-                    this.navigateToPost(CakoApp.navLinkRight.dataset.postId);;
+
+                    const id = CakoApp.navLinkRight.dataset.postId;
+                    this.navigateToPost(id);
+                    history.pushState(this.state, "", `/${id}/`);
                 }
             }
         }
