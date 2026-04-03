@@ -154,16 +154,18 @@ export default class CakoApp {
     }
 
     async navigateToState(state) {
-        switch (state.page) {
-            case "/":
-                await this.navigateToIndex();
-                break;
-            case "features":
-                await this.navigateToFeatures();
-                break;
-            default:
-                await this.navigateToPost(state.page);
-                break;
+        if (state.page) {
+            switch (state.page) {
+                case "/":
+                    await this.navigateToIndex();
+                    break;
+                case "features":
+                    await this.navigateToFeatures();
+                    break;
+                default:
+                    await this.navigateToPost(state.page);
+                    break;
+            }
         }
     }
 
@@ -262,7 +264,9 @@ export default class CakoApp {
     }
 
     onPopState = async (e) => {
-        await this.navigateToState(e.state);
+        if (e.state) {
+            await this.navigateToState(e.state);
+        }
     }
 
     onSearchState = (shown) => {
