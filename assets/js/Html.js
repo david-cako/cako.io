@@ -173,6 +173,6 @@ export default class Html {
 
     /** Replace double spaces with en-space to fix wrapping. */
     static replaceSpaces(htmlText) {
-        return htmlText.replace(/ &nbsp;/g, "&ensp;");
+        return htmlText.replace(/ \u00A0/g, "&ensp;");
     }
 }
