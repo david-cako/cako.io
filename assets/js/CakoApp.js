@@ -282,13 +282,14 @@ export default class CakoApp {
 
     /** Only capture events on live site, not on static sites from cako cli. */
     async setupEventHandlers() {
+        document.addEventListener("keydown", this.onKeyDown);
+
         try {
             await this.api.hasApi();
             this.isLiveSite = true;
             console.log("Live site initialized.");
-            document.addEventListener("click", this.onClick);
-            document.addEventListener("keydown", this.onKeyDown);
 
+            document.addEventListener("click", this.onClick);
             window.addEventListener("popstate", this.onPopState);
 
             this.search.onSearchState(this.onSearchState);
