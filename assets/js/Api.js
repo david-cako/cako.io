@@ -1,6 +1,6 @@
 const GHOST_API = new GhostContentAPI({
-    url: "https://cako.io",
-    key: "cd0baa38f66654ecac76e61d72",
+    url: location.origin,
+    key: CONTENT_API_KEY,
     version: "v3"
 });
 
@@ -99,7 +99,6 @@ export default class Api {
         }
     }
 
-
     async getAllPosts() {
         if (Api.hasFinishedGettingPosts) {
             return Api.posts;
@@ -121,6 +120,10 @@ export default class Api {
         }
 
         return article;
+    }
+
+    async hasApi() {
+        return await this.getPage(1);
     }
 
     static hasPage(n) {
@@ -154,7 +157,6 @@ export default class Api {
 
         return Api.posts.slice(start, end)
     }
-
 
     /** Fetch next page given current pagination and Api.postsPerRequest */
     async #getNextPage() {

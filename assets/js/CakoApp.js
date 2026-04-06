@@ -46,13 +46,7 @@ export default class CakoApp {
             this.infiniteScroll = new InfiniteScroll();
         }
 
-        // Do not capture events on static sites hosted from cako cli
-        if (location.host == "cako.io") {
-            document.addEventListener("click", this.onClick);
-            document.addEventListener("keydown", this.onKeyDown);
-
-            window.addEventListener("popstate", this.onPopState);
-        }
+        this.maybeSetupNavigationHandlers();
 
         this.search.onSearchState(this.onSearchState);
     }
@@ -205,7 +199,7 @@ export default class CakoApp {
             }, 200);
 
             await this.navigateToIndex();
-        
+
             history.pushState(this.state, "", "/");
         }
 
@@ -283,6 +277,20 @@ export default class CakoApp {
                 this.state = this.searchBackgroundState;
                 this.searchBackgroundState = undefined;
             }
+        }
+    }
+
+    /** Only capture events on live site, not on static sites from cako cli. */
+    async maybeSetupNavigationHandlers() {
+        try {
+            await this.api.hasApi();
+            console.log("Live site initialized.");
+            document.addEventListener("click", this.onClick);
+            document.addEventListener("keydown", this.onKeyDown);
+
+            window.addEventListener("popstate", this.onPopState);
+        } catch {
+            console.log("Static site initialized.");
         }
     }
 }
