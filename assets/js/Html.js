@@ -186,8 +186,14 @@ export default class Html {
             throw new Error("No cako-post element found.")
         }
 
-        const id = post.dataset.postId;
-        if (!id) {
+        let id;
+        if (post.dataset.postId) {
+            id = post.dataset.postId;
+        } else if (postLink.href) {
+            // Necessary for Features links!
+            const url = URL.parse(postLink.href);
+            id = url.pathname.replaceAll("/", "");
+        } else {
             throw new Error("Missing post id or href in post link!");
         }
 

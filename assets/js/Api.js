@@ -210,7 +210,7 @@ export default class Api {
             try {
                 return await GHOST_API.posts.read({
                     slug: id,
-                    formats: includeBody ? ['html'] : []
+                    formats: includeBody ? ['html'] : undefined
                 });
             } catch (e) {
                 console.log(`Error fetching posts, attempt ${retries}`, e);

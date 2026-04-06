@@ -40,9 +40,16 @@ export default class CakoApp {
         this.search = new Search(Menu);
         this.api = new Api();
 
-        this.state = { page: location.pathname };
+        let page
+        if (location.pathname == "/") {
+            page = "/"
+        } else {
+            page = location.pathname.replaceAll("/", "");
+        }
 
-        if (this.state.page == "/all/") {
+        this.state = { page: page };
+
+        if (this.state.page == "all") {
             this.infiniteScroll = new InfiniteScroll({ noFetch: true });
         } else {
             this.infiniteScroll = new InfiniteScroll();
@@ -55,6 +62,8 @@ export default class CakoApp {
         this.state = { page: "/" };
 
         this.saveScrollPosition();
+
+        document.body.classList = "home-template";
 
         CakoApp.postInner.style.display = "none";
         CakoApp.postArticle.innerHTML = "";
@@ -80,6 +89,8 @@ export default class CakoApp {
 
         const post = await this.api.getPost(id);
         const generated = Html.generatePost(post);
+
+        document.body.classList = "post-template";
 
         CakoApp.postArticle.innerHTML = "";
         CakoApp.postArticle.append(generated);
@@ -117,6 +128,8 @@ export default class CakoApp {
         const features = await this.api.getFeaturesContent();
 
         this.saveScrollPosition();
+
+        document.body.classList = "page-template";
 
         CakoApp.postArticle.innerHTML = features.innerHTML;
 

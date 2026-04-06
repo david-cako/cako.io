@@ -1572,10 +1572,19 @@ The first (most recent) post in the list is styled to be bigger than the others 
     margin: 0;
 }
 
-.post-template .post-full-content>p:first-child {
+.post-full-content>p:first-child {
     font-weight: 500;
     font-size: 1.1em;
     line-height: 1.5em;
+}
+
+.page-template .post-full-content>p:first-child {
+    margin-bottom: 0.7em;
+    margin-top: -0.7em;
+}
+
+.page-template .site-footer-content {
+    padding: 10px 6px 30px 15px
 }
 
 .post-full-content a {
