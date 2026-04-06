@@ -1,8 +1,8 @@
 <div class="post-nav-outer">
-    <div id="post-nav-inner" class="post-nav inner left">
+    <div id="post-nav-inner" class="post-nav inner">
         {{#prev_post}}
-            <div class="cako-post">
-                <a href="{{url}}" class="cako-post-link post-nav-link left" data-post-id="{{slug}}">
+            <div class="cako-post left" data-post-id="{{slug}}">
+                <a href="{{url}}" class="cako-post-link post-nav-link left">
                     <div class="cako-post-title">{{title}}</div>
                     <div class="cako-post-date-outer">
                         <time class="cako-post-date" datetime="{{date format="YYYY-MM-DDTHH:mm:ss"}}">{{date format="D . M . YYYY"}}</time>
@@ -14,8 +14,8 @@
         {{/prev_post}}
             
         {{#next_post}}
-        <div class="cako-post right">
-            <a href="{{url}}" class="cako-post-link post-nav-link right" data-post-id="{{slug}}">
+        <div class="cako-post right" data-post-id="{{slug}}">
+            <a href="{{url}}" class="cako-post-link post-nav-link right">
                 <div class="cako-post-title">{{title}}</div>
                 <div class="cako-post-date-outer">
                     <time class="cako-post-date" datetime="{{date format="YYYY-MM-DDTHH:mm:ss"}}">{{date format="D . M . YYYY"}}</time>

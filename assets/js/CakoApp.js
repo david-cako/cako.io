@@ -17,6 +17,8 @@ export default class CakoApp {
     indexScrollPos;
     featuresScrollPos;
 
+    isLiveSite;
+
     static siteNavLink = document.getElementById("cako-site-nav-link");
     static indexInner = document.getElementById("index-inner");
     static postInner = document.getElementById("post-inner");
@@ -46,9 +48,8 @@ export default class CakoApp {
             this.infiniteScroll = new InfiniteScroll();
         }
 
-        this.maybeSetupNavigationHandlers();
+        this.setupEventHandlers();
 
-        this.search.onSearchState(this.onSearchState);
     }
 
     async navigateToIndex() {
@@ -193,6 +194,7 @@ export default class CakoApp {
         if (headerElem) {
             e.preventDefault();
 
+            // Shows touch feedback on mobile.
             CakoApp.siteNavLink.focus({ focusVisible: false });
             setTimeout(() => {
                 CakoApp.siteNavLink.blur()
@@ -207,17 +209,7 @@ export default class CakoApp {
         if (postLinkElem) {
             e.preventDefault();
 
-            const postElem = postLinkElem.parentElement;
-
-            let id;
-            if (postElem.dataset.postId) {
-                id = postElem.dataset.postId;
-            } else if (postLinkElem.href) {
-                const url = URL.parse(postLinkElem.href);
-                id = url.pathname.replaceAll("/", "");
-            } else {
-                throw new Error("Missing post id or href in post link!");
-            }
+            const id = Html.getIdForPostLink(postLinkElem);
 
             await this.navigateToPost(id);
 
@@ -243,9 +235,13 @@ export default class CakoApp {
                 if (CakoApp.navLinkLeft) {
                     CakoApp.navLinkLeft.focus({ preventScroll: true });
 
-                    const id = CakoApp.navLinkLeft.dataset.postId;
-                    await this.navigateToPost(id);
-                    history.pushState(this.state, "", `/${id}/`);
+                    if (this.isLiveSite) {
+                        const id = Html.getIdForPostLink(CakoApp.navLinkLeft);
+                        await this.navigateToPost(id);
+                        history.pushState(this.state, "", `/${id}/`);
+                    } else {
+                        CakoApp.navLinkLeft.click();
+                    }
                 }
             }
 
@@ -253,9 +249,13 @@ export default class CakoApp {
                 if (CakoApp.navLinkRight) {
                     CakoApp.navLinkRight.focus({ preventScroll: true });
 
-                    const id = CakoApp.navLinkRight.dataset.postId;
-                    await this.navigateToPost(id);
-                    history.pushState(this.state, "", `/${id}/`);
+                    if (this.isLiveSite) {
+                        const id = Html.getIdForPostLink(CakoApp.navLinkRight);
+                        await this.navigateToPost(id);
+                        history.pushState(this.state, "", `/${id}/`);
+                    } else {
+                        CakoApp.navLinkRight.click();
+                    }
                 }
             }
         }
@@ -281,15 +281,19 @@ export default class CakoApp {
     }
 
     /** Only capture events on live site, not on static sites from cako cli. */
-    async maybeSetupNavigationHandlers() {
+    async setupEventHandlers() {
         try {
             await this.api.hasApi();
+            this.isLiveSite = true;
             console.log("Live site initialized.");
             document.addEventListener("click", this.onClick);
             document.addEventListener("keydown", this.onKeyDown);
 
             window.addEventListener("popstate", this.onPopState);
+
+            this.search.onSearchState(this.onSearchState);
         } catch {
+            this.isLiveSite = false;
             console.log("Static site initialized.");
         }
     }

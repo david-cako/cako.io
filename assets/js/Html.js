@@ -89,9 +89,10 @@ export default class Html {
 
         const postLinkElem = document.importNode(Html.postLinkTemplate.content, true);
 
+        postLinkElem.firstElementChild.dataset.postId = post.slug;
+
         let aElem = postLinkElem.querySelector("a");
         aElem.href = `/${post.slug}/`
-        aElem.dataset.postId = post.slug;
 
         if (navLink) {
             aElem.classList.add("post-nav-link");
@@ -174,5 +175,19 @@ export default class Html {
     /** Replace double spaces with en-space to fix wrapping. */
     static replaceSpaces(htmlText) {
         return htmlText.replace(/ \u00A0/g, "&ensp;");
+    }
+
+    static getIdForPostLink(postLink) {
+        const post = postLink.closest('.cako-post');
+        if (!post) {
+            throw new Error("No cako-post element found.")
+        }
+
+        const id = post.dataset.postId;
+        if (!id) {
+            throw new Error("Missing post id or href in post link!");
+        }
+
+        return id;
     }
 }
