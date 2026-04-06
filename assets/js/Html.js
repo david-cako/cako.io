@@ -147,7 +147,10 @@ export default class Html {
         dateElem.innerText = `${date} ${monthName} ${year}`;
 
         let contentElem = postContent.querySelector(".post-full-content");
-        contentElem.innerHTML = Html.replaceSpaces(post.html);
+
+        if (post.html) {
+            contentElem.innerHTML = Html.replaceSpaces(post.html);
+        }
 
         return postContent;
     }
