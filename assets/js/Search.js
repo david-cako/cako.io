@@ -244,9 +244,10 @@ export default class Search {
 
         // if enter, attempt to navigate to first result
         if (e.key == "Enter") {
-            if (firstResult) {
+            if (this.focusedResult) {
+                this.focusedResult.click();
+            } else if (firstResult) {
                 firstResult.click();
-                return;
             }
         }
 
