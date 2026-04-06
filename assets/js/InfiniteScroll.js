@@ -229,7 +229,7 @@ export default class InfiniteScroll {
 
         const shouldRestoreScrollPosition =
             this.savedScrollPosition !== null && this.savedScrollPosIsFresh &&
-            !window.Search.searchIsShown && !userHasScrolled;
+            window.CakoApp.state.page == "/" && !userHasScrolled;
 
         if (shouldRestoreScrollPosition) {
             this.restoreScrollPosition();
