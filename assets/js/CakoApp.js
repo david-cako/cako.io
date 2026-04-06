@@ -49,7 +49,6 @@ export default class CakoApp {
         }
 
         this.setupEventHandlers();
-
     }
 
     async navigateToIndex() {

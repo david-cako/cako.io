@@ -25,8 +25,6 @@ export default class Api {
     static #maxRetries = 10;
     /** Array of objects containing a page number and a promise to resolve with posts. */
     static #pageAwaiters = [];
-    /** Array of objects containing a post ID and a promise to resolve with desired post. */
-    static #postAwaiters = [];
     /** Array of objects containing a promise to resolve with all posts. */
     static #allPostsAwaiters = [];
 
@@ -87,15 +85,7 @@ export default class Api {
         if (post) {
             return post;
         } else {
-            if (Api.hasFinishedGettingPosts) {
-                throw new Error("Post not found.")
-            }
-
-            let p = new Promise((resolve, reject) => {
-                Api.#postAwaiters.push({ id: id, promise: { resolve, reject } });
-            });
-
-            return await p;
+            return Api.#getPost(id);
         }
     }
 
@@ -200,8 +190,27 @@ export default class Api {
                 return await GHOST_API.posts.browse({
                     limit: limit || "all",
                     fields: `title,published_at,slug${includeBody ? ',html' : ''}`,
-                    include: "tags",
                     page
+                });
+            } catch (e) {
+                console.log(`Error fetching posts, attempt ${retries}`, e);
+                if (retries >= Api.#maxRetries) {
+                    throw e;
+                }
+            }
+        }
+    }
+
+    static async #getPost(id, { includeBody } = {}) {
+        let retries = 0;
+
+        while (retries < Api.#maxRetries) {
+            retries++;
+
+            try {
+                return await GHOST_API.posts.read({
+                    slug: id,
+                    formats: includeBody ? ['html'] : []
                 });
             } catch (e) {
                 console.log(`Error fetching posts, attempt ${retries}`, e);
@@ -238,35 +247,18 @@ export default class Api {
     }
 
     static #resolveAwaiters() {
-        for (const a of Api.#postAwaiters) {
-            const p = Api.postForId(a.id);
-
-            if (p) {
-                a.promise.resolve(p);
-
-                const i = Api.#postAwaiters.indexOf(a);
-                Api.#postAwaiters.slice(i, 1);
-            }
-        }
-
         for (const a of Api.#pageAwaiters) {
             if (Api.hasPage(a.pageNumber)) {
                 const p = Api.postsForPage(a.pageNumber);
                 a.promise.resolve(p);
 
-                const i = Api.#postAwaiters.indexOf(a);
-                Api.#postAwaiters.slice(i, 1);
+                const i = Api.#pageAwaiters.indexOf(a);
+                Api.#pageAwaiters.slice(i, 1);
             }
         }
     }
 
     static #rejectAwaiters(error) {
-        for (const a of Api.#postAwaiters) {
-            a.promise.reject(error);
-        }
-
-        Api.#postAwaiters = [];
-
         for (const a of Api.#pageAwaiters) {
             a.promise.reject(error);
         }
@@ -275,12 +267,6 @@ export default class Api {
     }
 
     static #finalizeAwaiters() {
-        for (const a of Api.#postAwaiters) {
-            a.promise.reject(new Error("Post not found."));
-        }
-
-        Api.#postAwaiters = [];
-
         for (const a of Api.#pageAwaiters) {
             a.promise.resolve(null);
         }
