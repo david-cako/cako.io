@@ -5,6 +5,8 @@ class Header {
     static headerLink = document.getElementById('cako-site-nav-link');
     static maxScroll = 35;
 
+    static lastOpacity;
+
     static get browserSupportsCssScrollAnimations() {
         return window.CSS.supports("animation-timeline", "scroll()") &&
             window.CSS.supports("animation-range", "0px 35px");
@@ -12,7 +14,7 @@ class Header {
 
     static init() {
         if (!Header.browserSupportsCssScrollAnimations) {
-            updateHeaderOpacity();
+            Header.updateHeaderOpacity();
 
             window.addEventListener('scroll', Header.updateHeaderOpacity);
 
@@ -25,16 +27,16 @@ class Header {
 
     static updateHeaderOpacity() {
         requestAnimationFrame(() => {
-            if (window.scrollY > maxScroll && lastOpacity === 0) {
+            if (window.scrollY > Header.maxScroll && Header.lastOpacity === 0) {
                 return;
             }
 
-            const newOpacity = window.scrollY > maxScroll
+            const newOpacity = window.scrollY > Header.maxScroll
                 ? 0
-                : 1 - (window.scrollY / maxScroll);
+                : 1 - (window.scrollY / Header.maxScroll);
 
-            cakoHeader.style.opacity = newOpacity;
-            lastOpacity = newOpacity;
+            Header.header.style.opacity = newOpacity;
+            Header.lastOpacity = newOpacity;
         })
     }
 
