@@ -37,7 +37,7 @@ export default class CakoApp {
 
     constructor() {
         window.CakoApp = this;
-        
+
         this.menu = new Menu();
         this.search = new Search(Menu);
         this.api = new Api();
@@ -74,6 +74,7 @@ export default class CakoApp {
                     break;
                 case "search":
                     await this.#navigateToSearch();
+                    break;
                 default:
                     await this.#navigateToPost(state.page);
                     break;
@@ -127,6 +128,7 @@ export default class CakoApp {
             await this.navigateToState({ page: "/" });
 
             history.pushState(this.state, "", "/");
+            return;
         }
 
         const postLinkElem = e.target.closest(".cako-post-link");
@@ -138,6 +140,7 @@ export default class CakoApp {
             await this.navigateToState({ page: id });
 
             history.pushState(this.state, "", `/${id}/`);
+            return;
         }
 
         const featuresLinkElem = e.target.closest("#cako-menu-features-link");
@@ -147,6 +150,7 @@ export default class CakoApp {
             await this.navigateToState({ page: "features" });
 
             history.pushState(this.state, "", "/features/");
+            return;
         }
     }
 
