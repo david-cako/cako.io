@@ -88,6 +88,18 @@ export default class CakoApp {
         }
     }
 
+    async navigateToPostLink(postLink) {
+        postLink.focus({ preventScroll: true });
+
+        if (this.isLiveSite) {
+            const id = Html.getIdForPostLink(postLink);
+            await this.navigateToState({ page: id });
+            history.pushState(this.state, "", `/${id}/`);
+        } else {
+            postLink.click();
+        }
+    }
+
     hideSearch() {
         this.searchBackgroundState = undefined;
 
@@ -128,11 +140,7 @@ export default class CakoApp {
         if (postLinkElem) {
             e.preventDefault();
 
-            const id = Html.getIdForPostLink(postLinkElem);
-
-            await this.navigateToState({ page: id });
-
-            history.pushState(this.state, "", `/${id}/`);
+            await this.navigateToPostLink(postLinkElem);
             return;
         }
 
@@ -175,27 +183,11 @@ export default class CakoApp {
         if (!Search.shown && !modifier) {
             if (e.key == "ArrowLeft") {
                 if (CakoApp.navLinkLeft) {
-                    CakoApp.navLinkLeft.focus({ preventScroll: true });
-
-                    if (this.isLiveSite) {
-                        const id = Html.getIdForPostLink(CakoApp.navLinkLeft);
-                        await this.navigateToState({ page: id });
-                        history.pushState(this.state, "", `/${id}/`);
-                    } else {
-                        CakoApp.navLinkLeft.click();
-                    }
+                    await this.navigateToPostLink(CakoApp.navLinkLeft);
                 }
             } else if (e.key == "ArrowRight") {
                 if (CakoApp.navLinkRight) {
-                    CakoApp.navLinkRight.focus({ preventScroll: true });
-
-                    if (this.isLiveSite) {
-                        const id = Html.getIdForPostLink(CakoApp.navLinkRight);
-                        await this.navigateToState({ page: id });
-                        history.pushState(this.state, "", `/${id}/`);
-                    } else {
-                        CakoApp.navLinkRight.click();
-                    }
+                    await this.navigateToPostLink(CakoApp.navLinkRight)
                 }
             }
 
