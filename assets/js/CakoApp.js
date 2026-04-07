@@ -58,97 +58,32 @@ export default class CakoApp {
         this.setupEventHandlers();
     }
 
-    async navigateToIndex() {
-        this.saveScrollPosition();
-
-        document.body.classList = "home-template";
-
-        CakoApp.postArticle.innerHTML = "";
-
-        this.search.hideSearch();
-
-        document.title = "cako.io";
-
-        this.state = { page: "/" };
-
-        this.restoreScrollPosition();
-    }
-
-    async navigateToPost(id) {
-        if (!id) {
-            throw new Error("Missing id in call to navigateToPost(id)");
-        }
-
-        const post = await this.api.getPost(id);
-        const generated = Html.generatePost(post);
-
-        this.saveScrollPosition();
-
-        document.body.classList = "post-template";
-
-        CakoApp.postArticle.innerHTML = "";
-        CakoApp.postArticle.append(generated);
-
-        CakoApp.postNavInner.innerHTML = "";
-        if (post.prev) {
-            CakoApp.postNavInner.append(Html.generatePostLink(post.prev, { navLink: "left" }));
-        } else {
-            CakoApp.postNavInner.append(document.createElement("div"));
-        }
-        if (post.next) {
-            CakoApp.postNavInner.append(Html.generatePostLink(post.next, { navLink: "right" }));
-        }
-
-        this.search.hideSearch();
-        Menu.close();
-
-        document.title = post.title;
-
-        window.scrollTo({ top: 0 });
-        window.Header.resetAnimation();
-
-        this.state = { page: id };
-    }
-
-    async navigateToFeatures() {
-        const features = await this.api.getFeaturesContent();
-
-        // Save scroll position before changing state.
-        this.saveScrollPosition();
-
-        document.body.classList = "page-template";
-
-        CakoApp.postArticle.innerHTML = features.innerHTML;
-
-        document.title = "Features";
-
-        this.state = { page: "features" };
-
-        this.restoreScrollPosition();
-    }
-
-    async navigateToSearch() {
-        // Save scroll position before changing state.
-        this.saveScrollPosition();
-        
-        document.body.classList.add("search-shown");
-
-        this.state = { page: "search" };
-    }
-
     async navigateToState(state) {
         if (state.page) {
+            // Save scroll position before changing state.
+            this.saveScrollPosition();
+
             switch (state.page) {
                 case "/":
-                    await this.navigateToIndex();
+                    await this.#navigateToIndex();
                     break;
                 case "features":
-                    await this.navigateToFeatures();
+                    await this.#navigateToFeatures();
                     break;
+                case "search":
+                    await this.#navigateToSearch();
                 default:
-                    await this.navigateToPost(state.page);
+                    await this.#navigateToPost(state.page);
                     break;
             }
+
+            if (state.page !== "search") {
+                this.search.hideSearch();
+                Menu.close();
+            }
+
+            this.state = state;
+            this.restoreScrollPosition();
         }
     }
 
@@ -187,7 +122,7 @@ export default class CakoApp {
                 CakoApp.siteNavLink.blur()
             }, 200);
 
-            await this.navigateToIndex();
+            await this.navigateToState({ page: "/" });
 
             history.pushState(this.state, "", "/");
         }
@@ -198,7 +133,7 @@ export default class CakoApp {
 
             const id = Html.getIdForPostLink(postLinkElem);
 
-            await this.navigateToPost(id);
+            await this.navigateToState({ page: id });
 
             history.pushState(this.state, "", `/${id}/`);
         }
@@ -207,7 +142,7 @@ export default class CakoApp {
         if (featuresLinkElem) {
             e.preventDefault();
 
-            await this.navigateToFeatures();
+            await this.navigateToState({ page: "features" });
 
             history.pushState(this.state, "", "/features/");
         }
@@ -224,7 +159,7 @@ export default class CakoApp {
 
                     if (this.isLiveSite) {
                         const id = Html.getIdForPostLink(CakoApp.navLinkLeft);
-                        await this.navigateToPost(id);
+                        await this.navigateToState({ page: id });
                         history.pushState(this.state, "", `/${id}/`);
                     } else {
                         CakoApp.navLinkLeft.click();
@@ -238,7 +173,7 @@ export default class CakoApp {
 
                     if (this.isLiveSite) {
                         const id = Html.getIdForPostLink(CakoApp.navLinkRight);
-                        await this.navigateToPost(id);
+                        await this.navigateToState({ page: id });
                         history.pushState(this.state, "", `/${id}/`);
                     } else {
                         CakoApp.navLinkRight.click();
@@ -257,7 +192,7 @@ export default class CakoApp {
     onSearchState = (shown) => {
         if (shown) {
             this.searchBackgroundState = Object.assign({}, this.state);
-            this.navigateToSearch();
+            this.navigateToState({ page: "search" });
         } else {
             if (this.searchBackgroundState) {
                 this.navigateToState(this.searchBackgroundState);
@@ -285,6 +220,55 @@ export default class CakoApp {
             this.isLiveSite = false;
             console.log("Static site initialized.");
         }
+    }
+
+
+    async #navigateToIndex() {
+        document.body.classList = "home-template";
+
+        CakoApp.postArticle.innerHTML = "";
+        document.title = "cako.io";
+    }
+
+    async #navigateToPost(id) {
+        if (!id) {
+            throw new Error("Missing id in call to navigateToPost(id)");
+        }
+
+        const post = await this.api.getPost(id);
+        const generated = Html.generatePost(post);
+
+        document.body.classList = "post-template";
+
+        CakoApp.postArticle.innerHTML = "";
+        CakoApp.postArticle.append(generated);
+
+        CakoApp.postNavInner.innerHTML = "";
+        if (post.prev) {
+            CakoApp.postNavInner.append(Html.generatePostLink(post.prev, { navLink: "left" }));
+        } else {
+            CakoApp.postNavInner.append(document.createElement("div"));
+        }
+        if (post.next) {
+            CakoApp.postNavInner.append(Html.generatePostLink(post.next, { navLink: "right" }));
+        }
+
+        document.title = post.title;
+
+        window.scrollTo({ top: 0 });
+        window.Header.resetAnimation();
+    }
+
+    async #navigateToFeatures() {
+        const features = await this.api.getFeaturesContent();
+
+        document.body.classList = "page-template";
+        CakoApp.postArticle.innerHTML = features.innerHTML;
+        document.title = "Features";
+    }
+
+    async #navigateToSearch() {
+        document.body.classList.add("search-shown");
     }
 }
 
