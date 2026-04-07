@@ -63,13 +63,9 @@ export default class CakoApp {
 
         document.body.classList = "home-template";
 
-        CakoApp.postInner.style.display = "none";
         CakoApp.postArticle.innerHTML = "";
 
-        CakoApp.searchInner.style.display = "none";
         this.search.hideSearch();
-
-        CakoApp.indexInner.style.display = "block";
 
         document.title = "cako.io";
 
@@ -103,16 +99,8 @@ export default class CakoApp {
             CakoApp.postNavInner.append(Html.generatePostLink(post.next, { navLink: "right" }));
         }
 
-        CakoApp.indexInner.style.display = "none";
-
-        CakoApp.searchInner.style.display = "none";
         this.search.hideSearch();
         Menu.close();
-
-        CakoApp.emailAddress.style.display = "inline-block";
-        CakoApp.postNavInner.style.display = "flex";
-
-        CakoApp.postInner.style.display = "block";
 
         document.title = post.title;
 
@@ -132,14 +120,6 @@ export default class CakoApp {
 
         CakoApp.postArticle.innerHTML = features.innerHTML;
 
-        CakoApp.indexInner.style.display = "none";
-        CakoApp.searchInner.style.display = "none";
-
-        CakoApp.emailAddress.style.display = "none";
-        CakoApp.postNavInner.style.display = "none";
-
-        CakoApp.postInner.style.display = "block";
-
         document.title = "Features";
 
         this.state = { page: "features" };
@@ -150,15 +130,8 @@ export default class CakoApp {
     async navigateToSearch() {
         // Save scroll position before changing state.
         this.saveScrollPosition();
-
-        CakoApp.indexInner.style.display = "none";
-        CakoApp.postInner.style.display = "none";
-        CakoApp.postArticle.innerHTML = "";
-
-        CakoApp.emailAddress.style.display = "none";
-        CakoApp.postNavInner.style.display = "none";
-
-        CakoApp.searchInner.style.display = "block";
+        
+        document.body.classList.add("search-shown");
 
         this.state = { page: "search" };
     }
@@ -290,6 +263,7 @@ export default class CakoApp {
                 this.navigateToState(this.searchBackgroundState);
                 this.state = this.searchBackgroundState;
                 this.searchBackgroundState = undefined;
+                document.body.classList.remove("search-shown");
             }
         }
     }

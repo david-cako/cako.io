@@ -136,15 +136,12 @@ export default class Search {
 
     showSearch() {
         Search.searchIsShown = true;
-        Search.searchFeed.style.display = "block";
 
         this.callSearchStateCallbacks(true);
     }
 
     /* Clears search input, results, and hides search feed. */
     hideSearch() {
-        Search.searchFeed.style.display = "none";
-
         this.clear();
 
         Search.searchIsShown = false;
@@ -237,7 +234,7 @@ export default class Search {
         const hasModifier = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
 
         // if search shown and up or down pressed, prevent scrolling
-        if (Search.searchFeed.style.display === "block" && !hasModifier &&
+        if (Search.searchIsShown && !hasModifier &&
             (e.key == "ArrowUp" || e.key == "ArrowDown")) {
             e.preventDefault();
         }

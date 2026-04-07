@@ -118,14 +118,6 @@ production stylesheet in assets/built/screen.css
     padding-bottom: 4em;
 }
 
-.outer:not(.post) #post-inner {
-    display: none;
-}
-
-.outer:not(.index) #index-inner {
-    display: none;
-}
-
 blockquote a {
     font-size: 0.5em;
 }
@@ -209,10 +201,6 @@ code.hljs {
     padding: 0 0 2em;
 }
 
-.index #cako-search-feed {
-    padding: 0.5em 15px 2em;
-}
-
 #loading-posts {
     display: none;
     margin-bottom: 2em;
@@ -223,15 +211,14 @@ code.hljs {
 }
 
 #cako-search-feed {
-    display: none;
-    padding: 1.1em 15px 1.1em;
+    padding: 1.1em 15px 3em;
     max-width: 750px;
     margin: 0 auto;
 }
 
 @media (max-width: 850px) {
     #cako-search-feed {
-        padding: .25em 15px 1.1em;
+        padding: .25em 15px 3em;
     }
 }
 
@@ -1578,13 +1565,40 @@ The first (most recent) post in the list is styled to be bigger than the others 
     line-height: 1.5em;
 }
 
+.home-template #post-inner,
+.home-template:not(.search-shown) #search-inner {
+    display: none;
+}
+
+.post-template #index-inner,
+.post-template:not(.search-shown) #search-inner {
+    display: none;
+}
+
 .page-template .post-full-content>p:first-child {
     margin-bottom: 0.7em;
     margin-top: -0.7em;
 }
 
 .page-template .site-footer-content {
-    padding: 10px 6px 30px 15px
+    padding: 5px 6px 30px 15px;
+}
+
+.page-template #index-inner,
+.page-template:not(.search-shown) #search-inner,
+.page-template #post-nav-inner {
+    display: none;
+}
+
+.search-shown #index-inner,
+.search-shown #post-inner,
+.search-shown #email-address,
+.search-shown #post-nav-inner {
+    display: none;
+}
+
+.search-shown #search-inner {
+    display: block;
 }
 
 .post-full-content a {
