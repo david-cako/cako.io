@@ -93,9 +93,9 @@ export default class InfiniteScroll {
     initialize = async () => {
         history.scrollRestoration = "manual";
 
-        document.addEventListener("scroll", this.maybeSaveIndexScrollPosition);
-        document.addEventListener("click", this.maybeSaveIndexScrollPosition);
-        window.addEventListener("pageshow", this.loadScrollPosition);
+        document.addEventListener("scroll", this.#maybeSaveIndexScrollPosition);
+        document.addEventListener("click", this.#maybeSaveIndexScrollPosition);
+        window.addEventListener("pageshow", this.#loadScrollPosition);
 
         if (!this.noFetch) {
             this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedIndexScrollPosition });
@@ -212,8 +212,13 @@ export default class InfiniteScroll {
         }
     }
 
+    /** Jumps to bottom of post index.  This was too many buttons. */
+    scrollToBottom() {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
     /** Saves both savedIndexScrollPosition and savedIndexScrollPositionTime in localStorage. */
-    saveIndexScrollPosition() {
+    #saveIndexScrollPosition() {
         InfiniteScroll.savedIndexScrollPosition = this.indexScrollPosition;
 
         this.lastScrollPositionTime = Date.now();
@@ -221,7 +226,7 @@ export default class InfiniteScroll {
     }
 
     /** Sets page scroll position from saved value in localStorage. */
-    restoreIndexScrollPosition() {
+    #restoreIndexScrollPosition() {
         const pos = this.savedIndexScrollPosition;
 
         if (pos !== null) {
@@ -231,7 +236,7 @@ export default class InfiniteScroll {
 
     /** Saves scroll position to localStorage when user scrolls, index is shown,
      * and InfiniteScroll.scrollPositionThrottle has elapsed since last save. */
-    maybeSaveIndexScrollPosition = () => {
+    #maybeSaveIndexScrollPosition = () => {
         this.scrollEvents++;
 
         if (this.scrollEvents <= 1) {
@@ -245,12 +250,12 @@ export default class InfiniteScroll {
             if (this.indexScrollPosition === 0 ||
                 !this.lastScrollPositionTime ||
                 time - this.lastScrollPositionTime >= this.scrollPositionThrottle) {
-                this.saveIndexScrollPosition();
+                this.#saveIndexScrollPosition();
             }
         }
     }
 
-    maybeRestoreIndexScrollPosition() {
+    #maybeRestoreIndexScrollPosition() {
         const userHasScrolled = this.scrollEvents > 1;
 
         const shouldRestoreScrollPosition =
@@ -258,20 +263,15 @@ export default class InfiniteScroll {
             window.CakoApp && window.CakoApp.state.page == "/" && !userHasScrolled;
 
         if (shouldRestoreScrollPosition) {
-            this.restoreIndexScrollPosition();
+            this.#restoreIndexScrollPosition();
         }
     }
 
-    loadScrollPosition = async () => {
+    #loadScrollPosition = async () => {
         this.scrollEvents = 0;
 
         await this.savedPosHasLoaded;
 
-        this.maybeRestoreIndexScrollPosition();
-    }
-
-    /** Jumps to bottom of post index.  This was too many buttons. */
-    scrollToBottom() {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        this.#maybeRestoreIndexScrollPosition();
     }
 }
