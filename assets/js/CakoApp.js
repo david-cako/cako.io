@@ -59,8 +59,6 @@ export default class CakoApp {
     }
 
     async navigateToIndex() {
-        this.state = { page: "/" };
-
         this.saveScrollPosition();
 
         document.body.classList = "home-template";
@@ -75,6 +73,8 @@ export default class CakoApp {
 
         document.title = "cako.io";
 
+        this.state = { page: "/" };
+
         this.restoreScrollPosition();
     }
 
@@ -83,12 +83,10 @@ export default class CakoApp {
             throw new Error("Missing id in call to navigateToPost(id)");
         }
 
-        this.state = { page: id };
-
-        this.saveScrollPosition();
-
         const post = await this.api.getPost(id);
         const generated = Html.generatePost(post);
+
+        this.saveScrollPosition();
 
         document.body.classList = "post-template";
 
@@ -120,13 +118,14 @@ export default class CakoApp {
 
         window.scrollTo({ top: 0 });
         window.Header.resetAnimation();
+
+        this.state = { page: id };
     }
 
     async navigateToFeatures() {
-        this.state = { page: "features" };
-
         const features = await this.api.getFeaturesContent();
 
+        // Save scroll position before changing state.
         this.saveScrollPosition();
 
         document.body.classList = "page-template";
@@ -143,12 +142,13 @@ export default class CakoApp {
 
         document.title = "Features";
 
+        this.state = { page: "features" };
+
         this.restoreScrollPosition();
     }
 
     async navigateToSearch() {
-        this.state = { page: "search" };
-
+        // Save scroll position before changing state.
         this.saveScrollPosition();
 
         CakoApp.indexInner.style.display = "none";
@@ -159,6 +159,8 @@ export default class CakoApp {
         CakoApp.postNavInner.style.display = "none";
 
         CakoApp.searchInner.style.display = "block";
+
+        this.state = { page: "search" };
     }
 
     async navigateToState(state) {
