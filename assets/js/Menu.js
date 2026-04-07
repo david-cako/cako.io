@@ -1,5 +1,5 @@
 export default class Menu {
-    search;
+    static shown = false;
 
     static menu = document.getElementById("cako-menu");
     static menuIcon = document.getElementById("menu-icon");
@@ -56,6 +56,8 @@ export default class Menu {
         }
 
         window.Lights.prefetchDarkCss();
+
+        Menu.shown = true;
     }
 
     static close() {
@@ -64,6 +66,8 @@ export default class Menu {
         if (document.activeElement) {
             document.activeElement.blur();
         }
+
+        Menu.shown = false;
     }
 
     static showMenuIndicator() {

@@ -6,7 +6,6 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
 ];
 
 export default class Search {
-    menu;
     api;
     /** Dynamically populated with posts from API. */
     posts = [];
@@ -24,8 +23,8 @@ export default class Search {
     inputThrottleTimeout;
     inputThrottleTime = 100;
 
-    /** Array of callbacks to be called when search state changes. */
-    searchStateCallbacks = [];
+    /** Array of callbacks to be called when search is shown. */
+    searchShownCallbacks = [];
 
     static searchIsShown = false;
 
@@ -46,8 +45,7 @@ export default class Search {
         }
     }
 
-    constructor(menu) {
-        this.menu = menu;
+    constructor() {
         this.api = new Api();
 
         window.Search = Search;
@@ -60,12 +58,6 @@ export default class Search {
 
         Search.searchElement.addEventListener("input", this.onInput);
 
-        Search.searchElement.addEventListener("keydown", (e) => {
-            // prevents arrow left/right post navigation while
-            // search is focused
-            e.stopPropagation();
-            this.onKeyDown(e);
-        });
         document.addEventListener("keydown", this.onKeyDown);
 
         Search.searchClear.addEventListener("click", () => {
@@ -137,7 +129,7 @@ export default class Search {
     showSearch() {
         Search.searchIsShown = true;
 
-        this.callSearchStateCallbacks(true);
+        this.callSearchShownCallbacks();
     }
 
     /* Clears search input, results, and hides search feed. */
@@ -160,17 +152,12 @@ export default class Search {
         }
     }
 
-    /* Clears results. */
-    clearResults() {
-        this.previousResults = undefined;
-        Search.searchResults.innerHTML = "";
-    }
-
     /** Clears search input and results. */
     clear() {
         Search.searchElement.value = "";
         this.previousQuery = "";
-        this.clearResults();
+        this.previousResults = undefined;
+        Search.searchResults.innerHTML = "";
         Search.clearIcon.style.display = "none";
     }
 
@@ -194,9 +181,7 @@ export default class Search {
 
     onSearchChange = async (value) => {
         if (value.length < 1) {
-            this.previousQuery = "";
-            Search.clearIcon.style.display = "none";
-            this.clearResults();
+            this.clear();
 
             return;
         }
@@ -248,25 +233,6 @@ export default class Search {
             }
         }
 
-        // cmd/ctrl + shift + f to open search
-        if (e.key.toLowerCase() == "f" && (e.ctrlKey || e.metaKey) && e.shiftKey) {
-            e.preventDefault();
-
-            this.menu.toggle();
-
-            Search.focus();
-
-            return;
-        }
-
-        // escape closes menu
-        if (e.key == "Escape") {
-            this.#hideSearch();
-            this.menu.close();
-
-            return;
-        }
-
         if (this.focusedResult) {
             const current = this.focusedResult;
 
@@ -316,24 +282,18 @@ export default class Search {
         }
     }
 
-    onSearchState(fn) {
-        this.searchStateCallbacks.push(fn);
+    onSearchShown(fn) {
+        this.searchShownCallbacks.push(fn);
     }
 
-    offSearchState(fn) {
-        this.searchStateCallbacks = this.searchStateCallbacks.filter(c => c != fn);
+    offSearchShown(fn) {
+        this.searchShownCallbacks = this.searchShownCallbacks.filter(c => c != fn);
     }
 
-    callSearchStateCallbacks(shown) {
-        for (const fn of this.searchStateCallbacks) {
-            fn(shown);
+    callSearchShownCallbacks() {
+        for (const fn of this.searchShownCallbacks) {
+            fn();
         }
-    }
-
-    /* Private method hides search and calls callbacks to avoid circular callbacks. */
-    #hideSearch() {
-        this.hideSearch();
-        this.callSearchStateCallbacks(false);
     }
 
     static search(posts, query) {
