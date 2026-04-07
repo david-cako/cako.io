@@ -13,9 +13,6 @@ export default class CakoApp {
     /** Background state saved to return to after hiding search. */
     searchBackgroundState;
 
-    indexScrollPos;
-    featuresScrollPos;
-
     isLiveSite;
 
     static siteNavLink = document.getElementById("cako-site-nav-link");
@@ -64,7 +61,7 @@ export default class CakoApp {
     async navigateToState(state) {
         if (state.page) {
             // Save scroll position before changing state.
-            this.saveScrollPosition();
+            this.infiniteScroll.saveNavigationScrollPosition(this.state.page);
 
             switch (state.page) {
                 case "/":
@@ -86,31 +83,8 @@ export default class CakoApp {
             }
 
             this.state = state;
-            this.restoreScrollPosition();
-        }
-    }
 
-    saveScrollPosition() {
-        if (this.state.page == "/") {
-            this.indexScrollPos = window.scrollY;
-        } else if (this.state.page == "features") {
-            this.featuresScrollPos = window.scrollY;
-        }
-    }
-
-    restoreScrollPosition() {
-        if (this.state.page == "/") {
-            const pos = this.indexScrollPos;
-
-            if (pos !== null) {
-                window.scroll(0, pos);
-            }
-        } else if (this.state.page == "features") {
-            const pos = this.featuresScrollPos;
-
-            if (pos !== null) {
-                window.scroll(0, pos);
-            }
+            this.infiniteScroll.restoreNavigationScrollPosition(this.state.page);
         }
     }
 

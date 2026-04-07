@@ -6,7 +6,9 @@ export default class InfiniteScroll {
     api = new Api({ page: 2 });
 
     /** Current index scroll position managed by InfiniteScroll. */
-    contentScrollPosition = 0;
+    indexScrollPosition = 0;
+    /** Listing of scroll positions to resume when navigating. */
+    navigationScrollPositions = {};
     /** Increments on every scroll event after InfiniteScroll initialization.
      * Resets on pageShow event. */
     scrollEvents = 0;
@@ -23,18 +25,18 @@ export default class InfiniteScroll {
 
     /** Promise that resolves once posts have loaded up to saved position. */
     savedPosHasLoaded;
-    /** Unix timestamp of last save of contentScrollPosition to localStorage. */
+    /** Unix timestamp of last save of indexScrollPosition to localStorage. */
     lastScrollPositionTime;
-    /** Throttle for saving contentScrollPosition to localStorage. */
+    /** Throttle for saving indexScrollPosition to localStorage. */
     scrollPositionThrottle = 100;
-    /** TTL for saved contentScrollPosition in localStorage. */
-    restoreScrollPosTTL = 1000 * 60 * 30;
+    /** TTL for saved indexScrollPosition in localStorage. */
+    restoreScrollPosTTL = 1000 * 60 * 10;
 
     loadingPostsElem = document.getElementById("loading-posts");
 
-    /** Getter for saved initialScrollPosition from localStorage. */
-    get initialScrollPosition() {
-        let pos = InfiniteScroll.initialScrollPosition;
+    /** Getter for saved indexScrollPosition from localStorage. */
+    get savedIndexScrollPosition() {
+        let pos = InfiniteScroll.savedIndexScrollPosition;
 
         if (pos !== null && Number(pos) !== NaN) {
             return Number(pos);
@@ -43,9 +45,9 @@ export default class InfiniteScroll {
         }
     }
 
-    /** Getter for saved initialScrollPositionTime from localStorage. */
-    get initialScrollPositionTime() {
-        let time = InfiniteScroll.initialScrollPositionTime;
+    /** Getter for saved indexScrollPositionTime from localStorage. */
+    get savedIndexScrollPositionTime() {
+        let time = InfiniteScroll.savedIndexScrollPositionTime;
 
         if (time !== null && Number(time) !== NaN) {
             return Number(time);
@@ -54,10 +56,10 @@ export default class InfiniteScroll {
         }
     }
 
-    /** Returns true if saved initialScrollPosition in localStorage is
+    /** Returns true if saved indexScrollPosition in localStorage is
      * fresher than restoreScrollPosTTL. */
-    get initialScrollPosIsFresh() {
-        let savedPosTime = this.initialScrollPositionTime;
+    get savedIndexScrollPosIsFresh() {
+        let savedPosTime = this.savedIndexScrollPositionTime;
 
         if (savedPosTime === null) {
             return false;
@@ -66,20 +68,20 @@ export default class InfiniteScroll {
         return Date.now() - savedPosTime <= this.restoreScrollPosTTL;
     }
 
-    static get initialScrollPosition() {
-        return localStorage.getItem("initialScrollPosition");
+    static get savedIndexScrollPosition() {
+        return localStorage.getItem("indexScrollPosition");
     }
 
-    static set initialScrollPosition(value) {
-        return localStorage.setItem("initialScrollPosition", value);
+    static set savedIndexScrollPosition(value) {
+        return localStorage.setItem("indexScrollPosition", value);
     }
 
-    static get initialScrollPositionTime() {
-        return localStorage.getItem("initialScrollPositionTime")
+    static get savedIndexScrollPositionTime() {
+        return localStorage.getItem("indexScrollPositionTime")
     }
 
-    static set initialScrollPositionTime(value) {
-        return localStorage.setItem("initialScrollPositionTime", value)
+    static set savedIndexScrollPositionTime(value) {
+        return localStorage.setItem("indexScrollPositionTime", value)
     }
 
     constructor({ noFetch } = {}) {
@@ -91,12 +93,12 @@ export default class InfiniteScroll {
     initialize = async () => {
         history.scrollRestoration = "manual";
 
-        document.addEventListener("scroll", this.maybeSaveInitialScrollPosition);
-        document.addEventListener("click", this.maybeSaveInitialScrollPosition);
+        document.addEventListener("scroll", this.maybeSaveIndexScrollPosition);
+        document.addEventListener("click", this.maybeSaveIndexScrollPosition);
         window.addEventListener("pageshow", this.loadScrollPosition);
 
         if (!this.noFetch) {
-            this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.initialScrollPosition });
+            this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedIndexScrollPosition });
 
             this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
                 this.newPostsIntervalTime);
@@ -186,53 +188,77 @@ export default class InfiniteScroll {
         this.isUpdatingPosts = false;
     }
 
-    /** Saves both contentScrollPosition and contentScrollPositionTime in localStorage. */
-    saveInitialScrollPosition() {
-        InfiniteScroll.initialScrollPosition = this.contentScrollPosition;
+    saveNavigationScrollPosition(page) {
+        if (page == "/") {
+            this.navigationScrollPositions["/"] = window.scrollY;
+        } else if (page == "features") {
+            this.navigationScrollPositions["features"] = window.scrollY;
+        }
+    }
+
+    restoreNavigationScrollPosition(page) {
+        if (page == "/") {
+            const pos = this.navigationScrollPositions["/"];
+
+            if (pos !== null) {
+                window.scroll(0, pos);
+            }
+        } else if (page == "features") {
+            const pos = this.navigationScrollPositions["features"];
+
+            if (pos !== null) {
+                window.scroll(0, pos);
+            }
+        }
+    }
+
+    /** Saves both savedIndexScrollPosition and savedIndexScrollPositionTime in localStorage. */
+    saveIndexScrollPosition() {
+        InfiniteScroll.savedIndexScrollPosition = this.indexScrollPosition;
 
         this.lastScrollPositionTime = Date.now();
-        InfiniteScroll.initialScrollPositionTime = this.lastScrollPositionTime;
+        InfiniteScroll.savedIndexScrollPositionTime = this.lastScrollPositionTime;
     }
 
     /** Sets page scroll position from saved value in localStorage. */
-    restoreScrollPosition() {
-        const pos = this.initialScrollPosition;
+    restoreIndexScrollPosition() {
+        const pos = this.savedIndexScrollPosition;
 
         if (pos !== null) {
             window.scroll(0, pos);
         }
     }
 
-    /** Saves scroll position to localStorage when user scrolls, search is not shown,
+    /** Saves scroll position to localStorage when user scrolls, index is shown,
      * and InfiniteScroll.scrollPositionThrottle has elapsed since last save. */
-    maybeSaveInitialScrollPosition = () => {
+    maybeSaveIndexScrollPosition = () => {
         this.scrollEvents++;
 
         if (this.scrollEvents <= 1) {
             return;
         }
 
-        if (window.Search == undefined || !window.Search.searchIsShown) {
-            this.contentScrollPosition = window.scrollY;
+        if (window.CakoApp && window.CakoApp.state.page == "/") {
+            this.indexScrollPosition = window.scrollY;
             let time = Date.now();
 
-            if (this.contentScrollPosition === 0 ||
+            if (this.indexScrollPosition === 0 ||
                 !this.lastScrollPositionTime ||
                 time - this.lastScrollPositionTime >= this.scrollPositionThrottle) {
-                this.saveInitialScrollPosition();
+                this.saveIndexScrollPosition();
             }
         }
     }
 
-    maybeRestoreInitialScrollPosition() {
+    maybeRestoreIndexScrollPosition() {
         const userHasScrolled = this.scrollEvents > 1;
 
         const shouldRestoreScrollPosition =
-            this.initialScrollPosition !== null && this.initialScrollPosIsFresh &&
+            this.savedIndexScrollPosition !== null && this.savedIndexScrollPosIsFresh &&
             window.CakoApp && window.CakoApp.state.page == "/" && !userHasScrolled;
 
         if (shouldRestoreScrollPosition) {
-            this.restoreScrollPosition();
+            this.restoreIndexScrollPosition();
         }
     }
 
@@ -241,7 +267,7 @@ export default class InfiniteScroll {
 
         await this.savedPosHasLoaded;
 
-        this.maybeRestoreInitialScrollPosition();
+        this.maybeRestoreIndexScrollPosition();
     }
 
     /** Jumps to bottom of post index.  This was too many buttons. */
