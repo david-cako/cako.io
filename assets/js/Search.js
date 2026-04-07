@@ -26,7 +26,7 @@ export default class Search {
     /** Array of callbacks to be called when search is shown. */
     searchShownCallbacks = [];
 
-    static searchIsShown = false;
+    static shown = false;
 
     static searchElement = document.getElementById("cako-search");
     static clearIcon = document.getElementById("cako-search-clear");
@@ -127,7 +127,7 @@ export default class Search {
 
 
     showSearch() {
-        Search.searchIsShown = true;
+        Search.shown = true;
 
         this.callSearchShownCallbacks();
     }
@@ -136,7 +136,7 @@ export default class Search {
     hideSearch() {
         this.clear();
 
-        Search.searchIsShown = false;
+        Search.shown = false;
     }
 
 
@@ -163,7 +163,7 @@ export default class Search {
 
 
     onScroll = () => {
-        if (!Search.searchIsShown) {
+        if (!Search.shown) {
             this.contentScrollPosition = window.scrollY;
         }
     }
@@ -188,7 +188,7 @@ export default class Search {
 
         Search.clearIcon.style.display = "block";
 
-        if (!Search.searchIsShown) {
+        if (!Search.shown) {
             this.showSearch();
         }
 
@@ -204,7 +204,7 @@ export default class Search {
             throw e;
         }
 
-        if (Search.searchIsShown) {
+        if (Search.shown) {
             Search.updateStatus({ results: results });
 
             window.scrollTo({ top: 0 });
@@ -219,7 +219,7 @@ export default class Search {
         const hasModifier = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
 
         // if search shown and up or down pressed, prevent scrolling
-        if (Search.searchIsShown && !hasModifier &&
+        if (Search.shown && !hasModifier &&
             (e.key == "ArrowUp" || e.key == "ArrowDown")) {
             e.preventDefault();
         }

@@ -5,7 +5,6 @@ import Api from "./Api.js";
 import Html from "./Html.js";
 
 export default class CakoApp {
-    menu;
     search;
     infiniteScroll;
     api;
@@ -38,7 +37,9 @@ export default class CakoApp {
     constructor() {
         window.CakoApp = this;
 
-        this.menu = new Menu();
+        Menu.init();
+        Menu.onStateChange(this.onMenuStateChange);
+
         this.search = new Search();
         this.api = new Api();
 
@@ -114,15 +115,21 @@ export default class CakoApp {
     }
 
     hideSearch() {
-        Menu.close();
-        this.search.hideSearch();
+        this.searchBackgroundState = undefined;
+
+        if (Menu.shown) {
+            Menu.close();
+        }
+        if (Search.shown) {
+            this.search.hideSearch();
+        }
+
         document.body.classList.remove("search-shown");
     }
 
     popSearchBackgroundState() {
         if (this.searchBackgroundState) {
             this.navigateToState(this.searchBackgroundState);
-            this.searchBackgroundState = undefined;
         }
     }
 
@@ -191,7 +198,7 @@ export default class CakoApp {
         }
 
         // arrow keys navigate between posts when search is not active
-        if (!Search.searchIsShown && !modifier) {
+        if (!Search.shown && !modifier) {
             if (e.key == "ArrowLeft") {
                 if (CakoApp.navLinkLeft) {
                     CakoApp.navLinkLeft.focus({ preventScroll: true });
@@ -233,6 +240,12 @@ export default class CakoApp {
         this.navigateToState({ page: "search" });
     }
 
+    onMenuStateChange = (shown) => {
+        if (this.state.page == "search" && shown == false) {
+            this.popSearchBackgroundState();
+        }
+    }
+
     /** Only capture events on live site, not on static sites from cako cli. */
     async setupEventHandlers() {
         document.addEventListener("keydown", this.onKeyDown);
@@ -251,7 +264,6 @@ export default class CakoApp {
             console.log("Static site initialized.");
         }
     }
-
 
     async #navigateToIndex() {
         document.body.classList = "home-template";

@@ -11,6 +11,8 @@ export default class Menu {
 
     static newFeatureDate = 1633046530235;
 
+    static menuStateCallbacks = [];
+
     static get menuIndicator() {
         return document.getElementById("cako-menu-indicator");
     }
@@ -23,8 +25,16 @@ export default class Menu {
         localStorage.setItem("menuIndicatorCleared", String(value));
     }
 
-    constructor() {
-        Menu.setupListeners()
+    static init() {
+        Menu.menuIcon.addEventListener("click", Menu.toggle);
+
+        for (const i of Menu.menuItems) {
+            i.addEventListener("click", Menu.toggle);
+        }
+
+        Menu.menuLights.addEventListener("click", window.Lights.toggle);
+
+        document.addEventListener("click", Menu.maybeClose);
     }
 
     static toggle() {
@@ -58,6 +68,8 @@ export default class Menu {
         window.Lights.prefetchDarkCss();
 
         Menu.shown = true;
+
+        Menu.callStateChangeCallbacks(true);
     }
 
     static close() {
@@ -68,6 +80,8 @@ export default class Menu {
         }
 
         Menu.shown = false;
+
+        Menu.callStateChangeCallbacks(false);
     }
 
     static showMenuIndicator() {
@@ -104,15 +118,17 @@ export default class Menu {
         }
     }
 
-    static setupListeners() {
-        Menu.menuIcon.addEventListener("click", Menu.toggle);
+    static onStateChange(fn) {
+        Menu.menuStateCallbacks.push(fn);
+    }
 
-        for (const i of Menu.menuItems) {
-            i.addEventListener("click", Menu.toggle);
+    static offStateChange(fn) {
+        Menu.menuStateCallbacks = Menu.menuStateCallbacks.filter(fn !== fn);
+    }
+
+    static callStateChangeCallbacks(shown) {
+        for (const fn of Menu.menuStateCallbacks) {
+            fn(shown);
         }
-
-        Menu.menuLights.addEventListener("click", window.Lights.toggle);
-
-        document.addEventListener("click", Menu.maybeClose);
     }
 }
