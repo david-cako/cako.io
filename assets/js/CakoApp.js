@@ -9,10 +9,12 @@ export default class CakoApp {
     infiniteScroll;
     api;
 
+    /** Current application state. */
     state;
     /** Background state saved to return to after hiding search. */
     searchBackgroundState;
-
+    /** True when accessing hosted site with API available.
+     * Otherwise, we are accessing a static archive and should not override events. */
     isLiveSite;
 
     static siteNavLink = document.getElementById("cako-site-nav-link");
