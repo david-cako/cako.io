@@ -239,7 +239,7 @@ code.hljs {
 
 .cako-featured {
     border: 1px solid #000;
-    padding: 1.3rem 1.4rem 1.5rem;
+    padding: 1.3rem 1.4rem 1.6rem;
     border-radius: 7px;
     max-width: 750px;
     line-height: 1.6rem;
@@ -262,7 +262,7 @@ code.hljs {
     font-size: 1.9rem;
     font-weight: 500;
     line-height: 1.15;
-    margin-bottom: 0.7em;
+    margin-bottom: 0.6em;
 }
 
 .cako-featured .cako-post {
@@ -305,11 +305,6 @@ code.hljs {
 
 .cako-post-link:focus {
     outline: none;
-}
-
-.post-nav .cako-post-link:focus .cako-post-date,
-.post-nav .cako-post-link:hover .cako-post-date {
-    border-bottom: 1px solid #0070e6;
 }
 
 #cako-search-results>.cako-post:not(:nth-of-type(1)) {
@@ -1419,7 +1414,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 /* ^ Required to make .post-full-content:before/after z-index stacking work */
 
 .post-full-header {
-    margin: 0em 15px 1.2em;
+    margin: 0em 15px 1em;
 }
 
 .post-full-meta {
