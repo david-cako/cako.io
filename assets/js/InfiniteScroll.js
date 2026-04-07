@@ -212,7 +212,7 @@ export default class InfiniteScroll {
             return;
         }
 
-        if (!window.Search.searchIsShown) {
+        if (window.Search == undefined || !window.Search.searchIsShown) {
             this.contentScrollPosition = window.scrollY;
             let time = Date.now();
 
@@ -229,7 +229,7 @@ export default class InfiniteScroll {
 
         const shouldRestoreScrollPosition =
             this.initialScrollPosition !== null && this.initialScrollPosIsFresh &&
-            window.CakoApp.state.page == "/" && !userHasScrolled;
+            window.CakoApp && window.CakoApp.state.page == "/" && !userHasScrolled;
 
         if (shouldRestoreScrollPosition) {
             this.restoreScrollPosition();

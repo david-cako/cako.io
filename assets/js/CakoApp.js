@@ -36,6 +36,8 @@ export default class CakoApp {
     }
 
     constructor() {
+        window.CakoApp = this;
+        
         this.menu = new Menu();
         this.search = new Search(Menu);
         this.api = new Api();
@@ -273,5 +275,5 @@ export default class CakoApp {
 }
 
 (() => {
-    window.CakoApp = new CakoApp();
+    new CakoApp();
 })();
