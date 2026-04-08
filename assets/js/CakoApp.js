@@ -50,6 +50,7 @@ export default class CakoApp {
         }
 
         this.state = { page: page };
+        history.replaceState(this.state, "", "/");
 
         if (this.state.page == "all") {
             this.infiniteScroll = new InfiniteScroll({ noFetch: true });
