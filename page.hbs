@@ -1,37 +1,31 @@
-{{!< default}}
-{{!-- The tag above means: insert everything in this file
-into the {body} of the default.hbs template --}}
+{{!< default}} {{!-- The tag above means: insert everything in this file into the {body} of the default.hbs template
+    --}} {{> "header"}}
 
-{{> "header"}}
+    {{!-- Everything inside the #post tags pulls data from the post --}}
+    {{#post}}
 
-{{!-- Everything inside the #post tags pulls data from the post --}}
-{{#post}}
+    {{#match @page.show_title_and_feature_image}}
+    {{/match}}
 
-{{#match @page.show_title_and_feature_image}}
-{{/match}}
+    <main id="site-main" class="site-main post outer" role="main">
+        {{> "index-inner"}}
+        {{> "search-inner"}}
+        <div id="post-inner" class="post inner">
+            <article id="post-article" class="post-full {{post_class}} {{#unless feature_image}}no-image{{/unless}}">
+                <header class="post-full-header">
+                    <h1 class="post-full-title">{{title}}</h1>
+                </header>
 
-<main id="site-main" class="site-main post outer" role="main">
-    {{> "index-inner"}}
-    {{> "search-inner"}}
-    <div id="post-inner" class="post inner">
-        <article id="post-article" class="post-full {{post_class}} {{#unless feature_image}}no-image{{/unless}}">
-            <header class="post-full-header">
-                <h1 class="post-full-title">{{title}}</h1>
-            </header>
+                {{#if feature_image}}
+                <figure class="post-full-image" style="background-image: url({{feature_image}})">
+                </figure>
+                {{/if}}
 
-            {{#if feature_image}}
-            <figure class="post-full-image" style="background-image: url({{feature_image}})">
-            </figure>
-            {{/if}}
-
-            <section class="post-full-content">
-                {{content}}
-            </section>
-        </article>
-        {{> "post-footer"}}
-        <div class="post-nav-outer">
-            <div id="post-nav-inner" class="post-nav inner"></div>
+                <section class="post-full-content">
+                    {{content}}
+                </section>
+            </article>
+            {{> "post-footer"}}
         </div>
-    </div>
-</main>
-{{/post}}
+    </main>
+    {{/post}}

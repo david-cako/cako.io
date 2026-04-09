@@ -318,8 +318,8 @@ code.hljs {
 }
 
 #cako-search-results .cako-post-link:focus .cako-post-date,
-.post-nav .cako-post-link:focus .cako-post-date,
-.post-nav .cako-post-link:hover .cako-post-date {
+#post-nav .cako-post-link:focus .cako-post-date,
+#post-nav .cako-post-link:hover .cako-post-date {
     border-bottom: 1px solid #0070e6;
 }
 
@@ -379,30 +379,22 @@ code.hljs {
     color: #ee600b;
 }
 
-.post-nav-outer {
-    width: 100%;
-    padding: 0 0 42px;
-}
-
-@media (max-width: 850px) {
-    .post-nav-outer {
-        margin-top: auto;
-        padding: 0 0 15px;
-    }
-}
-
-.post-nav {
+#post-nav {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-}
-
-.post-nav.inner {
-    padding: 0 15px;
     align-items: start;
+    padding: 0 15px 42px;
 }
 
-.post-nav .cako-post {
+@media (max-width: 850px) {
+    #post-nav {
+        margin-top: auto;
+        padding: 0 15px 15px;
+    }
+}
+
+#post-nav .cako-post {
     flex: 1;
     overflow: hidden;
     margin: 0;
@@ -410,25 +402,25 @@ code.hljs {
     font-size: 10px;
 }
 
-.post-nav .cako-post.right,
-.post-nav .cako-post-link.right {
+#post-nav .cako-post.right,
+#post-nav .cako-post-link.right {
     text-align: right;
 }
 
-.post-nav .cako-post-link {
+#post-nav .cako-post-link {
     max-width: 100%;
     transition: transform ease-in-out 0.1s;
 }
 
-.post-nav .cako-post-link:hover {
+#post-nav .cako-post-link:hover {
     transform: scale(1.04);
 }
 
-.post-nav .cako-post-link:focus .icon {
+#post-nav .cako-post-link:focus .icon {
     background-color: #0070e6;
 }
 
-.post-nav .cako-post-title {
+#post-nav .cako-post-title {
     font-size: 1.3em;
     padding-bottom: 0.5em;
     font-weight: 400;
@@ -439,28 +431,28 @@ code.hljs {
     overflow: hidden;
 }
 
-.post-nav .cako-post-date {
+#post-nav .cako-post-date {
     font-size: 1.1em;
     font-weight: 400;
 }
 
-.post-nav .cako-post-date-outer {
+#post-nav .cako-post-date-outer {
     line-height: 1em;
     margin-top: -0.1em;
 }
 
-.post-nav .icon {
+#post-nav .icon {
     background-color: rgb(140, 140, 140);
     width: 1em;
     height: 1em;
     margin-top: 0.25em;
 }
 
-.post-nav .arrow-icon-back {
+#post-nav .arrow-icon-back {
     margin-right: 2px;
 }
 
-.post-nav .arrow-icon-forward {
+#post-nav .arrow-icon-forward {
     margin-left: 2px;
 }
 
@@ -1581,14 +1573,15 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 .page-template #index-inner,
 .page-template:not(.search-shown) #search-inner,
-.page-template #post-nav-inner {
+.page-template #post-nav,
+.home-template #post-nav {
     display: none;
 }
 
 .search-shown #index-inner,
 .search-shown #post-inner,
 .search-shown #email-address,
-.search-shown #post-nav-inner {
+.search-shown #post-nav {
     display: none;
 }
 

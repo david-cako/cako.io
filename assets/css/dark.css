@@ -29,11 +29,11 @@ body {
     color: #fff;
 }
 
-.post-nav .icon {
+#post-nav .icon {
     background-color: #aeaeae;
 }
 
-.post-nav .cako-post-title {
+#post-nav .cako-post-title {
     color: #eee;
 }
 
@@ -102,13 +102,13 @@ body {
     background: #fff;
 }
 
-.post-nav .cako-post-link:focus .icon {
+#post-nav .cako-post-link:focus .icon {
     background-color: #27d7ff;
 }
 
 #cako-search-results .cako-post-link:focus .cako-post-date,
-.post-nav .cako-post-link:focus .cako-post-date,
-.post-nav .cako-post-link:hover .cako-post-date {
+#post-nav .cako-post-link:focus .cako-post-date,
+#post-nav .cako-post-link:hover .cako-post-date {
     border-bottom: 1px solid #27d7ff;
 }
 

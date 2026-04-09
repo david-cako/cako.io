@@ -4,9 +4,9 @@ const MonthNames = ["January", "February", "March", "April", "May", "June",
 
 export default class Html {
     static postFeed = document.getElementById("cako-post-feed");
-
     static postTemplate = document.querySelector("#cako-post-template");
     static postLinkTemplate = document.querySelector("#cako-post-link-template");
+    static indexCopyright = document.querySelector("#index-inner .copyright-date");
 
     static generateSearchPreview(result) {
         if (result.strong === undefined || result.strong.in !== "html") {
@@ -198,5 +198,11 @@ export default class Html {
         }
 
         return id;
+    }
+
+    static setCopyrightDate(page) {
+        if (!page) {
+
+        }
     }
 }
