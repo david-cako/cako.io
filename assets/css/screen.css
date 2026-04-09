@@ -385,7 +385,7 @@ code.hljs {
     .site-footer-content {
         flex: 1;
     }
-    
+
     #post-nav {
         margin-top: auto;
         padding: 20px 0px 15px;
@@ -1577,7 +1577,8 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 .page-template #index-inner,
 .page-template:not(.search-shown) #search-inner,
-.page-template #post-nav {
+.page-template #post-nav,
+.page-template .post-full-meta {
     display: none;
 }
 

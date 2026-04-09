@@ -21,7 +21,6 @@ export default class CakoApp {
     static indexInner = document.getElementById("index-inner");
     static postInner = document.getElementById("post-inner");
     static searchInner = document.getElementById("search-inner");
-    static postArticle = document.getElementById("post-article");
     static emailAddress = document.getElementById("email-address");
 
     static get navLinkLeft() {
@@ -48,7 +47,7 @@ export default class CakoApp {
         }
 
         this.state = { page: page };
-        history.replaceState(this.state, "", "/");
+        history.replaceState(this.state, "");
 
         if (this.state.page == "all") {
             this.infiniteScroll = new InfiniteScroll({ noFetch: true });
@@ -234,27 +233,25 @@ export default class CakoApp {
 
     async #navigateToIndex() {
         document.body.classList = "home-template";
+
+        Html.setPostContent();
         Html.setCopyrightDate();
 
-        CakoApp.postArticle.innerHTML = "";
         document.title = "cako.io";
     }
 
     async #navigateToPost(id) {
         if (!id) {
-            throw new Error("Missing id in call to navigateToPost(id)");
+            throw new Error("Missing id in call to #navigateToPost(id)");
         }
 
         const post = await this.api.getPost(id);
-        const generated = Html.generatePost(post);
 
         document.body.classList = "post-template";
 
-        CakoApp.postArticle.innerHTML = "";
-        CakoApp.postArticle.append(generated);
-
+        Html.setPostContent(post);
         Html.setCopyrightDate(post);
-        Html.updatePostNav(post);
+        Html.setPostNav(post);
 
         document.title = post.title;
 
@@ -263,11 +260,12 @@ export default class CakoApp {
     }
 
     async #navigateToFeatures() {
-        const features = await this.api.getFeaturesContent();
+        const features = await Api.features;
 
         document.body.classList = "page-template";
-        CakoApp.postArticle.innerHTML = features.innerHTML;
-        Html.setCopyrightDate();
+
+        Html.setPostContent(features);
+        Html.setCopyrightDate(features);
 
         document.title = "Features";
     }

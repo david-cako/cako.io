@@ -30,8 +30,8 @@ export default class Api {
 
     /** Path to features page. */
     static featuresPath = "/features/"
-    /** Promise that will contain full document element for features page after retrieval. */
-    static featuresDocument;
+    /** Promise that will contain features page after API retrieval. */
+    static features;
     /** True while fetching features. */
     static fetchingFeatures = false;
     /** True after features have been retrieved. */
@@ -53,7 +53,7 @@ export default class Api {
         }
 
         if (!window.Api) {
-            window.Api = Api;
+            window.Api = this;
         }
     }
 
@@ -99,17 +99,6 @@ export default class Api {
         });
 
         return await p;
-    }
-
-    async getFeaturesContent() {
-        const d = await Api.featuresDocument;
-
-        const article = d.querySelector("article");
-        if (!article) {
-            throw new Error("Could not get features article from response.")
-        }
-
-        return article;
     }
 
     async hasApi() {
@@ -224,24 +213,28 @@ export default class Api {
     static async #prefetchFeatures() {
         Api.fetchingFeatures = true;
 
-        Api.featuresDocument = (async () => {
-            try {
-                const r = await fetch(Api.featuresPath);
-                if (!r.ok) {
-                    throw new Error(`Response status: ${r.status}`);
+        Api.features = (async () => {
+            let retries = 0;
+
+            while (retries < Api.#maxRetries) {
+                retries++;
+
+                try {
+                    const f = await GHOST_API.pages.read({
+                        slug: "features",
+                        formats: ['html']
+                    });
+
+                    Api.fetchingFeatures = false;
+                    Api.hasFetchedFeatures = true;
+
+                    return f
+                } catch (e) {
+                    console.log(`Error fetching features, attempt ${retries}`, e);
+                    if (retries >= Api.#maxRetries) {
+                        throw e;
+                    }
                 }
-
-                const html = await r.text();
-                const parser = new DOMParser()
-                const d = parser.parseFromString(html, "text/html")
-
-                Api.fetchingFeatures = false;
-                Api.hasFetchedFeatures = true;
-
-                return d;
-            } catch (e) {
-                Api.fetchingFeatures = false;
-                throw e;
             }
         })();
     }

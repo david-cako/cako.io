@@ -5,6 +5,7 @@ const MonthNames = ["January", "February", "March", "April", "May", "June",
 export default class Html {
     static postFeed = document.getElementById("cako-post-feed");
     static postTemplate = document.querySelector("#cako-post-template");
+    static postArticle = document.getElementById("post-article");
     static postLinkTemplate = document.querySelector("#cako-post-link-template");
     static copyrightDate = document.querySelector(".copyright-date");
     static postNav = document.getElementById("post-nav");
@@ -201,15 +202,24 @@ export default class Html {
         return id;
     }
 
-    static setCopyrightDate(page = null) {
-        if (!page) {
-            Html.copyrightDate.innerText = new Date().getFullYear();
-        } else {
-            Html.copyrightDate.innerText = new Date(page.published_at).getFullYear();
+    static setPostContent(post = null) {
+        Html.postArticle.innerHTML = "";
+
+        if (post) {
+            const generated = Html.generatePost(post);
+            Html.postArticle.append(generated);
         }
     }
 
-    static updatePostNav(post) {
+    static setCopyrightDate(post = null) {
+        if (!post) {
+            Html.copyrightDate.innerText = new Date().getFullYear();
+        } else {
+            Html.copyrightDate.innerText = new Date(post.published_at).getFullYear();
+        }
+    }
+
+    static setPostNav(post) {
         Html.postNav.innerHTML = "";
         if (post.prev) {
             Html.postNav.append(Html.generatePostLink(post.prev, { navLink: "left" }));
