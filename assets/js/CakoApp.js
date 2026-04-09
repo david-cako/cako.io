@@ -22,7 +22,7 @@ export default class CakoApp {
     static postInner = document.getElementById("post-inner");
     static searchInner = document.getElementById("search-inner");
     static postArticle = document.getElementById("post-article");
-    static postNavInner = document.getElementById("post-nav-inner");
+    static postNavInner = document.getElementById("post-nav");
     static siteFooterContent = document.querySelector(".site-footer-content");
     static emailAddress = document.getElementById("email-address");
 

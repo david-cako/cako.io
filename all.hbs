@@ -18,7 +18,7 @@ into the {body} of the default.hbs template --}}
                 {{/get}}
             </div>
             <div id="loading-posts">Loading posts...</div>
-            <section class="copyright"><a href="https://davidcako.com">{{@site.title}}</a> &copy; {{date format="YYYY"}}</section>
+            {{> "copyright"}}
         </div>
     </div>
     {{> "search-inner"}}
