@@ -1,8 +1,8 @@
-import Menu from "./Menu.js";
-import Search from "./Search.js";
-import InfiniteScroll from "./InfiniteScroll.js";
-import Api from "./Api.js";
-import Html from "./Html.js";
+import Menu from "Menu";
+import Search from "Search";
+import InfiniteScroll from "InfiniteScroll";
+import Api from "Api";
+import Html from "Html";
 
 export default class CakoApp {
     search;

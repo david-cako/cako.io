@@ -1,5 +1,5 @@
-import Api from "./Api.js";
-import Html from "./Html.js";
+import Api from "Api";
+import Html from "Html";
 
 /** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
