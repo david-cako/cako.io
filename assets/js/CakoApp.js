@@ -22,8 +22,6 @@ export default class CakoApp {
     static postInner = document.getElementById("post-inner");
     static searchInner = document.getElementById("search-inner");
     static postArticle = document.getElementById("post-article");
-    static postNav = document.getElementById("post-nav");
-    static siteFooterContent = document.querySelector(".site-footer-content");
     static emailAddress = document.getElementById("email-address");
 
     static get navLinkLeft() {
@@ -236,6 +234,7 @@ export default class CakoApp {
 
     async #navigateToIndex() {
         document.body.classList = "home-template";
+        Html.setCopyrightDate();
 
         CakoApp.postArticle.innerHTML = "";
         document.title = "cako.io";
@@ -254,15 +253,8 @@ export default class CakoApp {
         CakoApp.postArticle.innerHTML = "";
         CakoApp.postArticle.append(generated);
 
-        CakoApp.postNav.innerHTML = "";
-        if (post.prev) {
-            CakoApp.postNav.append(Html.generatePostLink(post.prev, { navLink: "left" }));
-        } else {
-            CakoApp.postNav.append(document.createElement("div"));
-        }
-        if (post.next) {
-            CakoApp.postNav.append(Html.generatePostLink(post.next, { navLink: "right" }));
-        }
+        Html.setCopyrightDate(post);
+        Html.updatePostNav(post);
 
         document.title = post.title;
 
@@ -275,6 +267,8 @@ export default class CakoApp {
 
         document.body.classList = "page-template";
         CakoApp.postArticle.innerHTML = features.innerHTML;
+        Html.setCopyrightDate();
+
         document.title = "Features";
     }
 

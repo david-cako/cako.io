@@ -6,7 +6,8 @@ export default class Html {
     static postFeed = document.getElementById("cako-post-feed");
     static postTemplate = document.querySelector("#cako-post-template");
     static postLinkTemplate = document.querySelector("#cako-post-link-template");
-    static indexCopyright = document.querySelector("#index-inner .copyright-date");
+    static copyrightDate = document.querySelector(".copyright-date");
+    static postNav = document.getElementById("post-nav");
 
     static generateSearchPreview(result) {
         if (result.strong === undefined || result.strong.in !== "html") {
@@ -200,9 +201,23 @@ export default class Html {
         return id;
     }
 
-    static setCopyrightDate(page) {
+    static setCopyrightDate(page = null) {
         if (!page) {
+            Html.copyrightDate.innerText = new Date().getFullYear();
+        } else {
+            Html.copyrightDate.innerText = new Date(page.published_at).getFullYear();
+        }
+    }
 
+    static updatePostNav(post) {
+        Html.postNav.innerHTML = "";
+        if (post.prev) {
+            Html.postNav.append(Html.generatePostLink(post.prev, { navLink: "left" }));
+        } else {
+            Html.postNav.append(document.createElement("div"));
+        }
+        if (post.next) {
+            Html.postNav.append(Html.generatePostLink(post.next, { navLink: "right" }));
         }
     }
 }
