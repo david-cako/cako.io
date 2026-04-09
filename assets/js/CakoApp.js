@@ -55,7 +55,7 @@ export default class CakoApp {
             this.infiniteScroll = new InfiniteScroll();
         }
 
-        this.setupEventHandlers();
+        this.#setupEventHandlers();
     }
 
     async navigateToState(state) {
@@ -212,23 +212,8 @@ export default class CakoApp {
         }
     }
 
-    /** Only capture events on live site, not on static sites from cako cli. */
-    async setupEventHandlers() {
-        document.addEventListener("keydown", this.onKeyDown);
-
-        try {
-            await this.api.hasApi();
-            this.isLiveSite = true;
-            console.log("Live site initialized.");
-
-            document.addEventListener("click", this.onClick);
-            window.addEventListener("popstate", this.onPopState);
-
-            this.search.onSearchShown(this.onSearchShown);
-        } catch {
-            this.isLiveSite = false;
-            console.log("Static site initialized.");
-        }
+    onUnhandledPromiseRejection = (e) => {
+        console.error("Unhandled Promise Rejection: " + e.reason.stack);
     }
 
     async #navigateToIndex() {
@@ -272,6 +257,26 @@ export default class CakoApp {
 
     async #navigateToSearch() {
         document.body.classList.add("search-shown");
+    }
+
+    /** Only capture events on live site, not on static sites from cako cli. */
+    async #setupEventHandlers() {
+        window.addEventListener("unhandledrejection", this.onUnhandledPromiseRejection);
+        document.addEventListener("keydown", this.onKeyDown);
+
+        try {
+            await this.api.hasApi();
+            this.isLiveSite = true;
+            console.log("Live site initialized.");
+
+            document.addEventListener("click", this.onClick);
+            window.addEventListener("popstate", this.onPopState);
+
+            this.search.onSearchShown(this.onSearchShown);
+        } catch {
+            this.isLiveSite = false;
+            console.log("Static site initialized.");
+        }
     }
 }
 
