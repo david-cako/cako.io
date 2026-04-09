@@ -341,7 +341,7 @@ code.hljs {
     display: inline-block;
     line-height: 1em;
     position: relative;
-    margin-bottom: 0.2em;
+    padding-bottom: 0.2em;
     font-size: 1.75em;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Arial, sans-serif;
     font-weight: 500;
@@ -404,7 +404,7 @@ code.hljs {
 
 .post-nav .cako-post {
     flex: 1;
-    max-width: 40%;
+    overflow: hidden;
     margin: 0;
     padding: 0;
     font-size: 10px;
@@ -430,7 +430,7 @@ code.hljs {
 
 .post-nav .cako-post-title {
     font-size: 1.3em;
-    margin-bottom: 0.5em;
+    padding-bottom: 0.5em;
     font-weight: 400;
     color: #111;
     text-overflow: ellipsis;
