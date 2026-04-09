@@ -22,7 +22,7 @@ export default class CakoApp {
     static postInner = document.getElementById("post-inner");
     static searchInner = document.getElementById("search-inner");
     static postArticle = document.getElementById("post-article");
-    static postNavInner = document.getElementById("post-nav");
+    static postNav = document.getElementById("post-nav");
     static siteFooterContent = document.querySelector(".site-footer-content");
     static emailAddress = document.getElementById("email-address");
 
@@ -254,14 +254,14 @@ export default class CakoApp {
         CakoApp.postArticle.innerHTML = "";
         CakoApp.postArticle.append(generated);
 
-        CakoApp.postNavInner.innerHTML = "";
+        CakoApp.postNav.innerHTML = "";
         if (post.prev) {
-            CakoApp.postNavInner.append(Html.generatePostLink(post.prev, { navLink: "left" }));
+            CakoApp.postNav.append(Html.generatePostLink(post.prev, { navLink: "left" }));
         } else {
-            CakoApp.postNavInner.append(document.createElement("div"));
+            CakoApp.postNav.append(document.createElement("div"));
         }
         if (post.next) {
-            CakoApp.postNavInner.append(Html.generatePostLink(post.next, { navLink: "right" }));
+            CakoApp.postNav.append(Html.generatePostLink(post.next, { navLink: "right" }));
         }
 
         document.title = post.title;

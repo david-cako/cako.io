@@ -113,11 +113,6 @@ production stylesheet in assets/built/screen.css
 
 */
 
-.index.inner {
-    position: relative;
-    padding-bottom: 4em;
-}
-
 blockquote a {
     font-size: 0.5em;
 }
@@ -198,7 +193,7 @@ code.hljs {
 }
 
 #cako-post-feed {
-    padding: 0 0 2em;
+    padding: 0 0 1.4em;
 }
 
 #loading-posts {
@@ -382,15 +377,18 @@ code.hljs {
 #post-nav {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
     align-items: start;
-    padding: 0 15px 42px;
+    padding: 20px 0px 42px;
 }
 
 @media (max-width: 850px) {
+    .site-footer-content {
+        flex: 1;
+    }
+    
     #post-nav {
         margin-top: auto;
-        padding: 0 15px 15px;
+        padding: 20px 0px 15px;
     }
 }
 
@@ -812,19 +810,19 @@ body {
 }
 
 @media (max-height: 1100px) {
-    .inner:not(.index) {
+    body:not(.home-template) .inner {
         max-width: 750px;
     }
 }
 
 @media (max-height: 800px) {
-    .inner:not(.index) {
+    body:not(.home-template) .inner {
         max-width: 675px;
     }
 }
 
 @media (min-width: 900px) {
-    .index.inner {
+    body.home-template .inner {
         max-width: 90vw;
     }
 }
@@ -1553,8 +1551,14 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .home-template #post-inner,
-.home-template:not(.search-shown) #search-inner {
+.home-template:not(.search-shown) #search-inner,
+.home-template #post-nav,
+.home-template #email-address {
     display: none;
+}
+
+.home-template .site-footer-content {
+    padding-bottom: 4em;
 }
 
 .post-template #index-inner,
@@ -1573,8 +1577,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 .page-template #index-inner,
 .page-template:not(.search-shown) #search-inner,
-.page-template #post-nav,
-.home-template #post-nav {
+.page-template #post-nav {
     display: none;
 }
 
@@ -2955,11 +2958,15 @@ Usage (In Ghost editor):
     color: #000;
 }
 
+.home-template .copyright {
+    font-size: 1em;
+}
+
 .site-footer-content {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
     font-size: 1.3rem;
     padding: 5px 15px 20px;
 }
