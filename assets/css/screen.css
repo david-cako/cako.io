@@ -206,14 +206,14 @@ code.hljs {
 }
 
 #search-inner {
-    padding: 1.1em 15px 3em;
+    padding: 1.1em 15px 1em;
     max-width: 750px;
     margin: 0 auto;
 }
 
 @media (max-width: 850px) {
     #search-inner {
-        padding: .25em 15px 3em;
+        padding: .25em 15px 1em;
     }
 }
 
