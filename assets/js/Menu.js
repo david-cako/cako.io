@@ -103,7 +103,7 @@ export default class Menu {
         if (Menu.menuInner.style.display === "block") {
             if (e.target !== Menu.menuIcon &&
                 e.target !== Menu.menuInner &&
-                (!window.Search || !window.Search.searchFeed.contains(e.target)) &&
+                (!window.Search || !window.Search.searchInner.contains(e.target)) &&
                 !Menu.menuInner.contains(e.target)) {
                 Menu.close();
             }
