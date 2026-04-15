@@ -186,7 +186,7 @@ code.hljs {
     padding: 0 15px;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 899px) {
     #cako-post-feed-outer {
         margin-top: 0.25em;
     }
@@ -211,7 +211,7 @@ code.hljs {
     margin: 0 auto;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 899px) {
     #search-inner {
         padding: .25em 15px 1em;
     }
@@ -306,7 +306,7 @@ code.hljs {
     margin-top: 1.7em;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 899px) {
     #cako-search-results>.cako-post:not(:nth-of-type(1)) {
         margin-top: 1.4em;
     }
@@ -381,11 +381,7 @@ code.hljs {
     padding: 20px 0px 42px;
 }
 
-@media (max-width: 850px) {
-    .site-footer-content {
-        flex: 1;
-    }
-
+@media (max-width: 899px) {
     #post-nav {
         margin-top: auto;
         padding: 20px 0px 15px;
@@ -1399,7 +1395,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
     padding-top: 0.5em;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 899px) {
     .post-full {
         padding-top: 0;
     }
