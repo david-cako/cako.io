@@ -1,5 +1,5 @@
-import Api from "./Api.js";
-import Html from "./Html.js";
+import Api from "Api";
+import Html from "Html";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -33,7 +33,7 @@ export default class Search {
     static searchClear = document.getElementById("cako-search-clear");
     static searchHeader = document.getElementById("cako-search-header");
     static searchResults = document.getElementById("cako-search-results");
-    static searchFeed = document.getElementById("cako-search-feed");
+    static searchInner = document.getElementById("search-inner");
     static searchStatusElem = document.getElementById("search-status");
     static postFeed = document.getElementById("cako-post-feed-outer");
     static postContent = document.querySelector(".post-full");
