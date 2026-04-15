@@ -33,7 +33,7 @@ export default class Search {
     static searchClear = document.getElementById("cako-search-clear");
     static searchHeader = document.getElementById("cako-search-header");
     static searchResults = document.getElementById("cako-search-results");
-    static searchFeed = document.getElementById("cako-search-feed");
+    static searchInner = document.getElementById("search-inner");
     static searchStatusElem = document.getElementById("search-status");
     static postFeed = document.getElementById("cako-post-feed-outer");
     static postContent = document.querySelector(".post-full");

@@ -205,14 +205,14 @@ code.hljs {
     color: red;
 }
 
-#cako-search-feed {
+#search-inner {
     padding: 1.1em 15px 3em;
     max-width: 750px;
     margin: 0 auto;
 }
 
 @media (max-width: 850px) {
-    #cako-search-feed {
+    #search-inner {
         padding: .25em 15px 3em;
     }
 }
@@ -810,19 +810,23 @@ body {
 }
 
 @media (max-height: 1100px) {
-    body:not(.home-template) .inner {
+
+    body:not(.home-template) .inner,
+    body.search-shown .inner {
         max-width: 750px;
     }
 }
 
 @media (max-height: 800px) {
-    body:not(.home-template) .inner {
+
+    body:not(.home-template) .inner,
+    body.search-shown .inner {
         max-width: 675px;
     }
 }
 
 @media (min-width: 900px) {
-    body.home-template .inner {
+    body.home-template:not(.search-shown) .inner {
         max-width: 90vw;
     }
 }

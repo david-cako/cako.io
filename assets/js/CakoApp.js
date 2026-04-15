@@ -20,7 +20,6 @@ export default class CakoApp {
     static siteNavLink = document.getElementById("cako-site-nav-link");
     static indexInner = document.getElementById("index-inner");
     static postInner = document.getElementById("post-inner");
-    static searchInner = document.getElementById("search-inner");
     static emailAddress = document.getElementById("email-address");
 
     static get navLinkLeft() {
