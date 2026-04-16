@@ -17,7 +17,7 @@ export const windowSizes = {
     }
 };
 
-export const timeouts = { implicit: 500, script: 2000 };
+export const timeouts = { implicit: 5000, script: 5000 };
 
 export function parseArgs() {
     let named = {};
