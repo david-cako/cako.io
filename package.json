@@ -23,5 +23,11 @@
     "config": {
         "posts_per_page": 25
     },
-    "dependencies": {}
+    "scripts": {
+        "test": "SE_AVOID_STATS=true mocha --timeout=5000"
+    },
+    "devDependencies": {
+        "mocha": "^11.7.5",
+        "selenium-webdriver": "^4.43.0"
+    }
 }
