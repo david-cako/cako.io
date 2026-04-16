@@ -23,9 +23,6 @@
   "config": {
     "posts_per_page": 25
   },
-  "scripts": {
-    "test-safari": "npx playwright test --headed --project=webkit"
-  },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.6.0"

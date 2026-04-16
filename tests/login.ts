@@ -42,8 +42,8 @@ setup.describe('login', () => {
         await expect(submit).toBeVisible();
         await expect(submit).toBeInViewport();
 
-        await expect(submit).toHaveCSS("color", "#fff");
-        await expect(submit).toHaveCSS("border-color", "#fff");
+        await expect(submit).toHaveCSS("color", "rgb(255, 255, 255)");
+        await expect(submit).toHaveCSS("border-color", "rgb(255, 255, 255)");
     })
 
     setup('submit button turns aqua on hover', async ({ page }) => {
@@ -54,13 +54,12 @@ setup.describe('login', () => {
         await expect(submit).toBeVisible();
         await expect(submit).toBeInViewport();
 
-        await expect(submit).toHaveCSS("color", "#27d7ff");
-        await expect(submit).toHaveCSS("border-color", "#27d7ff");
+        await expect(submit).toHaveCSS("color", "rgb(39, 215, 255)");
+        await expect(submit).toHaveCSS("border-color", "rgb(39, 215, 255)");
     })
 
     setup('logs into site with password', async ({ page }) => {
         const url = new URL(page.url());
-
         const loginFile = path.resolve(setup.info().project.outputDir, 'login.json');
 
         if (!process.env.PASSWORD) {
@@ -76,6 +75,8 @@ setup.describe('login', () => {
 
             await submit.click();
         }
+
+        console.log("Saving login file to: ", loginFile);
 
         await page.context().storageState({ path: loginFile });
     });
