@@ -1,33 +1,33 @@
 {
-    "name": "cako-io-ghost",
-    "description": "cako.io theme for ghost",
-    "version": "3.1.0",
-    "engines": {
-        "ghost": ">=1.2.0"
-    },
-    "author": {
-        "name": "David Cako",
-        "email": "dc@cako.io",
-        "url": "https://cako.io"
-    },
-    "gpm": {
-        "type": "theme"
-    },
-    "keywords": [
-        "ghost-theme"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/david-cako/cako.io"
-    },
-    "config": {
-        "posts_per_page": 25
-    },
-    "scripts": {
-        "test": "SE_AVOID_STATS=true mocha --timeout=5000"
-    },
-    "devDependencies": {
-        "mocha": "^11.7.5",
-        "selenium-webdriver": "^4.43.0"
-    }
+  "name": "cako-io-ghost",
+  "description": "cako.io theme for ghost",
+  "version": "3.1.0",
+  "engines": {
+    "ghost": ">=1.2.0"
+  },
+  "author": {
+    "name": "David Cako",
+    "email": "dc@cako.io",
+    "url": "https://cako.io"
+  },
+  "gpm": {
+    "type": "theme"
+  },
+  "keywords": [
+    "ghost-theme"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/david-cako/cako.io"
+  },
+  "config": {
+    "posts_per_page": 25
+  },
+  "scripts": {
+    "test-safari": "npx playwright test --headed --project=webkit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0"
+  }
 }
