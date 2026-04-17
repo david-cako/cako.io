@@ -235,12 +235,17 @@ export default class CakoApp {
 
         Html.setPostContent(post);
         Html.setCopyrightDate(post);
-        Html.setPostNav(post);
 
         document.title = post.title;
 
         window.scrollTo({ top: 0 });
         window.Header.resetAnimation();
+
+        Html.setPostNav(post);
+
+        if (!Api.postHasPagination(post)) {
+            this.#setPostNavWhenAvailable(post);
+        }
     }
 
     async #navigateToFeatures() {
@@ -256,6 +261,13 @@ export default class CakoApp {
 
     async #navigateToSearch() {
         document.body.classList.add("search-shown");
+    }
+
+    async #setPostNavWhenAvailable(post) {
+        const p = await this.api.onPost(post.slug);
+        if (p && this.state.page == post.slug) {
+            Html.setPostNav(p);
+        }
     }
 
     /** Only capture events on live site, not on static sites from cako cli. */

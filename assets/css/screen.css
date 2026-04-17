@@ -403,11 +403,6 @@ code.hljs {
 
 #post-nav .cako-post-link {
     max-width: 100%;
-    transition: transform ease-in-out 0.1s;
-}
-
-#post-nav .cako-post-link:hover {
-    transform: scale(1.04);
 }
 
 #post-nav .cako-post-link:focus .icon {
