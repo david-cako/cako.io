@@ -102,19 +102,20 @@ export default class CakoApp {
     hideSearch() {
         this.searchBackgroundState = undefined;
 
-        if (Menu.shown) {
-            Menu.close();
-        }
         if (Search.shown) {
             this.search.hideSearch();
+        }
+
+        if (Menu.shown) {
+            Menu.close();
         }
 
         document.body.classList.remove("search-shown");
     }
 
-    popSearchBackgroundState() {
+    async popSearchBackgroundState() {
         if (this.searchBackgroundState) {
-            this.navigateToState(this.searchBackgroundState);
+            return this.navigateToState(this.searchBackgroundState);
         }
     }
 
@@ -171,9 +172,16 @@ export default class CakoApp {
             return;
         }
 
-        // escape closes menu
+        // escape closes search and menu
         if (e.key == "Escape") {
-            this.popSearchBackgroundState();
+            if (this.searchBackgroundState) {
+                e.preventDefault();
+                await this.popSearchBackgroundState();
+            }
+            if (Menu.shown) {
+                e.preventDefault();
+                Menu.close()
+            }
 
             return;
         }
@@ -181,10 +189,12 @@ export default class CakoApp {
         // arrow keys navigate between posts when search is not active
         if (!Search.shown && !modifier) {
             if (e.key == "ArrowLeft") {
+                e.preventDefault();
                 if (CakoApp.navLinkLeft) {
                     await this.navigateToPostLink(CakoApp.navLinkLeft);
                 }
             } else if (e.key == "ArrowRight") {
+                e.preventDefault();
                 if (CakoApp.navLinkRight) {
                     await this.navigateToPostLink(CakoApp.navLinkRight)
                 }
