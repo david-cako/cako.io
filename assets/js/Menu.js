@@ -28,13 +28,7 @@ export default class Menu {
     static init() {
         Menu.menuIcon.addEventListener("click", Menu.toggle);
 
-        for (const i of Menu.menuItems) {
-            i.addEventListener("click", Menu.toggle);
-        }
-
         Menu.menuLights.addEventListener("click", window.Lights.toggle);
-
-        document.addEventListener("click", Menu.maybeClose);
     }
 
     static toggle() {
@@ -96,17 +90,6 @@ export default class Menu {
             Menu.menuIndicator.remove();
 
             Menu.menuIndicatorCleared = String(Date.now());
-        }
-    }
-
-    static maybeClose(e) {
-        if (Menu.menuInner.style.display === "block") {
-            if (e.target !== Menu.menuIcon &&
-                e.target !== Menu.menuInner &&
-                (!window.Search || !window.Search.searchInner.contains(e.target)) &&
-                !Menu.menuInner.contains(e.target)) {
-                Menu.close();
-            }
         }
     }
 

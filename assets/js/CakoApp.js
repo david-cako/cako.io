@@ -153,6 +153,15 @@ export default class CakoApp {
             history.pushState(this.state, "", "/features/");
             return;
         }
+
+        if (Menu.shown) {
+            if (e.target !== Menu.menuIcon &&
+                e.target !== Menu.menuInner &&
+                (!Search.searchInner.contains(e.target)) &&
+                !Menu.menuInner.contains(e.target)) {
+                Menu.close();
+            }
+        }
     }
 
     onKeyDown = async (e) => {
