@@ -242,10 +242,6 @@ export default class CakoApp {
         window.Header.resetAnimation();
 
         Html.setPostNav(post);
-
-        if (!Api.postHasPagination(post)) {
-            this.#setPostNavWhenAvailable(post);
-        }
     }
 
     async #navigateToFeatures() {

@@ -83,20 +83,20 @@ export default class Api {
     }
 
     async getPost(slug) {
-        const post = Api.#postForSlug(slug);
+        const post = await Api.#postForSlug(slug);
 
         if (post) {
             return post;
         } else {
-            const post = Api.#getPost(slug);
+            return await Api.#getPost(slug);
         }
     }
 
     /** Returns promise that will resolve to post when post is
      * loaded and pagination is available for post. */
     async onPost(slug) {
-        const post = Api.#postForSlug(slug);
-        if (post && Api.postHasPagination(post)) {
+        const post = await Api.#postForSlug(slug);
+        if (post) {
             return post;
         } else {
             if (Api.hasFinishedGettingPosts) {
@@ -208,11 +208,26 @@ export default class Api {
         }
     }
 
-    static async #getPrevPost(slug, { includeBody } = {}) {
+    static async #getPrevPost(post, { includeBody } = {}) {
+        // let published_at = post.published_at.split(".")[0];
+        // published_at = published_at.replace("T", " ");
         const posts = await GHOST_API.posts.browse({
-            order: "published_at" + "desc",
+            order: "published_at " + "desc",
             limit: 1,
-            filter: "slug:-" + slug + "+published_at" + "<=" + `'${post.published_at}'`,
+            filter: "slug:-" + post.slug + "+published_at:" + "<=" + `'${post.published_at}'`,
+            formats: includeBody ? ['html'] : undefined
+        });
+
+        return posts[0];
+    }
+
+    static async #getNextPost(post, { includeBody } = {}) {
+        // let published_at = post.published_at.split(".")[0];
+        // published_at = published_at.replace("T", " ");
+        const posts = await GHOST_API.posts.browse({
+            order: "published_at " + "asc",
+            limit: 1,
+            filter: "slug:-" + post.slug + "+published_at:" + ">" + `'${post.published_at}'`,
             formats: includeBody ? ['html'] : undefined
         });
 
@@ -246,20 +261,17 @@ export default class Api {
      * previous or next will be null, respectively.  */
     static async #setPostPagination(post) {
         const postIdx = Api.posts.findIndex(p => p.slug == post.slug);
-        if (postIdx == -1) {
-            return null;
-        }
 
-        if (postIdx + 1 < Api.posts.length) {
+        if (postIdx != -1 && postIdx + 1 < Api.posts.length) {
             post.prev = Object.assign({}, Api.posts[postIdx + 1]);
         } else {
-            post.prev = await Api.#getPrevPost(post.slug);
+            post.prev = await Api.#getPrevPost(post);
         }
 
-        if (postIdx > 0) {
+        if (postIdx != -1 && postIdx > 0) {
             post.next = Object.assign({}, Api.posts[postIdx - 1]);
         } else {
-            post.next = null;
+            post.next = await Api.#getNextPost(post);
         }
     }
 
