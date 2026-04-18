@@ -23,8 +23,6 @@ export default class Api {
     static #postsPerPage = 25;
     /** Retry count for getPosts. */
     static #maxRetries = 10;
-    /** Array of objects containing a post slug and a promise to resolve with post. */
-    static #postAwaiters = [];
     /** Array of objects containing a page number and a promise to resolve with posts. */
     static #pageAwaiters = [];
     /** Array of objects containing a promise to resolve with all posts. */
@@ -61,7 +59,7 @@ export default class Api {
 
     async getPage(n) {
         if (Api.hasPage(n)) {
-            return Api.#postsForPage(n);
+            return Api.postsForPage(n);
         } else {
             if (Api.hasFinishedGettingPosts) {
                 return null;
@@ -82,32 +80,12 @@ export default class Api {
         return p;
     }
 
-    async getPost(slug) {
-        const post = await Api.#postForSlug(slug);
-
+    async getPost(id) {
+        const post = Api.postForId(id);
         if (post) {
             return post;
         } else {
-            return await Api.#getPost(slug);
-        }
-    }
-
-    /** Returns promise that will resolve to post when post is
-     * loaded and pagination is available for post. */
-    async onPost(slug) {
-        const post = await Api.#postForSlug(slug);
-        if (post) {
-            return post;
-        } else {
-            if (Api.hasFinishedGettingPosts) {
-                return null;
-            }
-
-            let p = new Promise((resolve, reject) => {
-                Api.#postAwaiters.push({ slug: slug, promise: { resolve, reject } })
-            });
-
-            return await p;
+            return Api.#getPost(id);
         }
     }
 
@@ -131,6 +109,34 @@ export default class Api {
         return Api.posts.length > (n - 1) * Api.#postsPerPage
     }
 
+    static postForId(id) {
+        const postIdx = Api.posts.findIndex(p => p.slug == id);
+        if (postIdx == -1) {
+            return null;
+        }
+
+        const post = Object.assign({}, Api.posts[postIdx]);
+
+        if (postIdx + 1 < Api.posts.length) {
+            post.prev = Object.assign({}, Api.posts[postIdx + 1]);
+        }
+        if (postIdx > 0) {
+            post.next = Object.assign({}, Api.posts[postIdx - 1]);
+        }
+
+        return post;
+    }
+
+    static postsForPage(n) {
+        if (!Api.hasPage(n)) {
+            throw new Error("Page number out of bounds!")
+        }
+        const start = (n - 1) * Api.#postsPerPage;
+        const end = n * Api.#postsPerPage;
+
+        return Api.posts.slice(start, end)
+    }
+
     /** Fetch next page given current pagination and Api.postsPerRequest */
     async #getNextPage() {
         let posts = await Api.#getPosts(Api.#postsPerPage, Api.#page, { includeBody: true });
@@ -150,7 +156,7 @@ export default class Api {
                 const p = await this.#getNextPage();
                 Api.posts = Api.posts.concat(p)
 
-                await Api.#resolveAwaiters();
+                Api.#resolveAwaiters();
             }
         } catch (e) {
             Api.gettingPosts = false;
@@ -184,94 +190,23 @@ export default class Api {
         }
     }
 
-    static async #getPost(slug, { includeBody } = {}) {
+    static async #getPost(id, { includeBody } = {}) {
         let retries = 0;
 
         while (retries < Api.#maxRetries) {
             retries++;
 
             try {
-                const post = await GHOST_API.posts.read({
-                    slug: slug,
+                return await GHOST_API.posts.read({
+                    slug: id,
                     formats: includeBody ? ['html'] : undefined
                 });
-
-                await Api.#setPostPagination(post);
-
-                return post
             } catch (e) {
                 console.log(`Error fetching posts, attempt ${retries}`, e);
                 if (retries >= Api.#maxRetries) {
                     throw e;
                 }
             }
-        }
-    }
-
-    static async #getPrevPost(post, { includeBody } = {}) {
-        // let published_at = post.published_at.split(".")[0];
-        // published_at = published_at.replace("T", " ");
-        const posts = await GHOST_API.posts.browse({
-            order: "published_at " + "desc",
-            limit: 1,
-            filter: "slug:-" + post.slug + "+published_at:" + "<=" + `'${post.published_at}'`,
-            formats: includeBody ? ['html'] : undefined
-        });
-
-        return posts[0];
-    }
-
-    static async #getNextPost(post, { includeBody } = {}) {
-        // let published_at = post.published_at.split(".")[0];
-        // published_at = published_at.replace("T", " ");
-        const posts = await GHOST_API.posts.browse({
-            order: "published_at " + "asc",
-            limit: 1,
-            filter: "slug:-" + post.slug + "+published_at:" + ">" + `'${post.published_at}'`,
-            formats: includeBody ? ['html'] : undefined
-        });
-
-        return posts[0];
-    }
-
-    static async #postForSlug(slug) {
-        let post = Api.posts.find(p => p.slug == slug);
-        if (!post) {
-            return null;
-        }
-
-        post = Object.assign({}, post);
-
-        await Api.#setPostPagination(post);
-
-        return post;
-    }
-
-    static #postsForPage(n) {
-        if (!Api.hasPage(n)) {
-            throw new Error("Page number out of bounds!")
-        }
-        const start = (n - 1) * Api.#postsPerPage;
-        const end = n * Api.#postsPerPage;
-
-        return Api.posts.slice(start, end)
-    }
-
-    /** Sets previous and next post for post. If post is the first or last post,
-     * previous or next will be null, respectively.  */
-    static async #setPostPagination(post) {
-        const postIdx = Api.posts.findIndex(p => p.slug == post.slug);
-
-        if (postIdx != -1 && postIdx + 1 < Api.posts.length) {
-            post.prev = Object.assign({}, Api.posts[postIdx + 1]);
-        } else {
-            post.prev = await Api.#getPrevPost(post);
-        }
-
-        if (postIdx != -1 && postIdx > 0) {
-            post.next = Object.assign({}, Api.posts[postIdx - 1]);
-        } else {
-            post.next = await Api.#getNextPost(post);
         }
     }
 
@@ -304,17 +239,10 @@ export default class Api {
         })();
     }
 
-    static async #resolveAwaiters() {
-        for (const a of Api.#postAwaiters) {
-            const post = await Api.#postForSlug(a.slug);
-            if (post) {
-                a.promise.resolve(post);
-            }
-        }
-
+    static #resolveAwaiters() {
         for (const a of Api.#pageAwaiters) {
             if (Api.hasPage(a.pageNumber)) {
-                const p = Api.#postsForPage(a.pageNumber);
+                const p = Api.postsForPage(a.pageNumber);
                 a.promise.resolve(p);
 
                 const i = Api.#pageAwaiters.indexOf(a);
@@ -332,12 +260,6 @@ export default class Api {
     }
 
     static #finalizeAwaiters() {
-        for (const a of Api.#postAwaiters) {
-            a.promise.resolve(null);
-        }
-
-        Api.#postAwaiters = [];
-
         for (const a of Api.#pageAwaiters) {
             a.promise.resolve(null);
         }
