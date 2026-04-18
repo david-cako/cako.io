@@ -1,7 +1,7 @@
 import { test as setup, expect } from '@playwright/test';
 import path from 'path';
 
-import baseURL from './url';
+import baseURL from './Url.ts';
 
 setup.describe('Login', () => {
     setup.beforeEach(async ({ page }) => {

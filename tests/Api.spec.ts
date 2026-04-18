@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import baseURL from './url';
-import Api from './page/Api';
+import baseURL from './Url.ts';
+import Api from './page/Api.ts';
 
 test.describe('Api', () => {
     test.beforeEach(async ({ page }) => {

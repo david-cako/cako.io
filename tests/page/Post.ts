@@ -1,5 +1,5 @@
-import { expect, Locator, Page } from '@playwright/test';
-import Header from './Header';
+import { expect, type Locator, type Page } from '@playwright/test';
+import Header from './Header.ts';
 
 export default class Post {
     readonly page: Page;

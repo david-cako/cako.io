@@ -1,6 +1,6 @@
-import { test, expect, Locator, Page } from '@playwright/test';
-import Header from './page/Header';
-import baseURL from './url';
+import { test, expect } from '@playwright/test';
+import Header from './page/Header.ts';
+import baseURL from './Url.ts';
 
 test.describe('Header', () => {
     test.beforeEach(async ({ page }) => {

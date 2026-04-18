@@ -1,9 +1,9 @@
-import test, { expect } from "@playwright/test";
-import Post from "./page/Post";
-import baseURL from "./url";
-import Header from "./page/Header";
-import Index from "./page/Index";
-import Search from "./page/Search";
+import { test, expect } from "@playwright/test";
+import Post from "./page/Post.ts";
+import baseURL from "./Url.ts";
+import Header from "./page/Header.ts";
+import Index from "./page/Index.ts";
+import Search from "./page/Search.ts";
 
 test.describe('Post', () => {
     test.beforeEach(async ({ page }) => {

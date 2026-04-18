@@ -1,8 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import baseURL from './url';
-import Search from './page/Search';
-import { expectNoDuplicatePosts } from './page/utls';
+import baseURL from './Url.ts';
+import Search from './page/Search.ts';
+import { expectNoDuplicatePosts } from './page/Utils.ts';
 
 test.describe('Search', () => {
     test.beforeEach(async ({ page }) => {
@@ -29,6 +29,7 @@ test.describe('Search', () => {
         const search = new Search(page);
 
         await search.findResults();
+        await page.waitForTimeout(1000);
         await search.clearIcon.click();
 
         await expect(search.results).toHaveCount(0);

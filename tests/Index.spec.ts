@@ -1,11 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import baseURL from './url';
-import Index from './page/Index';
-import Search from './page/Search';
-import Api from './page/Api';
-import { expectNoDuplicatePosts } from './page/utls';
-import Post from './page/Post';
+import baseURL from './Url.ts';
+import Index from './page/Index.ts';
+import Search from './page/Search.ts';
+import Api from './page/Api.ts';
+import { expectNoDuplicatePosts } from './page/Utils.ts';
+import Post from './page/Post.ts';
 
 test.describe('Index', () => {
     test.beforeEach(async ({ page }) => {

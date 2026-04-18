@@ -1,5 +1,5 @@
-import { expect, Locator, Page } from '@playwright/test';
-import Search from './Search';
+import { expect, type Locator, type Page } from '@playwright/test';
+import Search from './Search.ts';
 
 export default class Menu {
     readonly page: Page;

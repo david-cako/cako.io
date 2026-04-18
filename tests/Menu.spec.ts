@@ -1,8 +1,8 @@
 // @ts-check
-import { test, expect, Page } from '@playwright/test';
-import baseURL from './url';
-import Menu from './page/Menu';
-import Header from './page/Header';
+import { test, expect } from '@playwright/test';
+import baseURL from './Url.ts';
+import Menu from './page/Menu.ts';
+import Header from './page/Header.ts';
 
 test.describe('Menu', () => {
     test.beforeEach(async ({ page }) => {

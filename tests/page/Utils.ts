@@ -1,4 +1,4 @@
-import { expect, Locator } from "@playwright/test";
+import { expect, type Locator } from "@playwright/test";
 
 export async function expectNoDuplicatePosts(posts: Locator[]) {
     let postIds = []
