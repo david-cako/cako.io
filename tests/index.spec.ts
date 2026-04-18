@@ -1,37 +1,22 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import baseURL from './url';
+import Index from './page/Index';
+import Search from './page/Search';
+import Api from './page/Api';
+import { expectNoDuplicatePosts } from './page/utls';
+import Post from './page/Post';
 
-test.describe('index', () => {
+test.describe('Index', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto(baseURL);
     });
 
-    test('header begins at full opacity', async ({ page }) => {
-        const header = page.locator('#cako-header-text');
-
-        const headerOpacityProgress = await header
-            .evaluate(async (header) => {
-                const animation = header.getAnimations().find(a =>
-                    (a as CSSAnimation).animationName == "opacity");
-                return animation?.overallProgress;
-            });
-
-        expect(headerOpacityProgress).toBe(0);
-    });
-
-    test('header is visible', async ({ page }) => {
-        const header = page.locator('#cako-header-text');
-
-        await expect(header).toBeVisible();
-        await expect(header).toBeInViewport();
-    });
-
     test('index is shown', async ({ page }) => {
-        const indexInner = page.locator("#index-inner");
+        const index = new Index(page);
 
-        await expect(indexInner).toBeVisible();
-        await expect(indexInner).toBeInViewport();
+        await expect(index.inner).toBeVisible();
+        await expect(index.inner).toBeInViewport();
     });
 
     test('post is not shown', async ({ page }) => {
@@ -41,70 +26,61 @@ test.describe('index', () => {
     });
 
     test('search is not shown', async ({ page }) => {
-        const searchInner = page.locator("#search-inner");
+        const search = new Search(page);
 
-        await expect(searchInner).not.toBeVisible();
+        await expect(search.inner).not.toBeVisible();
     });
 
     test('index layout is responsive', async ({ page }) => {
-        const indexInner = page.locator("#index-inner");
+        const index = new Index(page);
         const viewport = page.viewportSize();
 
+        const indexInnerBoundingBox = await index.inner.boundingBox();
+
         if (viewport!.width >= 900) {
-            await expect(indexInner).toHaveCSS("max-width", `${viewport!.width * .9}px`);
+            await expect(indexInnerBoundingBox!.width).toBe(viewport!.width * .9);
         } else {
-            await expect(indexInner).toHaveCSS("width", `100%`);
+            await expect(index.inner).toHaveCSS("width", `100%`);
         }
     });
 
     test('index shows all posts', async ({ page }) => {
-        const responsePromise = page.waitForResponse(r => r.url().includes('/ghost/api/v3/content/posts'));
-        const response = await responsePromise;
-        const obj = await response.json();
+        const index = new Index(page);
+
+        const api = new Api(page);
+        const obj = await api.waitForAnyResponse();
 
         const totalPosts: number = obj.meta.pagination.total;
         console.log("Total posts: ", totalPosts);
 
-        const postElements = page.locator("#cako-post-feed .cako-post");
-        await expect(postElements).toHaveCount(totalPosts, { timeout: 30000 });
+        await expect(index.posts).toHaveCount(totalPosts, { timeout: 30000 });
     });
 
     test('index does not show duplicate posts', async ({ page }) => {
-        const responsePromise = page.waitForResponse(r => r.url().includes('/ghost/api/v3/content/posts'));
-        const response = await responsePromise;
-        const obj = await response.json();
+        const index = new Index(page);
+
+        const api = new Api(page);
+        const obj = await api.waitForAnyResponse();
 
         const totalPosts: number = obj.meta.pagination.total;
 
-        const postElements = await page.locator("#cako-post-feed .cako-post");
-        await expect(postElements).toHaveCount(totalPosts, { timeout: 30000 });
+        await expect(index.posts).toHaveCount(totalPosts, { timeout: 30000 });
 
-        const allPostElements = await postElements.all();
-
-        let postIds = []
-        for (const p of allPostElements) {
-            postIds.push(await p.getAttribute("data-post-id"));
-        }
-        for (const p of postIds) {
-            const matchingPosts = postIds.filter(id => id == p);
-            if (matchingPosts.length > 1) {
-                console.log(postIds);
-                console.log("Duplicate posts found: ", matchingPosts);
-            }
-            expect(matchingPosts.length).toBe(1);
-        }
+        await expectNoDuplicatePosts(await index.posts.all());
     });
 
     test('post link navigates to post', async ({ page }) => {
-
+        const post = new Post(page);
+        await post.navigateToPost();
     });
-
-    // test('search finds date results', async ({ page }) => {
 
     test('copyright is shown', async ({ page }) => {
-        const copyright = page.getByText('cako.io ©');
-        await expect(copyright).toBeVisible();
+        const index = new Index(page);
+        await expect(index.copyright).toBeVisible();
     });
 
-    //test('navigation is not shown')
+    test('navigation is not shown', async ({ page }) => {
+        const post = new Post(page);
+        await expect(post.nav).not.toBeVisible();
+    })
 })

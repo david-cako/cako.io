@@ -1,31 +1,38 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import baseURL from './url';
+import Search from './page/Search';
+import { expectNoDuplicatePosts } from './page/utls';
 
-test.describe('search', () => {
+test.describe('Search', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto(baseURL);
     });
 
     test('search finds text results', async ({ page }) => {
-        const menuIcon = page.locator('#menu-icon');
-        const search = page.getByRole('textbox', { name: 'Search' })
-
-        await menuIcon.click();
-        await search.fill('test');
-        await expect(page.getByRole('link', { name: 'Lovely Rita (fuck.tha.' }))
-            .toBeVisible({ timeout: 30000 });
-        await expect(page.getByRole('link', { name: 'Winter\'s Toll 16 October' }))
-            .toBeVisible({ timeout: 30000 });
+        const search = new Search(page);
+        await search.findResults();
     });
 
     test('search finds title results', async ({ page }) => {
-        const menuIcon = page.locator('#menu-icon');
-        const search = page.getByRole('textbox', { name: 'Search' })
-
-        await menuIcon.click();
-        await search.fill('diamond praeturnal');
-        await expect(page.getByRole('link', { name: 'Diamond Praeturnal Reorder' }))
-            .toBeVisible({ timeout: 30000 });
+        const search = new Search(page);
+        await search.findTitleResults();
     });
+
+    test('search does not find duplicate text results', async ({ page }) => {
+        const search = new Search(page);
+        await search.findResults();
+        await expectNoDuplicatePosts(await search.results.all());
+    });
+
+    test('search is cleared when clear icon is clicked', async ({ page }) => {
+        const search = new Search(page);
+
+        await search.findResults();
+        await search.clearIcon.click();
+
+        await expect(search.results).toHaveCount(0);
+    })
+
+    // test('search finds date results', async ({ page }) => {
 });

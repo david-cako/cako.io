@@ -37,12 +37,12 @@ export default defineConfig({
     projects: [
         {
             name: 'login',
-            testMatch: /login\.ts/,
+            testMatch: /Login\.ts/,
             teardown: 'login cleanup'
         },
         {
             name: 'login cleanup',
-            testMatch: /login\.cleanup\.ts/
+            testMatch: /Login\.cleanup\.ts/
         },
         {
             name: 'chromium',

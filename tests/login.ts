@@ -3,7 +3,7 @@ import path from 'path';
 
 import baseURL from './url';
 
-setup.describe('login', () => {
+setup.describe('Login', () => {
     setup.beforeEach(async ({ page }) => {
         await page.goto(baseURL);
     });

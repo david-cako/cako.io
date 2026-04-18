@@ -1,37 +1,131 @@
 // @ts-check
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import baseURL from './url';
+import Menu from './page/Menu';
+import Header from './page/Header';
 
-test.describe('index', () => {
+test.describe('Menu', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto(baseURL);
     });
 
     test('menu icon is shown', async ({ page }) => {
-        const menuIcon = page.locator('#menu-icon');
+        const menu = new Menu(page);
 
-        await expect(menuIcon).toBeVisible();
-        await expect(menuIcon).toBeInViewport();
+        await expect(menu.menuIcon).toBeVisible();
+        await expect(menu.menuIcon).toBeInViewport();
     });
 
     test('menu is not shown', async ({ page }) => {
-        const menuInner = page.locator("#cako-menu-inner");
-        await expect(menuInner).not.toBeVisible();
+        const menu = new Menu(page);
+        await menu.expectIsNotShown();
     });
 
     test('menu is shown when icon is clicked', async ({ page }) => {
-        const menuInner = page.locator("#cako-menu-inner");
-        const menuIcon = page.locator('#menu-icon');
-        const lightsIcon = page.locator('#cako-menu-lights svg')
-        const featuresIcon = page.locator('#cako-menu-features svg')
-        const search = page.getByRole('textbox', { name: 'Search' });
+        const menu = new Menu(page);
+        await menu.show();
+    });
 
-        await menuIcon.click();
+    test('menu is closed when icon is clicked again', async ({ page }) => {
+        const menu = new Menu(page);
 
-        await expect(menuInner).toBeVisible();
-        await expect(menuInner).toBeInViewport();
-        await expect(lightsIcon).toBeVisible();
-        await expect(featuresIcon).toBeVisible();
-        await expect(search).toBeVisible();
+        await menu.show();
+        await menu.menuIcon.click();
+
+        await menu.expectIsNotShown();
+    });
+
+    test('menu is closed when escape key is pressed', async ({ page }) => {
+        const menu = new Menu(page);
+
+        await menu.show();
+        await page.keyboard.press("Escape");
+
+        await menu.expectIsNotShown();
+    });
+
+    test('menu is closed on navigation to home', async ({ page }) => {
+        const menu = new Menu(page);
+        const header = new Header(page);
+
+        await menu.show();
+        await header.header.click();
+
+        await menu.expectIsNotShown();
+    });
+
+    test('menu is closed on navigation to post', async ({ page }) => {
+        const menu = new Menu(page);
+        const post = page.locator(".cako-post-link").first();
+
+        await menu.show();
+        await post.click();
+
+        await menu.expectIsNotShown();
+    });
+
+    test('menu is closed on navigation to features', async ({ page }) => {
+        const menu = new Menu(page);
+
+        await menu.show();
+        await menu.features.click();
+
+        await menu.expectIsNotShown();
+    });
+
+    test('menu is closed on lights toggled', async ({ page }) => {
+        const menu = new Menu(page);
+        const header = new Header(page);
+
+        await menu.show();
+        await menu.lightsIcon.click();
+
+        await menu.expectIsNotShown();
+    });
+
+    test('menu is closed on page clicked', async ({ page }) => {
+        const menu = new Menu(page);
+        const body = await page.locator("body");
+
+        await menu.show();
+        await body.click();
+
+        await menu.expectIsNotShown();
+    });
+
+    test('menu is not closed on search clicked', async ({ page }) => {
+        const menu = new Menu(page);
+
+        await menu.show();
+        await menu.search.search.click();
+
+        await menu.expectIsShown();
+    });
+
+    test('menu is not closed on search input', async ({ page }) => {
+        const menu = new Menu(page);
+
+        await menu.show();
+        await menu.search.search.fill("test");
+
+        await menu.expectIsShown();
+    });
+
+    test('menu is not closed on search cleared', async ({ page }) => {
+        const menu = new Menu(page);
+
+        await menu.search.findResults();
+        await menu.search.clearIcon.click();
+
+        await menu.expectIsShown();
+    });
+
+    test('menu is closed on search navigation', async ({ page }) => {
+        const menu = new Menu(page);
+
+        await menu.search.findResults();
+        await menu.search.results.first().locator("a").click();
+
+        await menu.expectIsNotShown();
     });
 });
