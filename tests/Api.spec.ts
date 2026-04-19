@@ -8,7 +8,7 @@ test.describe('Api', () => {
         await page.goto(baseURL);
     });
 
-    test('Api retrieves all posts', async ({ page }) => {
+    test('retrieves all posts', async ({ page }) => {
         const api = new Api(page);
         const obj = await api.waitForAnyResponse();
 

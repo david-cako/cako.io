@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import Api from './Api.ts';
 
 export default class Search {
     readonly page: Page;
@@ -18,23 +19,22 @@ export default class Search {
     }
 
     async findResults() {
+        const api = new Api(this.page);
+        await api.waitForAnyResponse();
+
         await this.menuIcon.click();
-        await this.page.waitForTimeout(1000);
         await this.search.fill('test');
-        try {
-            await expect(this.inner.getByRole('link', { name: 'Lovely Rita (fuck.tha.' }))
-                .toBeVisible({ timeout: 30000 });
-            await expect(this.inner.getByRole('link', { name: 'Winter\'s Toll 16 October' }))
-                .toBeVisible({ timeout: 30000 });
-        } catch (e) {
-            await this.page.screenshot({ path: "test-results/search.jpg" });
-            throw e;
-        }
+        await expect(this.inner.getByRole('link', { name: 'Lovely Rita (fuck.tha.' }))
+            .toBeVisible({ timeout: 30000 });
+        await expect(this.inner.getByRole('link', { name: 'Winter\'s Toll 16 October' }))
+            .toBeVisible({ timeout: 30000 });
     }
 
     async findTitleResults() {
+        const api = new Api(this.page);
+        await api.waitForAnyResponse();
+
         await this.menuIcon.click();
-        await this.page.waitForTimeout(1000);
         await this.search.fill('diamond praeturnal');
         await expect(this.inner.getByRole('link', { name: 'Diamond Praeturnal Reorder' }))
             .toBeVisible({ timeout: 30000 });

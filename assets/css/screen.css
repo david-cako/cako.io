@@ -378,12 +378,21 @@ code.hljs {
     display: flex;
     justify-content: space-between;
     align-items: start;
-    padding: 20px 0px 42px;
+    padding: 20px 0px 30px;
 }
 
 @media (max-width: 899px) {
     #post-nav {
         margin-top: auto;
+    }
+}
+
+@media (max-width: 500px) {
+    .site-footer-content {
+        flex: 1;
+    }
+
+    #post-nav {
         padding: 20px 0px 15px;
     }
 }
@@ -821,7 +830,7 @@ body {
     }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 901px) {
     body.home-template:not(.search-shown) .inner {
         max-width: 90vw;
     }
@@ -840,7 +849,7 @@ body {
 /* 3. Special Template Styles
 /* ---------------------------------------------------------- */
 
-@media (min-width: 900px) {
+@media (min-width: 901px) {
 
     .home-template .post-feed,
     .tag-template .post-feed,
@@ -1572,7 +1581,7 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .page-template .site-footer-content {
-    padding: 5px 6px 30px 15px;
+    padding: 5px 6px 42px 15px;
 }
 
 .page-template #index-inner,

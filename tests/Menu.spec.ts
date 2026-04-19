@@ -7,26 +7,27 @@ import Header from './page/Header.ts';
 test.describe('Menu', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto(baseURL);
+        await page.waitForTimeout(100);
     });
 
-    test('menu icon is shown', async ({ page }) => {
+    test('icon is shown', async ({ page }) => {
         const menu = new Menu(page);
 
         await expect(menu.menuIcon).toBeVisible();
         await expect(menu.menuIcon).toBeInViewport();
     });
 
-    test('menu is not shown', async ({ page }) => {
+    test('is not shown', async ({ page }) => {
         const menu = new Menu(page);
         await menu.expectIsNotShown();
     });
 
-    test('menu is shown when icon is clicked', async ({ page }) => {
+    test('is shown when icon is clicked', async ({ page }) => {
         const menu = new Menu(page);
         await menu.show();
     });
 
-    test('menu is closed when icon is clicked again', async ({ page }) => {
+    test('is closed when icon is clicked again', async ({ page }) => {
         const menu = new Menu(page);
 
         await menu.show();
@@ -35,7 +36,7 @@ test.describe('Menu', () => {
         await menu.expectIsNotShown();
     });
 
-    test('menu is closed when escape key is pressed', async ({ page }) => {
+    test('is closed when escape key is pressed', async ({ page }) => {
         const menu = new Menu(page);
 
         await menu.show();
@@ -44,7 +45,7 @@ test.describe('Menu', () => {
         await menu.expectIsNotShown();
     });
 
-    test('menu is closed on navigation to home', async ({ page }) => {
+    test('is closed on navigation to home', async ({ page }) => {
         const menu = new Menu(page);
         const header = new Header(page);
 
@@ -54,7 +55,7 @@ test.describe('Menu', () => {
         await menu.expectIsNotShown();
     });
 
-    test('menu is closed on navigation to post', async ({ page }) => {
+    test('is closed on navigation to post', async ({ page }) => {
         const menu = new Menu(page);
         const post = page.locator(".cako-post-link").first();
 
@@ -64,7 +65,7 @@ test.describe('Menu', () => {
         await menu.expectIsNotShown();
     });
 
-    test('menu is closed on navigation to features', async ({ page }) => {
+    test('is closed on navigation to features', async ({ page }) => {
         const menu = new Menu(page);
 
         await menu.show();
@@ -73,7 +74,7 @@ test.describe('Menu', () => {
         await menu.expectIsNotShown();
     });
 
-    test('menu is closed on lights toggled', async ({ page }) => {
+    test('is closed on lights toggled', async ({ page }) => {
         const menu = new Menu(page);
         const header = new Header(page);
 
@@ -83,7 +84,7 @@ test.describe('Menu', () => {
         await menu.expectIsNotShown();
     });
 
-    test('menu is closed on page clicked', async ({ page }) => {
+    test('is closed on page clicked', async ({ page }) => {
         const menu = new Menu(page);
         const body = await page.locator("body");
 
@@ -93,7 +94,7 @@ test.describe('Menu', () => {
         await menu.expectIsNotShown();
     });
 
-    test('menu is not closed on search clicked', async ({ page }) => {
+    test('is not closed on search clicked', async ({ page }) => {
         const menu = new Menu(page);
 
         await menu.show();
@@ -102,7 +103,7 @@ test.describe('Menu', () => {
         await menu.expectIsShown();
     });
 
-    test('menu is not closed on search input', async ({ page }) => {
+    test('is not closed on search input', async ({ page }) => {
         const menu = new Menu(page);
 
         await menu.show();
@@ -111,7 +112,7 @@ test.describe('Menu', () => {
         await menu.expectIsShown();
     });
 
-    test('menu is not closed on search cleared', async ({ page }) => {
+    test('is not closed on search cleared', async ({ page }) => {
         const menu = new Menu(page);
 
         await menu.search.findResults();
@@ -120,7 +121,7 @@ test.describe('Menu', () => {
         await menu.expectIsShown();
     });
 
-    test('menu is closed on search navigation', async ({ page }) => {
+    test('is closed on search navigation', async ({ page }) => {
         const menu = new Menu(page);
 
         await menu.search.findResults();

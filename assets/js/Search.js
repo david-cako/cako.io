@@ -18,6 +18,7 @@ export default class Search {
     /** Updates from this.search() after successful query. */
     previousQuery = "";
     previousResults;
+    currentQuery = "";
     /** Position in document from when search is hidden. */
     contentScrollPosition;
     inputThrottleTimeout;
@@ -30,7 +31,6 @@ export default class Search {
 
     static searchElement = document.getElementById("cako-search");
     static clearIcon = document.getElementById("cako-search-clear");
-    static searchClear = document.getElementById("cako-search-clear");
     static searchHeader = document.getElementById("cako-search-header");
     static searchResults = document.getElementById("cako-search-results");
     static searchInner = document.getElementById("search-inner");
@@ -50,17 +50,13 @@ export default class Search {
 
         window.Search = Search;
 
-        Search.searchElement.addEventListener("focus", async () => {
-            if (this.postsLoadingComplete == undefined) {
-                await this.fetchPosts();
-            }
-        });
+        this.fetchPosts();
 
         Search.searchElement.addEventListener("input", this.onInput);
 
         document.addEventListener("keydown", this.onKeyDown);
 
-        Search.searchClear.addEventListener("click", () => {
+        Search.clearIcon.addEventListener("click", () => {
             this.clear();
             Search.focus();
         });
@@ -105,6 +101,10 @@ export default class Search {
         let results = [];
 
         const callback = (posts) => {
+            if (this.currentQuery !== query) {
+                return;
+            }
+
             const r = Search.search(posts, query);
 
             results = results.concat(r);
@@ -119,6 +119,10 @@ export default class Search {
         this.onPosts(callback);
         await this.postsLoadingComplete;
         this.offPosts(callback);
+
+        if (this.currentQuery !== query) {
+            return;
+        }
 
         this.previousResults = results.map(r => r.post);
 
@@ -186,6 +190,8 @@ export default class Search {
             return;
         }
 
+        this.currentQuery = value;
+
         Search.clearIcon.style.display = "block";
 
         if (!Search.shown) {
@@ -199,9 +205,14 @@ export default class Search {
         try {
             results = await this.search(value);
         } catch (e) {
-            Search.updateStatus({ error: error });
+            Search.updateStatus({ error: e });
             console.log(e);
             throw e;
+        }
+
+        // Search returned without results because currentQuery has changed
+        if (results === undefined) {
+            return;
         }
 
         if (Search.shown) {

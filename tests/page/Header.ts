@@ -13,12 +13,32 @@ export default class Header {
         return this.header.evaluate(async (header) => {
             const animation = header.getAnimations().find(a =>
                 (a as CSSAnimation).animationName == "opacity");
-            return animation?.overallProgress;
+            return animation!.overallProgress;
         });
     }
 
     async expectIsVisible() {
         await expect(this.header).toBeVisible();
         await expect(this.header).toBeInViewport();
+
+        await expect(async () => {
+            const progress = await this.headerOpacityProgress();
+            await expect(progress).toBe(0);
+        }).toPass()
+    }
+
+    async expectIsFadingOut() {
+        await expect(async () => {
+            const progress = await this.headerOpacityProgress();
+            await expect(progress).toBeGreaterThan(0);
+            await expect(progress).toBeLessThan(1);
+        }).toPass()
+    }
+
+    async expectIsInvisible() {
+        await expect(async () => {
+            const progress = await this.headerOpacityProgress();
+            await expect(progress).toBe(1);
+        }).toPass()
     }
 }
