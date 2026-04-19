@@ -144,6 +144,13 @@ export default class CakoApp {
             return;
         }
 
+        const menuLightsElem = e.target.closest("#cako-menu-lights");
+        if (menuLightsElem) {
+            e.preventDefault();
+            window.Lights.toggle();
+            Menu.close();
+        }
+
         const featuresLinkElem = e.target.closest("#cako-menu-features-link");
         if (featuresLinkElem) {
             e.preventDefault();

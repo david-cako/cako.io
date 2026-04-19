@@ -27,8 +27,6 @@ export default class Menu {
 
     static init() {
         Menu.menuIcon.addEventListener("click", Menu.toggle);
-
-        Menu.menuLights.addEventListener("click", window.Lights.toggle);
     }
 
     static toggle() {
