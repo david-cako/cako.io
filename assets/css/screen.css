@@ -626,14 +626,13 @@ ion-icon#cako-search-clear {
 }
 
 .nav-icon {
-    transform: scaleX(0.9);
     opacity: 0.9;
     background-color: #000;
     height: 24px;
     width: 24px;
     cursor: pointer;
     padding: 0 0.1em;
-    box-sizing: content-box;
+    box-sizing: border-box;
 }
 
 .nav-icon:active {
@@ -648,10 +647,10 @@ ion-icon#cako-search-clear {
     border-radius: 6px;
 }
 
-@media (max-width: 650px) {
+@media (pointer:coarse) {
     .nav-icon {
-        height: 26px;
-        width: 26px;
+        height: 35px;
+        width: 35px;
     }
 }
 

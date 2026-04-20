@@ -17,6 +17,26 @@ test.describe('Menu', () => {
         await expect(menu.menuIcon).toBeInViewport();
     });
 
+    test('icon layout is responsive', async ({ page }) => {
+        const menu = new Menu(page);
+
+        const viewport = page.viewportSize();
+
+        const menuIconBoundingBox = await menu.menuIcon.boundingBox();
+
+        const coarsePointer = await page.evaluate(() => {
+            return window.matchMedia("(pointer: coarse)").matches;
+        })
+
+        if (coarsePointer) {
+            await expect(menuIconBoundingBox!.width).toBe(35);
+            await expect(menuIconBoundingBox!.height).toBe(35);
+        } else {
+            await expect(menuIconBoundingBox!.width).toBe(24);
+            await expect(menuIconBoundingBox!.height).toBe(24);
+        }
+    });
+
     test('is not shown', async ({ page }) => {
         const menu = new Menu(page);
         await menu.expectIsNotShown();

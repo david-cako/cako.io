@@ -21,7 +21,7 @@ test.describe('Header', () => {
         const header = new Header(page);
         await header.expectIsVisible();
 
-        await page.mouse.wheel(0, 25);
+        await page.locator("html").evaluate(e => e.scrollTop = 25);
 
         await header.expectIsFadingOut();
     })
@@ -30,7 +30,7 @@ test.describe('Header', () => {
         const header = new Header(page);
         await header.expectIsVisible();
 
-        await page.mouse.wheel(0, 100);
+        await page.locator("html").evaluate(e => e.scrollTop = 100);
 
         await header.expectIsInvisible();
     })

@@ -63,7 +63,7 @@ export default class Footer {
             expect(box!.y + box!.height).toBeCloseTo(viewport!.height)
 
             const pageNavBox = await this.postNav.boundingBox();
-            expect(window.innerHeight - pageNavBox!.y).toBeLessThan(125);
+            expect(viewport!.height - pageNavBox!.y).toBeLessThan(125);
         }
     }
 }

@@ -18,15 +18,27 @@ setup.describe('Login', () => {
 
             await expect(dialog).toBeVisible();
             await expect(dialog).toBeInViewport();
-            await expect(dialog).toHaveCSS("width", "400px");
 
             await expect(logo).toBeVisible();
 
             await expect(heading).toBeVisible();
             await expect(heading).toBeInViewport();
-
         }
     });
+
+    setup('layout is responsive', async ({ page }) => {
+        const dialog = page.locator(".gh-signin");
+
+        const viewport = page.viewportSize();
+
+        const dialogBoundingBox = await dialog.boundingBox();
+
+        if (viewport!.width >= 430) {
+            await expect(dialogBoundingBox!.width).toBe(400);
+        } else {
+            await expect(dialogBoundingBox!.width).toBeCloseTo(viewport!.width - 30);
+        }
+    })
 
     setup('shows password input', async ({ page }) => {
         const password = page.getByRole('textbox', { name: 'Password' });
@@ -56,7 +68,19 @@ setup.describe('Login', () => {
 
         await expect(submit).toHaveCSS("color", "rgb(39, 215, 255)");
         await expect(submit).toHaveCSS("border-color", "rgb(39, 215, 255)");
-    })
+    });
+
+    setup('submit button turns aqua on focus', async ({ page }) => {
+        const submit = page.getByRole('button', { name: 'Enter Now' });
+
+        await submit.focus();
+
+        await expect(submit).toBeVisible();
+        await expect(submit).toBeInViewport();
+
+        await expect(submit).toHaveCSS("color", "rgb(39, 215, 255)");
+        await expect(submit).toHaveCSS("border-color", "rgb(39, 215, 255)");
+    });
 
     setup('logs into site with password', async ({ page }) => {
         const url = new URL(page.url());

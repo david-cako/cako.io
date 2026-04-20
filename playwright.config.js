@@ -69,16 +69,36 @@ export default defineConfig({
             },
             dependencies: ['login'],
         },
-
-        /* Test against mobile viewports. */
-        // {
-        //   name: 'Mobile Chrome',
-        //   use: { ...devices['Pixel 5'] },
-        // },
-        // {
-        //   name: 'Mobile Safari',
-        //   use: { ...devices['iPhone 12'] },
-        // },
+        {
+            name: 'Mobile Chrome',
+            use: {
+                ...devices['Pixel 5'],
+            },
+            dependencies: ['login'],
+        },
+        {
+            name: 'Mobile Safari login',
+            testMatch: /Login\.ts/,
+            teardown: 'Mobile Safari login cleanup',
+            use: {
+                ...devices['iPhone 13'],
+            },
+        },
+        {
+            name: 'Mobile Safari login cleanup',
+            testMatch: /Login\.cleanup\.ts/,
+            use: {
+                ...devices['iPhone 13'],
+            },
+        },
+        {
+            name: 'Mobile Safari',
+            use: {
+                ...devices['iPhone 13'],
+                storageState: 'test-results/login.json',
+            },
+            dependencies: ['Mobile Safari login'],
+        },
 
         /* Test against branded browsers. */
         // {
