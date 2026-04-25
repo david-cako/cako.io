@@ -55,6 +55,27 @@ export default class CakoApp {
         }
 
         this.#setupEventHandlers();
+
+        let posts = [];
+
+        window.conn = new WebSocket("wss://" + document.location.host + "/ws");
+        window.conn.onopen = function (evt) {
+            window.conn.send(JSON.stringify({
+                "type": "All"
+            }));
+        }
+        window.conn.onclose = function (evt) {
+            console.log(evt);
+        };
+        window.conn.onmessage = function (evt) {
+            if (evt.data) {
+                const d = JSON.parse(evt.data);
+                if (d.Post) {
+                    posts.push(d.Post);
+                    console.log(posts);
+                }
+            }
+        };
     }
 
     async navigateToState(state) {
