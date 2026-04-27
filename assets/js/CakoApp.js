@@ -57,7 +57,8 @@ export default class CakoApp {
         this.#setupEventHandlers();
 
         let posts = [];
-
+        const start = Date.now();
+        console.log(`Start: ${start}`)
         window.conn = new WebSocket("wss://" + document.location.host + "/ws");
         window.conn.onopen = function (evt) {
             window.conn.send(JSON.stringify({
@@ -70,9 +71,10 @@ export default class CakoApp {
         window.conn.onmessage = function (evt) {
             if (evt.data) {
                 const d = JSON.parse(evt.data);
-                if (d.Post) {
-                    posts.push(d.Post);
-                    console.log(posts);
+                if (d.type == "All" && d.post) {
+                    posts.push(d.post);
+                } else if (d.type == "AllEnd") {
+                    console.log(`All posts received in: ${Date.now() - start}ms`)
                 }
             }
         };
