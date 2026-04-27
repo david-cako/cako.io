@@ -16,6 +16,21 @@
     {{!-- Styles'n'Scripts --}}
     <link rel="stylesheet" type="text/css" href="{{asset "css/screen.css"}}" />
 
+    <script type="importmap">
+    {
+        "imports": {
+            "Api": "{{asset "js/Api.js"}}",
+            "CakoApp": "{{asset "js/CakoApp.js"}}",
+            "Header": "{{asset "js/Header.js"}}",
+            "Html": "{{asset "js/Html.js"}}",
+            "InfiniteScroll": "{{asset "js/InfiniteScroll.js"}}",
+            "Lights": "{{asset "js/Lights.js"}}",
+            "Menu": "{{asset "js/Menu.js"}}",
+            "Search": "{{asset "js/Search.js"}}"
+        }
+    }
+    </script>
+
     <meta id="theme-color" name="theme-color" content="#fff">
 
     <script>
@@ -47,20 +62,6 @@
         {{{body}}}
     </div>
 
-    <script type="importmap">
-    {
-        "imports": {
-            "Api": "{{asset "js/Api.js"}}",
-            "CakoApp": "{{asset "js/CakoApp.js"}}",
-            "Header": "{{asset "js/Header.js"}}",
-            "Html": "{{asset "js/Html.js"}}",
-            "InfiniteScroll": "{{asset "js/InfiniteScroll.js"}}",
-            "Lights": "{{asset "js/Lights.js"}}",
-            "Menu": "{{asset "js/Menu.js"}}",
-            "Search": "{{asset "js/Search.js"}}"
-        }
-    }
-    </script>
     <script src="{{asset "js/lib/content-api.min.js"}}"></script>
     <script type="module" src="{{asset "js/CakoApp.js"}}"></script>
 
