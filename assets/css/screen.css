@@ -678,7 +678,7 @@ ion-icon#cako-search-clear {
     transition: transform 0.1s ease-in-out;
 }
 
-.cako-menu-search {
+#cako-menu-search {
     padding: 0.4em 0.5em 0.3em;
     display: flex;
     align-items: center;
