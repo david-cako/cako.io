@@ -35,7 +35,7 @@ export default class CakoApp {
         Menu.init();
         Menu.onStateChange(this.onMenuStateChange);
 
-        this.search = new Search();
+        // this.search = new Search();
         this.api = new Api();
 
         let page
@@ -48,36 +48,13 @@ export default class CakoApp {
         this.state = { page: page };
         history.replaceState(this.state, "");
 
-        if (this.state.page == "all") {
-            this.infiniteScroll = new InfiniteScroll({ noFetch: true });
-        } else {
-            this.infiniteScroll = new InfiniteScroll();
-        }
+        // if (this.state.page == "all") {
+        //     this.infiniteScroll = new InfiniteScroll({ noFetch: true });
+        // } else {
+        //     this.infiniteScroll = new InfiniteScroll();
+        // }
 
         this.#setupEventHandlers();
-
-        let posts = [];
-        const start = Date.now();
-        console.log(`Start: ${start}`)
-        window.conn = new WebSocket("wss://" + document.location.host + "/ws");
-        window.conn.onopen = function (evt) {
-            window.conn.send(JSON.stringify({
-                "type": "All"
-            }));
-        }
-        window.conn.onclose = function (evt) {
-            console.log(evt);
-        };
-        window.conn.onmessage = function (evt) {
-            if (evt.data) {
-                const d = JSON.parse(evt.data);
-                if (d.type == "All" && d.post) {
-                    posts.push(d.post);
-                } else if (d.type == "AllEnd") {
-                    console.log(`All posts received in: ${Date.now() - start}ms`)
-                }
-            }
-        };
     }
 
     async navigateToState(state) {

@@ -1,32 +1,25 @@
-const GHOST_API = new GhostContentAPI({
-    url: location.origin,
-    key: CONTENT_API_KEY,
-    version: "v3"
-});
+const ApiTopicIndex = "Index";
+const ApiTopicPosts = "Posts";
+const ApiTopicNew = "New";
 
 export default class Api {
-    /** Current page for API instance. */
-    page;
+    /** Identifier for unique API instance. */
+    id;
 
-    /** Static variable caching all fetched posts. */
-    static posts
-    /** Set true while getting all posts. */
-    static gettingPosts = false
-    /** True after all posts have been successfully retrieved. **/
-    static hasFinishedGettingPosts = false;
+    /** WebSocket connection. */
+    static conn;
 
-    /** Private page index for requesting all pages. */
-    static #page = 1;
-    /** Ghost API pagination object, populated with each request for posts */
-    static #pagination;
-    /** Posts per page in each call to getNextPage. */
-    static #postsPerPage = 25;
-    /** Retry count for getPosts. */
-    static #maxRetries = 10;
-    /** Array of objects containing a page number and a promise to resolve with posts. */
-    static #pageAwaiters = [];
-    /** Array of objects containing a promise to resolve with all posts. */
-    static #allPostsAwaiters = [];
+    /** Ordered index of posts. */
+    static index = [];
+    /** Set true while getting index. */
+    static gettingIndex = false;
+    /** True after index been successfully retrieved. **/
+    static hasFinishedGettingIndex = false;
+
+    /** Object containing full post values for slug keys. */
+    static posts;
+    /** Total post count. */
+    static totalPosts;
 
     /** Path to features page. */
     static featuresPath = "/features/"
@@ -37,19 +30,22 @@ export default class Api {
     /** True after features have been retrieved. */
     static hasFetchedFeatures = false;
 
-    static get #hasMorePosts() {
-        return !Api.#pagination || Api.#pagination.next !== null
+    /** Array of objects containing subscribers to Api.index. */
+    static #indexSubscribers = [];
+    /** Array of objects containing subscribers to Api.posts. */
+    static #postSubscribers = [];
+    /** Array of objects containing subscribers to new posts. */
+    static #newPostSubscribers = [];
+
+    static get #indexHasMorePosts() {
+        return Api.totalPosts == undefined || Api.totalPosts > Api.index.length
     }
 
-    constructor(options = { page: 1 }) {
-        this.page = options.page;
+    constructor() {
+        this.id = crypto.randomUUID();
 
-        if (!Api.gettingPosts && !Api.hasFinishedGettingPosts) {
-            this.#getAllPosts();
-        }
-
-        if (!Api.fetchingFeatures && !Api.hasFetchedFeatures) {
-            Api.#prefetchFeatures();
+        if (!Api.conn) {
+            Api.#open();
         }
 
         if (!window.Api) {
@@ -57,219 +53,136 @@ export default class Api {
         }
     }
 
-    async getPage(n) {
-        if (Api.hasPage(n)) {
-            return Api.postsForPage(n);
-        } else {
-            if (Api.hasFinishedGettingPosts) {
-                return null;
-            }
-
-            let p = new Promise((resolve, reject) => {
-                Api.#pageAwaiters.push({ pageNumber: n, promise: { resolve, reject } })
-            });
-
-            return await p;
+    on(topic, fn) {
+        switch (topic) {
+            case ApiTopicIndex:
+                Api.#indexSubscribers.push({ fn: fn });
+                break;
+            case ApiTopicPosts:
+                Api.postSubscribers.push({ id: this.id, fn: fn });
+                break
+            case ApiTopicNewPosts:
+                Api.newPostSubscribers.push({ id: this.id, fn: fn });
+                break
         }
     }
 
-    async getNextPage() {
-        const p = await this.getPage(this.page);
-        this.page++;
+    getPosts(slugs) {
+        let requestSlugs = [];
 
-        return p;
-    }
-
-    async getPost(id) {
-        const post = Api.postForId(id);
-        if (post) {
-            return post;
-        } else {
-            return Api.#getPost(id);
-        }
-    }
-
-    async getAllPosts() {
-        if (Api.hasFinishedGettingPosts) {
-            return Api.posts;
-        }
-
-        let p = new Promise((resolve, reject) => {
-            Api.#allPostsAwaiters.push({ promise: { resolve, reject } })
-        });
-
-        return await p;
-    }
-
-    async hasApi() {
-        return await this.getPage(1);
-    }
-
-    static hasPage(n) {
-        return Api.posts.length > (n - 1) * Api.#postsPerPage
-    }
-
-    static postForId(id) {
-        const postIdx = Api.posts.findIndex(p => p.slug == id);
-        if (postIdx == -1) {
-            return null;
-        }
-
-        const post = Object.assign({}, Api.posts[postIdx]);
-
-        if (postIdx + 1 < Api.posts.length) {
-            post.prev = Object.assign({}, Api.posts[postIdx + 1]);
-        }
-        if (postIdx > 0) {
-            post.next = Object.assign({}, Api.posts[postIdx - 1]);
-        }
-
-        return post;
-    }
-
-    static postsForPage(n) {
-        if (!Api.hasPage(n)) {
-            throw new Error("Page number out of bounds!")
-        }
-        const start = (n - 1) * Api.#postsPerPage;
-        const end = n * Api.#postsPerPage;
-
-        return Api.posts.slice(start, end)
-    }
-
-    /** Fetch next page given current pagination and Api.postsPerRequest */
-    async #getNextPage() {
-        let posts = await Api.#getPosts(Api.#postsPerPage, Api.#page, { includeBody: true });
-        Api.#page++
-
-        Api.#pagination = posts.meta.pagination;
-
-        return posts
-    }
-
-    async #getAllPosts() {
-        Api.posts = [];
-        Api.gettingPosts = true;
-
-        try {
-            while (Api.#hasMorePosts) {
-                const p = await this.#getNextPage();
-                Api.posts = Api.posts.concat(p)
-
-                Api.#resolveAwaiters();
-            }
-        } catch (e) {
-            Api.gettingPosts = false;
-            Api.#rejectAwaiters(e)
-            throw e;
-        }
-
-        Api.hasFinishedGettingPosts = true;
-
-        Api.#finalizeAwaiters()
-    }
-
-    static async #getPosts(limit, page, { includeBody } = {}) {
-        let retries = 0;
-
-        while (retries < Api.#maxRetries) {
-            retries++;
-
-            try {
-                return await GHOST_API.posts.browse({
-                    limit: limit || "all",
-                    fields: `title,published_at,slug${includeBody ? ',html' : ''}`,
-                    page
-                });
-            } catch (e) {
-                console.log(`Error fetching posts, attempt ${retries}`, e);
-                if (retries >= Api.#maxRetries) {
-                    throw e;
-                }
+        for (const slug in slugs) {
+            if (slug in Api.posts) {
+                Api.#updatePostSubscriber(Api.posts[slug], this.id);
+            } else {
+                requestSlugs.push(slug);
             }
         }
+
+        Api.conn.send(JSON.stringify({
+            topic: ApiTopicPosts,
+            slugs: requestSlugs,
+            subscriberId: this.id
+        }));
     }
 
-    static async #getPost(id, { includeBody } = {}) {
-        let retries = 0;
+    getAllPosts() {
+        const existing = Object.keys(Api.posts);
+        for (const k in existing) {
+            Api.#updatePostSubscriber(Api.posts[slug], this.id);
+        }
 
-        while (retries < Api.#maxRetries) {
-            retries++;
+        Api.conn.send(JSON.stringify({
+            topic: ApiTopicPosts,
+            exclude: existing,
+            subscriberId: this.id
+        }));
+    }
 
-            try {
-                return await GHOST_API.posts.read({
-                    slug: id,
-                    formats: includeBody ? ['html'] : undefined
-                });
-            } catch (e) {
-                console.log(`Error fetching posts, attempt ${retries}`, e);
-                if (retries >= Api.#maxRetries) {
-                    throw e;
-                }
-            }
+    static #getIndex() {
+        Api.conn.send(JSON.stringify({
+            topic: ApiTopicIndex
+        }));
+    }
+
+    static #open() {
+        Api.conn = new WebSocket("wss://" + document.location.host + "/ws");
+
+        Api.conn.onopen = Api.#onOpen;
+        Api.conn.onmessage = Api.#onMessage;
+        Api.conn.onclose = Api.#onClose;
+
+        Api.conn.open();
+    }
+
+    static #onOpen() {
+        if (!Api.gettingIndex && !Api.hasFinishedGettingIndex) {
+            Api.#getIndex();
+        }
+
+        if (!Api.fetchingFeatures && !Api.hasFetchedFeatures) {
+            Api.#prefetchFeatures();
         }
     }
 
-    static async #prefetchFeatures() {
-        Api.fetchingFeatures = true;
-
-        Api.features = (async () => {
-            let retries = 0;
-
-            while (retries < Api.#maxRetries) {
-                retries++;
-
-                try {
-                    const f = await GHOST_API.pages.read({
-                        slug: "features",
-                        formats: ['html']
-                    });
-
-                    Api.fetchingFeatures = false;
-                    Api.hasFetchedFeatures = true;
-
-                    return f
-                } catch (e) {
-                    console.log(`Error fetching features, attempt ${retries}`, e);
-                    if (retries >= Api.#maxRetries) {
-                        throw e;
-                    }
-                }
-            }
-        })();
-    }
-
-    static #resolveAwaiters() {
-        for (const a of Api.#pageAwaiters) {
-            if (Api.hasPage(a.pageNumber)) {
-                const p = Api.postsForPage(a.pageNumber);
-                a.promise.resolve(p);
-
-                const i = Api.#pageAwaiters.indexOf(a);
-                Api.#pageAwaiters.slice(i, 1);
-            }
+    static #updateIndexSubscribers(index) {
+        for (const s of Api.#indexSubscribers) {
+            s(index);
         }
     }
 
-    static #rejectAwaiters(error) {
-        for (const a of Api.#pageAwaiters) {
-            a.promise.reject(error);
+    static #updatePostSubscriber(post, subscriberId) {
+        const s = Api.#postSubscribers.find(s => s.subscriberId == subscriberId);
+        if (!s) {
+            throw new Error("Post subscriber id not found: ", subscriberId);
         }
 
-        Api.#pageAwaiters = []
+        s(post);
     }
 
-    static #finalizeAwaiters() {
-        for (const a of Api.#pageAwaiters) {
-            a.promise.resolve(null);
+    static #updateNewPostSubscribers(post) {
+        for (const s of Api.#newPostSubscribers) {
+            s(post);
         }
+    }
 
-        Api.#pageAwaiters = [];
+    static #onIndex(post) {
+        Api.index = Api.index.push(post);
+        Api.#updateIndexSubscribers(post);
+    }
 
-        for (const a of Api.#allPostsAwaiters) {
-            a.promise.resolve(Api.posts);
+    static #onPost(post, subscriberId) {
+        if (!(p.slug in Api.posts)) {
+            Api.posts[p.slug] = post;
+            Api.#updatePostSubscriber(post, subscriberId);
         }
+    }
 
-        Api.#allPostsAwaiters = [];
+    static #onNewPost(post) {
+        const len = Api.index.unshift(post);
+        Api.totalPosts = len;
+
+        Api.posts[p.slug] = post;
+
+        Api.#updateNewPostSubscribers(post);
+    }
+
+    static #onMessage(e) {
+        switch (e.topic) {
+            case ApiTopicIndex:
+                Api.#onIndex(e.post);
+                break;
+            case ApiTopicPosts:
+                Api.#onPost(e.post, e.subscriberId);
+                break;
+            case ApiTopicNew:
+                Api.#onNewPost(e.post);
+                break;
+            default:
+                throw new Error("Unknown message topic.", e.topic);
+        }
+    }
+
+    static #onClose(e) {
+        console.log("WebSocket closed.", e);
     }
 }
