@@ -2,6 +2,33 @@ const ApiTopicIndex = "Index";
 const ApiTopicPosts = "Posts";
 const ApiTopicNew = "New";
 
+export class AsyncGenerator {
+    initial;
+    next;
+    resolve;
+
+    constructor(initial = []) {
+        this.initial = initial;
+        this.next = Promise.new(r => {
+            this.resolve = r;
+        });
+    }
+
+    async * generator() {
+        for (const v of this.initial) {
+            yield v;
+        }
+
+        let value;
+        while ((value = await next)) {
+            yield value;
+            this.next = Promise.new(r => {
+                this.resolve = r;
+            });
+        }
+    }
+}
+
 export default class Api {
     /** WebSocket connection. */
     static conn;
@@ -29,12 +56,12 @@ export default class Api {
 
     static #stream;
 
-    /** Array of objects containing streams for Api.index. */
-    static #indexStreams = [];
-    /** Array of objects containing streams for Api.posts. */
-    static #postStreams = [];
-    /** Array of objects containing streams for new posts. */
-    static #newPostStreams = [];
+    /** Array of objects containing generators for Api.index. */
+    static #indexGenerators = [];
+    /** Array of objects containing generators for Api.posts. */
+    static #postGenerators = [];
+    /** Array of objects containing generators for new posts. */
+    static #newPostGenerators = [];
 
     static get #indexHasMorePosts() {
         return Api.totalPosts == undefined || Api.totalPosts > Api.index.length
@@ -51,42 +78,36 @@ export default class Api {
     }
 
     static getIndex() {
-        const s = new TransformStream({
-            start(controller) {
-                for (const p of Api.index) {
-                    controller.enqueue(p);
-                }
-            }
-        });
+        const g = new AsyncGenerator([...Api.index]);
 
-        Api.#indexStreams.push({ stream: s, writer: s.writable.getWriter() });
+        Api.#indexStreams.push({ generator: g });
 
         return s;
     }
 
     static getPosts(slugs) {
         const id = crypto.randomUUID();
-        const s = new TransformStream({
-            start(controller) {
-                let requestSlugs = [];
 
-                for (const slug in slugs) {
-                    if (slug in Api.posts) {
-                        controller.enqueue(Api.posts[slug]);
-                    } else {
-                        requestSlugs.push(slug);
-                    }
-                }
+        let existing = [];
+        let requestSlugs = [];
 
-                Api.conn.send(JSON.stringify({
-                    topic: ApiTopicPosts,
-                    slugs: requestSlugs,
-                    streamId: id
-                }));
+        for (const slug in slugs) {
+            if (slug in Api.posts) {
+                existing.push(Api.posts[slug]);
+            } else {
+                requestSlugs.push(slug);
             }
-        });
+        }
 
-        Api.#postStreams.push({ stream: s, writer: s.writable.getWriter(), streamId: id });
+        const g = new AsyncGenerator(existing);
+
+        Api.conn.send(JSON.stringify({
+            topic: ApiTopicPosts,
+            slugs: requestSlugs,
+            topicId: id
+        }));
+
+        Api.#postGenerators.push({ generator: g, topicId: id });
 
         return s;
     }
@@ -94,22 +115,22 @@ export default class Api {
     static getAllPosts() {
         const id = crypto.randomUUID();
 
-        const s = new TransformStream({
-            start(controller) {
-                const existing = Object.keys(Api.posts);
-                for (const k in existing) {
-                    controller.enqueue(Api.posts[slug], id);
-                }
+        let existing = [];
 
-                Api.conn.send(JSON.stringify({
-                    topic: ApiTopicPosts,
-                    exclude: existing,
-                    subscriberId: id
-                }));
-            }
-        });
+        const existingKeys = Object.keys(Api.posts);
+        for (const k in existingKeys) {
+            existing.push(Api.posts[slug]);
+        }
 
-        Api.#postStreams.push({ stream: s, writer: s.writable.getWriter(), streamId: id });
+        const g = new AsyncGenerator(existing);
+
+        Api.conn.send(JSON.stringify({
+            topic: ApiTopicPosts,
+            exclude: existing,
+            topicId: id
+        }));
+
+        Api.#postGenerators.push({ generator: g, topicId: id });
 
         return s;
     }
@@ -117,9 +138,9 @@ export default class Api {
     static getNewPosts() {
         const id = crypto.randomUUID();
 
-        const s = new TransformStream();
+        const s = new AsyncGenerator();
 
-        Api.#newPostStreams.push({ stream: s, writer: s.writable.getWriter(), streamId: id });
+        Api.#newPostGenerators.push({ generator: g, topicId: id });
 
         return s;
     }
@@ -157,26 +178,27 @@ export default class Api {
 
         for (const s of Api.#indexStreams) {
             if (e.post) {
-                s.writer.write(index);
+                s.generator.resolve(e.post);
             } else {
-                s.writer.close();
+                s.generator.resolve(null);
             }
         }
     }
 
     static #onPost(e) {
-        const s = Api.#postStreams.find(s => s.subscriberId == e.subscriberId);
+        const s = Api.#postGenerators.find(s => s.subscriberId == e.subscriberId);
         if (!s) {
             throw new Error("Post subscriber id not found: ", e.subscriberId);
         }
 
         if (!e.post) {
-            s.writer.close();
-            const idx = Api.#postStreams.indexOf(s);
-            Api.#postStreams.splice(idx, 1);
+            s.generator.resolve(null);
+
+            const idx = Api.#postGenerators.indexOf(s);
+            Api.#postGenerators.splice(idx, 1);
         } else if (!(e.post.slug in Api.posts)) {
             Api.posts[p.slug] = e.post;
-            s.writer.write(post);
+            s.generator.resolve(post);
         }
     }
 
@@ -186,8 +208,8 @@ export default class Api {
 
         Api.posts[p.slug] = post;
 
-        for (const s of Api.#newPostStreams) {
-            s.writer.write(post);
+        for (const s of Api.#newPostGenerators) {
+            s.generator.resolve(post);
         }
     }
 
