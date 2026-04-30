@@ -1,33 +1,8 @@
+import AsyncGenerator from "./AsyncGenerator";
+
 const ApiTopicIndex = "Index";
 const ApiTopicPosts = "Posts";
 const ApiTopicNew = "New";
-
-export class AsyncGenerator {
-    initial;
-    next;
-    resolve;
-
-    constructor(initial = []) {
-        this.initial = initial;
-        this.next = Promise.new(r => {
-            this.resolve = r;
-        });
-    }
-
-    async * generator() {
-        for (const v of this.initial) {
-            yield v;
-        }
-
-        let value;
-        while ((value = await next)) {
-            yield value;
-            this.next = Promise.new(r => {
-                this.resolve = r;
-            });
-        }
-    }
-}
 
 export default class Api {
     /** WebSocket connection. */

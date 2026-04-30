@@ -1,5 +1,5 @@
-import Api from "Api";
-import Html from "Html";
+import Api from "./Api";
+import Html from "./Html";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
