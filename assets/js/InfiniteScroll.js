@@ -109,7 +109,6 @@ export default class InfiniteScroll {
             const posts = Api.getIndex();
 
             try {
-                console.log("generator")
                 for await (const p of posts.generator()) {
                     if (!Html.postsFeedContains(p)) {
                         Html.appendPostToFeed(p);

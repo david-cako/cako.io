@@ -17,7 +17,7 @@ export default class Api {
     static hasFinishedGettingIndex = false;
 
     /** Object containing full post values for slug keys. */
-    static posts;
+    static posts = [];
     /** Total post count. */
     static totalPosts;
 
@@ -115,7 +115,7 @@ export default class Api {
 
         if (!this.gettingAllPosts && !this.hasFinishedGettingAllPosts) {
             Api.conn.send(JSON.stringify({
-                topic: ApiTopicPosts,
+                topic: ApiTopicAllPosts,
                 exclude: existing
             }));
         }
@@ -137,6 +137,25 @@ export default class Api {
         Api.#newPostGenerators.push({ generator: g });
 
         return g;
+    }
+
+    static hasApi() {
+        return new Promise((resolve, reject) => {
+            if (Api.conn.readyState === WebSocket.OPEN) {
+                resolve();
+                return;
+            }
+
+            const listener = () => {
+                resolve();
+            }
+            Api.conn.addEventListener("open", listener);
+
+            setTimeout(() => {
+                Api.conn.removeEventListener("open", listener);
+                reject();
+            }, 5000)
+        })
     }
 
     static #getIndex() {

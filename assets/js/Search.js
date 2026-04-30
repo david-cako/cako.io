@@ -1,4 +1,5 @@
 import Api from "./Api.js";
+import Menu from "./Menu.js";
 import Html from "./Html.js";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
@@ -47,29 +48,30 @@ export default class Search {
     constructor() {
         window.Search = Search;
 
-        this.fetchPosts();
-
         Search.searchElement.addEventListener("input", this.onInput);
-
         document.addEventListener("keydown", this.onKeyDown);
-
         Search.clearIcon.addEventListener("click", () => {
             this.clear();
             Search.focus();
         });
-
         document.addEventListener("scroll", this.onScroll);
+
+        Menu.onStateChange((shown) => {
+            if (shown) {
+                this.getPosts();
+            }
+        });
     }
 
-    async fetchPosts() {
-        // const posts = await Api.getAllPosts();
+    async getPosts() {
+        const posts = await Api.getAllPosts();
 
-        // this.postsLoadingComplete = (async () => {
-        //     for await (const p of posts()) {
-        //         this.posts.push(p);
-        //         this.callPostCallbacks(p);
-        //     }
-        // })();
+        this.postsLoadingComplete = (async () => {
+            for await (const p of posts.generator()) {
+                this.posts.push(p);
+                this.callPostCallbacks(p);
+            }
+        })();
     }
 
     /** Match for title, content, and date on posts */
@@ -91,14 +93,14 @@ export default class Search {
 
         let results = [];
 
-        const callback = (post) => {
+        const callback = (posts) => {
             if (this.currentQuery !== query) {
                 return;
             }
 
-            const r = Search.search(post, query);
+            const r = Search.search(posts, query);
 
-            results = results.push(r);
+            results = results.concat(r);
             results = Search.sortResults(results);
 
             this.showResults(results);
@@ -107,9 +109,9 @@ export default class Search {
 
         callback(posts);
 
-        this.onPosts(callback);
+        this.onPost((p) => callback([p]));
         await this.postsLoadingComplete;
-        this.offPosts(callback);
+        this.offPost((p) => callback([p]));
 
         if (this.currentQuery !== query) {
             return;
@@ -269,12 +271,12 @@ export default class Search {
     }
 
     /** Add callback for new posts received from API. */
-    onPosts(fn) {
+    onPost(fn) {
         this.postCallbacks.push(fn);
     }
 
     /** Remove callback for new posts received from API. */
-    offPosts(fn) {
+    offPost(fn) {
         this.postCallbacks = this.postCallbacks.filter(c => c != fn);
     }
 
@@ -298,34 +300,36 @@ export default class Search {
         }
     }
 
-    static search(post, query) {
+    static search(posts, query) {
         const results = [];
 
         const tokens = tokenizeString(query, true);
 
-        let matches = [];
+        for (const post of posts) {
+            let matches = [];
 
-        for (const t of tokens) {
-            if (Search.getTitleMatch(t, post)) {
-                matches.push({ in: "title", token: t });
-            } else if (Search.getDateMatch(t, post)) {
-                matches.push({ in: "date" });
-            } else if (Search.getHtmlMatch(t, post)) {
-                matches.push({ in: "html", token: t });
-            }
-        }
-
-        if (matches.filter(m => m.in === "date").length >= tokens.length) {
-            results.push({
-                post: post,
-                strong: {
-                    in: "date",
-                    rank: 3
+            for (const t of tokens) {
+                if (Search.getTitleMatch(t, post)) {
+                    matches.push({ in: "title", token: t });
+                } else if (Search.getDateMatch(t, post)) {
+                    matches.push({ in: "date" });
+                } else if (Search.getHtmlMatch(t, post)) {
+                    matches.push({ in: "html", token: t });
                 }
-            });
-        } else if (matches.length > 0 && matches.length / tokens.length >= .6) {
-            const strong = Search.getStrongTextMatch(matches, post, query);
-            results.push({ post: post, strong: strong });
+            }
+
+            if (matches.filter(m => m.in === "date").length >= tokens.length) {
+                results.push({
+                    post: post,
+                    strong: {
+                        in: "date",
+                        rank: 3
+                    }
+                });
+            } else if (matches.length > 0 && matches.length / tokens.length >= .6) {
+                const strong = Search.getStrongTextMatch(matches, post, query);
+                results.push({ post: post, strong: strong });
+            }
         }
 
         return results;

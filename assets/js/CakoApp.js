@@ -37,7 +37,7 @@ export default class CakoApp {
         Menu.init();
         Menu.onStateChange(this.onMenuStateChange);
 
-        // this.search = new Search();
+        this.search = new Search();
 
         let page
         if (location.pathname == "/") {
@@ -299,7 +299,7 @@ export default class CakoApp {
             window.addEventListener("popstate", this.onPopState);
 
             this.search.onSearchShown(this.onSearchShown);
-        } catch {
+        } catch (e) {
             this.isLiveSite = false;
             console.log("Static site initialized.");
         }
