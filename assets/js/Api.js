@@ -104,8 +104,6 @@ export default class Api {
      * If not yet in flight, sends request for rest of posts, and
      * upon receipt, yields rest of posts. */
     static getAllPosts() {
-        const id = crypto.randomUUID();
-
         let existing = [];
 
         const existingKeys = Object.keys(Api.posts);
@@ -259,6 +257,19 @@ export default class Api {
     }
 
     static #onClose(e) {
+        for (const g of Api.#indexGenerators) {
+            g.reject("WebSocket closed.", e);
+        }
+        for (const g of Api.#postGenerators) {
+            g.reject("WebSocket closed.", e);
+        }
+        for (const g of Api.#allPostGenerators) {
+            g.reject("WebSocket closed.", e);
+        }
+        for (const g of Api.#newPostGenerators) {
+            g.reject("WebSocket closed.", e);
+        }
+
         console.log("WebSocket closed.", e);
     }
 }

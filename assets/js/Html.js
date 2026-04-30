@@ -157,20 +157,15 @@ export default class Html {
         return postContent;
     }
 
-    static appendPostsToFeed(posts) {
-        const postLinks = posts.map(p => Html.generatePostLink(p));
-
-        for (const p of postLinks) {
-            Html.postFeed.append(p);
-        }
+    static appendPostsToFeed(post) {
+        const postLink = Html.generatePostLink(post);
+        Html.postFeed.append(postLink);
     }
 
-    static appendPostsToBeginningOfFeed(posts) {
-        const postLinks = posts.map(p => Html.generatePostLink(p));
+    static appendPostToBeginningOfFeed(post) {
+        const postLink = Html.generatePostLink(post);
 
-        for (const p of postLinks) {
-            Html.postFeed.insertBefore(p, Html.postFeed.firstChild);
-        }
+        Html.postFeed.insertBefore(postLink, Html.postFeed.firstChild);
     }
 
     static postsFeedContains(post) {

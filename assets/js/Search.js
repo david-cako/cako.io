@@ -65,18 +65,12 @@ export default class Search {
     }
 
     async fetchPosts() {
+        const posts = await this.api.getAllPosts();
+
         this.postsLoadingComplete = (async () => {
-            let more = true;
-
-            while (more) {
-                const posts = await this.api.getNextPage();
-
-                if (posts) {
-                    this.posts = this.posts.concat(posts);
-                    this.callPostCallbacks(posts);
-                } else {
-                    more = false;
-                }
+            for await (const p of posts()) {
+                this.posts.push(p);
+                this.callPostCallbacks(p);
             }
         })();
     }
@@ -100,14 +94,14 @@ export default class Search {
 
         let results = [];
 
-        const callback = (posts) => {
+        const callback = (post) => {
             if (this.currentQuery !== query) {
                 return;
             }
 
-            const r = Search.search(posts, query);
+            const r = Search.search(post, query);
 
-            results = results.concat(r);
+            results = results.push(r);
             results = Search.sortResults(results);
 
             this.showResults(results);
@@ -287,9 +281,9 @@ export default class Search {
         this.postCallbacks = this.postCallbacks.filter(c => c != fn);
     }
 
-    callPostCallbacks(posts) {
+    callPostCallbacks(post) {
         for (const fn of this.postCallbacks) {
-            fn(posts);
+            fn(post);
         }
     }
 
@@ -307,36 +301,34 @@ export default class Search {
         }
     }
 
-    static search(posts, query) {
+    static search(post, query) {
         const results = [];
 
         const tokens = tokenizeString(query, true);
 
-        for (const p of posts) {
-            let matches = [];
+        let matches = [];
 
-            for (const t of tokens) {
-                if (Search.getTitleMatch(t, p)) {
-                    matches.push({ in: "title", token: t });
-                } else if (Search.getDateMatch(t, p)) {
-                    matches.push({ in: "date" });
-                } else if (Search.getHtmlMatch(t, p)) {
-                    matches.push({ in: "html", token: t });
+        for (const t of tokens) {
+            if (Search.getTitleMatch(t, post)) {
+                matches.push({ in: "title", token: t });
+            } else if (Search.getDateMatch(t, post)) {
+                matches.push({ in: "date" });
+            } else if (Search.getHtmlMatch(t, post)) {
+                matches.push({ in: "html", token: t });
+            }
+        }
+
+        if (matches.filter(m => m.in === "date").length >= tokens.length) {
+            results.push({
+                post: post,
+                strong: {
+                    in: "date",
+                    rank: 3
                 }
-            }
-
-            if (matches.filter(m => m.in === "date").length >= tokens.length) {
-                results.push({
-                    post: p,
-                    strong: {
-                        in: "date",
-                        rank: 3
-                    }
-                });
-            } else if (matches.length > 0 && matches.length / tokens.length >= .6) {
-                const strong = Search.getStrongTextMatch(matches, p, query);
-                results.push({ post: p, strong: strong });
-            }
+            });
+        } else if (matches.length > 0 && matches.length / tokens.length >= .6) {
+            const strong = Search.getStrongTextMatch(matches, post, query);
+            results.push({ post: post, strong: strong });
         }
 
         return results;

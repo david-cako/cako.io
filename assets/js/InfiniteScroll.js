@@ -12,14 +12,8 @@ export default class InfiniteScroll {
     /** Increments on every scroll event after InfiniteScroll initialization.
      * Resets on pageShow event. */
     scrollEvents = 0;
-    /** JS interval ID for new posts fetcher */
-    newPostsInterval;
-    /** Fetcher interval.  New posts are fetched every 30 seconds. */
-    newPostsIntervalTime = 1000 * 30;
-    /** True while getAndAppendPosts or getAndAppendNewPosts is called. */
+    /** True while getAndAppendPosts is called. */
     isUpdatingPosts = false;
-    /** True until no more posts are returned from API. */
-    hasMorePosts;
     /** When initialized with noFetch, no posts will be dynamically loaded. */
     noFetch;
 
@@ -99,50 +93,43 @@ export default class InfiniteScroll {
 
         if (!this.noFetch) {
             this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedIndexScrollPosition });
-
-            this.newPostsInterval = setInterval(this.getAndAppendNewPosts,
-                this.newPostsIntervalTime);
+            this.getAndAppendNewPosts();
         }
     }
 
 
 
-    /** Fetch and insert all posts, resolving on completion or 
+    /** Get and insert all posts, resolving on completion or 
      * when optional resolveAt position has loaded. */
     getAndAppendPosts({ resolveAt }) {
         let isResolved = false;
 
         return new Promise(async (resolve, reject) => {
             this.isUpdatingPosts = true;
-            this.hasMorePosts = true;
             this.loadingPostsElem.style.display = "block";
 
             const posts = this.api.getIndex();
 
-            while (this.hasMorePosts) {
-                try {
-                    const posts = await this.api.getNextPage();
-                    if (posts) {
-                        Html.appendPostsToFeed(posts);
-                    } else {
-                        this.hasMorePosts = false;
+            try {
+                for await (const post of posts()) {
+                    if (!Html.postsFeedContains(post)) {
+                        Html.appendPostToFeed(post);
                     }
-                } catch (e) {
-                    this.isUpdatingPosts = false;
-                    this.hasMorePosts = undefined;
-                    this.loadingPostsElem.innerText = "Could not finish loading posts.  Try refreshing cako.io.";
-                    this.loadingPostsElem.className = "error";
 
-                    reject(e);
-                    return;
+                    if (!isResolved && resolveAt !== undefined &&
+                        resolveAt <= document.body.clientHeight - window.innerHeight) {
+                        // resolves and continues execution to finish loading posts.
+                        resolve();
+                        isResolved = true;
+                    }
                 }
+            } catch (e) {
+                this.isUpdatingPosts = false;
+                this.loadingPostsElem.innerText = "Could not finish loading posts.  Try refreshing cako.io.";
+                this.loadingPostsElem.className = "error";
 
-                if (!isResolved && resolveAt !== undefined &&
-                    resolveAt <= document.body.clientHeight - window.innerHeight) {
-                    // resolves and continues execution to finish loading posts.
-                    resolve();
-                    isResolved = true;
-                }
+                reject(e);
+                return;
             }
 
             this.loadingPostsElem.style.display = "none";
@@ -154,40 +141,17 @@ export default class InfiniteScroll {
         });
     }
 
-    /** Fetch and insert new posts if available. */
+    /** Get and insert new posts if available. */
     getAndAppendNewPosts = async () => {
-        this.isUpdatingPosts = true;
-
-        const newPosts = [];
-
-        let page = 1;
         let shouldGetNewPosts = true;
 
-        // fetch posts until we reach newest shown post on page
-        while (shouldGetNewPosts) {
-            let posts;
+        const newPosts = this.api.getNewPosts();
 
-            try {
-                posts = await this.api.getPage(page);
-                page++;
-            } catch (e) {
-                this.isUpdatingPosts = false;
-                throw e;
-            }
-
-            for (const p of posts) {
-                if (!Html.postsFeedContains(p)) {
-                    newPosts.push(p);
-                } else {
-                    shouldGetNewPosts = false;
-                    break;
-                }
+        for await (const post of newPosts()) {
+            if (!Html.postsFeedContains(p)) {
+                Html.appendPostsToBeginningOfFeed(newPosts);
             }
         }
-
-        Html.appendPostsToBeginningOfFeed(newPosts);
-
-        this.isUpdatingPosts = false;
     }
 
     saveNavigationScrollPosition(page) {
