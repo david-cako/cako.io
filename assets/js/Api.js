@@ -17,7 +17,7 @@ export default class Api {
     static hasFinishedGettingIndex = false;
 
     /** Object containing full post values for slug keys. */
-    static posts = [];
+    static posts = {};
     /** Total post count. */
     static totalPosts;
 
