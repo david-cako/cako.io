@@ -12,7 +12,7 @@ export default class AsyncGenerator {
 
     constructor(initial = []) {
         this.initial = initial;
-        this.queue.unshift(AsyncGenerator.promiseWithResolvers());
+        this.queue = [AsyncGenerator.promiseWithResolvers()];
     }
 
     async * generator() {
@@ -20,7 +20,8 @@ export default class AsyncGenerator {
             yield v;
         }
 
-        while ((value = await this.next)) {
+        let value;
+        while ((value = await this.next.promise)) {
             this.queue.pop();
             if (this.queue.length == 0) {
                 this.queue.unshift(AsyncGenerator.promiseWithResolvers());
@@ -48,14 +49,14 @@ export default class AsyncGenerator {
 
     static promiseWithResolvers() {
         let r = {
-            promise: p,
+            promise: undefined,
             resolve: undefined,
             reject: undefined,
             isResolved: false,
             isRejected: false
         }
 
-        const p = new Promise((res, rej) => {
+        r.promise = new Promise((res, rej) => {
             r.resolve = (value) => {
                 res(value);
                 r.isResolved = true;

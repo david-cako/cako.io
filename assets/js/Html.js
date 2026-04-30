@@ -157,7 +157,7 @@ export default class Html {
         return postContent;
     }
 
-    static appendPostsToFeed(post) {
+    static appendPostToFeed(post) {
         const postLink = Html.generatePostLink(post);
         Html.postFeed.append(postLink);
     }

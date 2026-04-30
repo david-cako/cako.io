@@ -1,8 +1,8 @@
-import Menu from "./Menu";
-import Search from "./Search";
-import InfiniteScroll from "./InfiniteScroll";
-import Api from "./Api";
-import Html from "./Html";
+import Menu from "./Menu.js";
+import Search from "./Search.js";
+import InfiniteScroll from "./InfiniteScroll.js";
+import Api from "./Api.js";
+import Html from "./Html.js";
 
 export default class CakoApp {
     search;
@@ -32,11 +32,12 @@ export default class CakoApp {
     constructor() {
         window.CakoApp = this;
 
+        Api.initialize();
+
         Menu.init();
         Menu.onStateChange(this.onMenuStateChange);
 
         // this.search = new Search();
-        this.api = new Api();
 
         let page
         if (location.pathname == "/") {
@@ -255,7 +256,7 @@ export default class CakoApp {
             throw new Error("Missing id in call to #navigateToPost(id)");
         }
 
-        const post = await this.api.getPost(id);
+        const post = await Api.getPost(id);
 
         document.body.classList = "post-template";
 
@@ -290,7 +291,7 @@ export default class CakoApp {
         document.addEventListener("keydown", this.onKeyDown);
 
         try {
-            await this.api.hasApi();
+            await Api.hasApi();
             this.isLiveSite = true;
             console.log("Live site initialized.");
 

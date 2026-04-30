@@ -1,4 +1,4 @@
-import AsyncGenerator from "./AsyncGenerator";
+import AsyncGenerator from "./AsyncGenerator.js";
 
 const ApiTopicIndex = "Index";
 const ApiTopicPosts = "Posts";
@@ -48,7 +48,7 @@ export default class Api {
         return Api.totalPosts == undefined || Api.totalPosts > Api.index.length
     }
 
-    constructor() {
+    static initialize() {
         if (!Api.conn) {
             Api.#open();
         }
@@ -140,6 +140,7 @@ export default class Api {
     }
 
     static #getIndex() {
+        console.log("getindex")
         Api.conn.send(JSON.stringify({
             topic: ApiTopicIndex
         }));
@@ -159,11 +160,10 @@ export default class Api {
         Api.conn.onopen = Api.#onOpen;
         Api.conn.onmessage = Api.#onMessage;
         Api.conn.onclose = Api.#onClose;
-
-        Api.conn.open();
     }
 
     static #onOpen() {
+        console.log("onopen")
         if (!Api.gettingIndex && !Api.hasFinishedGettingIndex) {
             Api.#getIndex();
         }
@@ -173,13 +173,13 @@ export default class Api {
         }
     }
 
-    static #onIndex(e) {
-        for (const s of Api.#indexGenerators) {
-            s.generator.resolve(e.post);
+    static #onIndex(data) {
+        for (const g of Api.#indexGenerators) {
+            g.generator.resolve(data.post);
         }
 
-        if (e.post) {
-            Api.index = Api.index.push(e.post);
+        if (data.post) {
+            Api.index.push(data.post);
         } else {
             Api.gettingIndex = false;
             Api.hasFinishedGettingIndex = true;
@@ -187,22 +187,22 @@ export default class Api {
         }
     }
 
-    static #onPost(e) {
-        if (e.topicId == "features") {
-            Api.features.resolve(e.post);
+    static #onPost(data) {
+        if (data.topicId == "features") {
+            Api.features.resolve(data.post);
             return;
         }
 
-        const g = Api.#postGenerators.find(s => s.topicId == e.topicId);
+        const g = Api.#postGenerators.find(g => g.topicId == data.topicId);
         if (!g) {
-            throw new Error("Post subscriber id not found: ", e.topicId);
+            throw new Error("Post subscriber id not found: ", data.topicId);
         }
 
-        g.generator.resolve(e.post);
+        g.generator.resolve(data.post);
 
-        if (e.post) {
-            if (!(e.post.slug in Api.posts)) {
-                Api.posts[e.post.slug] = e.post;
+        if (data.post) {
+            if (!(data.post.slug in Api.posts)) {
+                Api.posts[data.post.slug] = data.post;
             }
         } else {
             const idx = Api.#postGenerators.indexOf(s);
@@ -210,14 +210,14 @@ export default class Api {
         }
     }
 
-    static #onAllPosts(e) {
+    static #onAllPosts(data) {
         for (const g of Api.#allPostGenerators) {
-            g.generator.resolve(e.post);
+            g.generator.resolve(data.post);
         }
 
-        if (e.post) {
-            if (!(e.post.slug in Api.posts)) {
-                Api.posts[e.post.slug] = e.post;
+        if (data.post) {
+            if (!(data.post.slug in Api.posts)) {
+                Api.posts[data.post.slug] = data.post;
             }
         } else {
             this.isGettingAllPosts = false;
@@ -226,30 +226,31 @@ export default class Api {
         }
     }
 
-    static #onNewPost(e) {
-        const len = Api.index.unshift(e.post);
+    static #onNewPost(data) {
+        const len = Api.index.unshift(data.post);
         Api.totalPosts = len;
 
-        Api.posts[p.slug] = e.post;
+        Api.posts[p.slug] = data.post;
 
         for (const g of Api.#newPostGenerators) {
-            g.generator.resolve(e.post);
+            g.generator.resolve(data.post);
         }
     }
 
     static #onMessage(e) {
-        switch (e.topic) {
+        const data = JSON.parse(e.data);
+        switch (data.topic) {
             case ApiTopicIndex:
-                Api.#onIndex(e);
+                Api.#onIndex(data);
                 break;
             case ApiTopicPosts:
-                Api.#onPost(e);
+                Api.#onPost(data);
                 break;
             case ApiTopicAllPosts:
-                Api.#onAllPosts(e);
+                Api.#onAllPosts(data);
                 break;
             case ApiTopicNew:
-                Api.#onNewPost(e);
+                Api.#onNewPost(data);
                 break;
             default:
                 throw new Error("Unknown message topic.", e.topic);
@@ -259,15 +260,19 @@ export default class Api {
     static #onClose(e) {
         for (const g of Api.#indexGenerators) {
             g.reject("WebSocket closed.", e);
+            Api.#indexGenerators = [];
         }
         for (const g of Api.#postGenerators) {
             g.reject("WebSocket closed.", e);
+            Api.#postGenerators = [];
         }
         for (const g of Api.#allPostGenerators) {
             g.reject("WebSocket closed.", e);
+            Api.#allPostGenerators = [];
         }
         for (const g of Api.#newPostGenerators) {
             g.reject("WebSocket closed.", e);
+            Api.#newPostGenerators = [];
         }
 
         console.log("WebSocket closed.", e);

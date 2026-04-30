@@ -1,12 +1,11 @@
-import Api from "./Api";
-import Html from "./Html";
+import Api from "./Api.js";
+import Html from "./Html.js";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
 export default class Search {
-    api;
     /** Dynamically populated with posts from API. */
     posts = [];
     /**  Promise resolving when all posts are loaded from API. */
@@ -46,8 +45,6 @@ export default class Search {
     }
 
     constructor() {
-        this.api = new Api();
-
         window.Search = Search;
 
         this.fetchPosts();
@@ -65,14 +62,14 @@ export default class Search {
     }
 
     async fetchPosts() {
-        const posts = await this.api.getAllPosts();
+        // const posts = await Api.getAllPosts();
 
-        this.postsLoadingComplete = (async () => {
-            for await (const p of posts()) {
-                this.posts.push(p);
-                this.callPostCallbacks(p);
-            }
-        })();
+        // this.postsLoadingComplete = (async () => {
+        //     for await (const p of posts()) {
+        //         this.posts.push(p);
+        //         this.callPostCallbacks(p);
+        //     }
+        // })();
     }
 
     /** Match for title, content, and date on posts */

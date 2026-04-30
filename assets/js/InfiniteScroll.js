@@ -1,10 +1,8 @@
-import Api from "./Api";
-import Html from "./Html";
+import Api from "./Api.js";
+import Html from "./Html.js";
 
 /** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
-    api = new Api();
-
     /** Current index scroll position managed by InfiniteScroll. */
     indexScrollPosition = 0;
     /** Listing of scroll positions to resume when navigating. */
@@ -108,12 +106,13 @@ export default class InfiniteScroll {
             this.isUpdatingPosts = true;
             this.loadingPostsElem.style.display = "block";
 
-            const posts = this.api.getIndex();
+            const posts = Api.getIndex();
 
             try {
-                for await (const post of posts()) {
-                    if (!Html.postsFeedContains(post)) {
-                        Html.appendPostToFeed(post);
+                console.log("generator")
+                for await (const p of posts.generator()) {
+                    if (!Html.postsFeedContains(p)) {
+                        Html.appendPostToFeed(p);
                     }
 
                     if (!isResolved && resolveAt !== undefined &&
@@ -145,13 +144,13 @@ export default class InfiniteScroll {
     getAndAppendNewPosts = async () => {
         let shouldGetNewPosts = true;
 
-        const newPosts = this.api.getNewPosts();
+        // const newPosts = Api.getNewPosts();
 
-        for await (const post of newPosts()) {
-            if (!Html.postsFeedContains(p)) {
-                Html.appendPostsToBeginningOfFeed(newPosts);
-            }
-        }
+        // for await (const p of newPosts.generator()) {
+        //     if (!Html.postsFeedContains(p)) {
+        //         Html.appendPostToBeginningOfFeed(p);
+        //     }
+        // }
     }
 
     saveNavigationScrollPosition(page) {
