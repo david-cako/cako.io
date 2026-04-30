@@ -23,7 +23,7 @@ export default class Api {
 
     /** Path to features page. */
     static featuresPath = "/features/"
-    /** Promise that will contain features page after API retrieval. */
+    /** promiseWithResolvers that will contain features page after API retrieval. */
     static features;
     /** True while getting features. */
     static gettingFeatures = false;
@@ -51,6 +51,10 @@ export default class Api {
     constructor() {
         if (!Api.conn) {
             Api.#open();
+        }
+
+        if (!Api.features) {
+            Api.features = AsyncGenerator.promiseWithResolvers();
         }
 
         if (!window.Api) {
@@ -127,6 +131,7 @@ export default class Api {
         return g;
     }
 
+    /** Returns generator that will yield on receipt of new posts. */
     static getNewPosts() {
         const id = crypto.randomUUID();
         const g = new AsyncGenerator();
@@ -139,6 +144,14 @@ export default class Api {
     static #getIndex() {
         Api.conn.send(JSON.stringify({
             topic: ApiTopicIndex
+        }));
+    }
+
+    static #getFeatures() {
+        Api.conn.send(JSON.stringify({
+            topic: ApiTopicPosts,
+            slugs: ["features"],
+            topicId: "features"
         }));
     }
 
@@ -158,7 +171,7 @@ export default class Api {
         }
 
         if (!Api.gettingFeatures && !Api.hasFinishedGettingFeatures) {
-            Api.#prefetchFeatures();
+            Api.#getFeatures();
         }
     }
 
@@ -177,9 +190,14 @@ export default class Api {
     }
 
     static #onPost(e) {
-        const g = Api.#postGenerators.find(s => s.subscriberId == e.subscriberId);
+        if (e.topicId == "features") {
+            Api.features.resolve(e.post);
+            return;
+        }
+
+        const g = Api.#postGenerators.find(s => s.topicId == e.topicId);
         if (!g) {
-            throw new Error("Post subscriber id not found: ", e.subscriberId);
+            throw new Error("Post subscriber id not found: ", e.topicId);
         }
 
         g.generator.resolve(e.post);

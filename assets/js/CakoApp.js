@@ -270,7 +270,7 @@ export default class CakoApp {
     }
 
     async #navigateToFeatures() {
-        const features = await Api.features;
+        const features = await Api.features.promise;
 
         document.body.classList = "page-template";
 

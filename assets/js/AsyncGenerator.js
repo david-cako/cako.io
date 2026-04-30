@@ -41,27 +41,31 @@ export default class AsyncGenerator {
             const p = AsyncGenerator.promiseWithResolvers();
             this.queue.unshift(p);
             p.resolve(data);
-            p.isResolved = true;
         } else {
             next.resolve(data);
-            next.isResolved = true;
         }
     }
 
     static promiseWithResolvers() {
-        let resolve;
-        let reject;
-        const p = new Promise((res, rej) => {
-            resolve = res;
-            reject = rej;
-        });
-
-        return {
+        let r = {
             promise: p,
-            resolve: r,
-            reject: r,
+            resolve: undefined,
+            reject: undefined,
             isResolved: false,
             isRejected: false
         }
+
+        const p = new Promise((res, rej) => {
+            r.resolve = (value) => {
+                res(value);
+                r.isResolved = true;
+            }
+            r.reject = (value) => {
+                rej(value);
+                r.isRejected = true;
+            }
+        });
+
+        return r
     }
 }
