@@ -3,9 +3,6 @@ const ApiTopicPosts = "Posts";
 const ApiTopicNew = "New";
 
 export default class Api {
-    /** Identifier for unique API instance. */
-    id;
-
     /** WebSocket connection. */
     static conn;
 
@@ -30,20 +27,20 @@ export default class Api {
     /** True after features have been retrieved. */
     static hasFetchedFeatures = false;
 
-    /** Array of objects containing subscribers to Api.index. */
-    static #indexSubscribers = [];
-    /** Array of objects containing subscribers to Api.posts. */
-    static #postSubscribers = [];
-    /** Array of objects containing subscribers to new posts. */
-    static #newPostSubscribers = [];
+    static #stream;
+
+    /** Array of objects containing streams for Api.index. */
+    static #indexStreams = [];
+    /** Array of objects containing streams for Api.posts. */
+    static #postStreams = [];
+    /** Array of objects containing streams for new posts. */
+    static #newPostStreams = [];
 
     static get #indexHasMorePosts() {
         return Api.totalPosts == undefined || Api.totalPosts > Api.index.length
     }
 
     constructor() {
-        this.id = crypto.randomUUID();
-
         if (!Api.conn) {
             Api.#open();
         }
@@ -53,49 +50,66 @@ export default class Api {
         }
     }
 
-    on(topic, fn) {
-        switch (topic) {
-            case ApiTopicIndex:
-                Api.#indexSubscribers.push({ fn: fn });
-                break;
-            case ApiTopicPosts:
-                Api.postSubscribers.push({ id: this.id, fn: fn });
-                break
-            case ApiTopicNewPosts:
-                Api.newPostSubscribers.push({ id: this.id, fn: fn });
-                break
-        }
-    }
-
-    getPosts(slugs) {
-        let requestSlugs = [];
-
-        for (const slug in slugs) {
-            if (slug in Api.posts) {
-                Api.#updatePostSubscriber(Api.posts[slug], this.id);
-            } else {
-                requestSlugs.push(slug);
+    static getIndex() {
+        const s = new TransformStream({
+            start(controller) {
+                for (const p of Api.index) {
+                    controller.enqueue(p);
+                }
             }
-        }
+        });
 
-        Api.conn.send(JSON.stringify({
-            topic: ApiTopicPosts,
-            slugs: requestSlugs,
-            subscriberId: this.id
-        }));
+        Api.#indexStreams.push({ stream: s });
+
+        return s;
     }
 
-    getAllPosts() {
-        const existing = Object.keys(Api.posts);
-        for (const k in existing) {
-            Api.#updatePostSubscriber(Api.posts[slug], this.id);
-        }
+    static getPosts(slugs) {
+        const id = crypto.randomUUID();
+        const s = new TransformStream({
+            start(controller) {
+                let requestSlugs = [];
 
-        Api.conn.send(JSON.stringify({
-            topic: ApiTopicPosts,
-            exclude: existing,
-            subscriberId: this.id
-        }));
+                for (const slug in slugs) {
+                    if (slug in Api.posts) {
+                        controller.enqueue(Api.posts[slug]);
+                    } else {
+                        requestSlugs.push(slug);
+                    }
+                }
+
+                Api.conn.send(JSON.stringify({
+                    topic: ApiTopicPosts,
+                    slugs: requestSlugs,
+                    streamId: id
+                }));
+            }
+        });
+
+        Api.#postStreams.push({ stream: s, streamId: id });
+
+        return s;
+    }
+
+    static getAllPosts() {
+        const id = crypto.randomUUID();
+
+        const s = new TransformStream({
+            start(controller) {
+                const existing = Object.keys(Api.posts);
+                for (const k in existing) {
+                    controller.enqueue(Api.posts[slug], id);
+                }
+
+                Api.conn.send(JSON.stringify({
+                    topic: ApiTopicPosts,
+                    exclude: existing,
+                    subscriberId: id
+                }));
+            }
+        });
+
+        return s;
     }
 
     static #getIndex() {
@@ -124,36 +138,28 @@ export default class Api {
         }
     }
 
-    static #updateIndexSubscribers(index) {
-        for (const s of Api.#indexSubscribers) {
-            s(index);
+    static #onIndex(e) {
+        Api.index = Api.index.push(e.post);
+
+        for (const s of Api.#indexStreams) {
+            const w = s.writable.getWriter();
+            w.write(index);
+            w.close();
         }
     }
 
-    static #updatePostSubscriber(post, subscriberId) {
-        const s = Api.#postSubscribers.find(s => s.subscriberId == subscriberId);
-        if (!s) {
-            throw new Error("Post subscriber id not found: ", subscriberId);
-        }
+    static #onPost(e) {
+        if (!(e.post.slug in Api.posts)) {
+            Api.posts[p.slug] = e.post;
 
-        s(post);
-    }
+            const s = Api.#postStreams.find(s => s.subscriberId == subscriberId);
+            if (!s) {
+                throw new Error("Post subscriber id not found: ", subscriberId);
+            }
 
-    static #updateNewPostSubscribers(post) {
-        for (const s of Api.#newPostSubscribers) {
-            s(post);
-        }
-    }
-
-    static #onIndex(post) {
-        Api.index = Api.index.push(post);
-        Api.#updateIndexSubscribers(post);
-    }
-
-    static #onPost(post, subscriberId) {
-        if (!(p.slug in Api.posts)) {
-            Api.posts[p.slug] = post;
-            Api.#updatePostSubscriber(post, subscriberId);
+            const w = s.writable.getWriter();
+            w.write(post);
+            w.close();
         }
     }
 
@@ -163,19 +169,23 @@ export default class Api {
 
         Api.posts[p.slug] = post;
 
-        Api.#updateNewPostSubscribers(post);
+        for (const s of Api.#newPostStreams) {
+            const w = s.writable.getWriter();
+            w.write(post);
+            w.close();
+        }
     }
 
     static #onMessage(e) {
         switch (e.topic) {
             case ApiTopicIndex:
-                Api.#onIndex(e.post);
+                Api.#onIndex(e);
                 break;
             case ApiTopicPosts:
-                Api.#onPost(e.post, e.subscriberId);
+                Api.#onPost(e);
                 break;
             case ApiTopicNew:
-                Api.#onNewPost(e.post);
+                Api.#onNewPost(e);
                 break;
             default:
                 throw new Error("Unknown message topic.", e.topic);
