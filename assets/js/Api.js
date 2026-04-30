@@ -2,6 +2,7 @@ import AsyncGenerator from "./AsyncGenerator";
 
 const ApiTopicIndex = "Index";
 const ApiTopicPosts = "Posts";
+const ApiTopicAllPosts = "AllPosts";
 const ApiTopicNew = "New";
 
 export default class Api {
@@ -24,17 +25,22 @@ export default class Api {
     static featuresPath = "/features/"
     /** Promise that will contain features page after API retrieval. */
     static features;
-    /** True while fetching features. */
-    static fetchingFeatures = false;
+    /** True while getting features. */
+    static gettingFeatures = false;
     /** True after features have been retrieved. */
-    static hasFetchedFeatures = false;
+    static hasFinishedGettingFeatures = false;
 
-    static #stream;
+    /** True while getting all posts. */
+    static gettingAllPosts = false;
+    /** True after all posts have been retrieved. */
+    static hasFinishedGettingAllPosts = false;
 
     /** Array of objects containing generators for Api.index. */
     static #indexGenerators = [];
     /** Array of objects containing generators for Api.posts. */
     static #postGenerators = [];
+    /** Array of objects containing generators for all posts. */
+    static #allPostGenerators = [];
     /** Array of objects containing generators for new posts. */
     static #newPostGenerators = [];
 
@@ -52,14 +58,17 @@ export default class Api {
         }
     }
 
+    /** Returns generator yielding existing index posts immediately and
+     * further index posts on receipt. */
     static getIndex() {
         const g = new AsyncGenerator([...Api.index]);
+        Api.#indexGenerators.push({ generator: g });
 
-        Api.#indexStreams.push({ generator: g });
-
-        return s;
+        return g;
     }
 
+    /** Returns generator yielding available posts for slugs immediately and
+     * sends request for rest of posts to be yielded on receipt. */
     static getPosts(slugs) {
         const id = crypto.randomUUID();
 
@@ -84,9 +93,12 @@ export default class Api {
 
         Api.#postGenerators.push({ generator: g, topicId: id });
 
-        return s;
+        return g;
     }
 
+    /** Returns generator yielding available posts for slugs immediately. 
+     * If not yet in flight, sends request for rest of posts, and
+     * upon receipt, yields rest of posts. */
     static getAllPosts() {
         const id = crypto.randomUUID();
 
@@ -99,25 +111,29 @@ export default class Api {
 
         const g = new AsyncGenerator(existing);
 
-        Api.conn.send(JSON.stringify({
-            topic: ApiTopicPosts,
-            exclude: existing,
-            topicId: id
-        }));
+        if (!this.gettingAllPosts && !this.hasFinishedGettingAllPosts) {
+            Api.conn.send(JSON.stringify({
+                topic: ApiTopicPosts,
+                exclude: existing
+            }));
+        }
 
-        Api.#postGenerators.push({ generator: g, topicId: id });
+        if (this.hasFinishedGettingAllPosts) {
+            g.resolve(null);
+        } else {
+            Api.#allPostGenerators.push({ generator: g });
+        }
 
-        return s;
+        return g;
     }
 
     static getNewPosts() {
         const id = crypto.randomUUID();
+        const g = new AsyncGenerator();
 
-        const s = new AsyncGenerator();
+        Api.#newPostGenerators.push({ generator: g });
 
-        Api.#newPostGenerators.push({ generator: g, topicId: id });
-
-        return s;
+        return g;
     }
 
     static #getIndex() {
@@ -141,50 +157,67 @@ export default class Api {
             Api.#getIndex();
         }
 
-        if (!Api.fetchingFeatures && !Api.hasFetchedFeatures) {
+        if (!Api.gettingFeatures && !Api.hasFinishedGettingFeatures) {
             Api.#prefetchFeatures();
         }
     }
 
     static #onIndex(e) {
-        if (e.post) {
-            Api.index = Api.index.push(e.post);
+        for (const s of Api.#indexGenerators) {
+            s.generator.resolve(e.post);
         }
 
-        for (const s of Api.#indexStreams) {
-            if (e.post) {
-                s.generator.resolve(e.post);
-            } else {
-                s.generator.resolve(null);
-            }
+        if (e.post) {
+            Api.index = Api.index.push(e.post);
+        } else {
+            Api.gettingIndex = false;
+            Api.hasFinishedGettingIndex = true;
+            Api.#indexGenerators = [];
         }
     }
 
     static #onPost(e) {
-        const s = Api.#postGenerators.find(s => s.subscriberId == e.subscriberId);
-        if (!s) {
+        const g = Api.#postGenerators.find(s => s.subscriberId == e.subscriberId);
+        if (!g) {
             throw new Error("Post subscriber id not found: ", e.subscriberId);
         }
 
-        if (!e.post) {
-            s.generator.resolve(null);
+        g.generator.resolve(e.post);
 
+        if (e.post) {
+            if (!(e.post.slug in Api.posts)) {
+                Api.posts[e.post.slug] = e.post;
+            }
+        } else {
             const idx = Api.#postGenerators.indexOf(s);
             Api.#postGenerators.splice(idx, 1);
-        } else if (!(e.post.slug in Api.posts)) {
-            Api.posts[p.slug] = e.post;
-            s.generator.resolve(post);
         }
     }
 
-    static #onNewPost(post) {
-        const len = Api.index.unshift(post);
+    static #onAllPosts(e) {
+        for (const g of Api.#allPostGenerators) {
+            g.generator.resolve(e.post);
+        }
+
+        if (e.post) {
+            if (!(e.post.slug in Api.posts)) {
+                Api.posts[e.post.slug] = e.post;
+            }
+        } else {
+            this.isGettingAllPosts = false;
+            this.hasFinishedGettingAllPosts = true;
+            Api.#allPostGenerators = [];
+        }
+    }
+
+    static #onNewPost(e) {
+        const len = Api.index.unshift(e.post);
         Api.totalPosts = len;
 
-        Api.posts[p.slug] = post;
+        Api.posts[p.slug] = e.post;
 
-        for (const s of Api.#newPostGenerators) {
-            s.generator.resolve(post);
+        for (const g of Api.#newPostGenerators) {
+            g.generator.resolve(e.post);
         }
     }
 
@@ -195,6 +228,9 @@ export default class Api {
                 break;
             case ApiTopicPosts:
                 Api.#onPost(e);
+                break;
+            case ApiTopicAllPosts:
+                Api.#onAllPosts(e);
                 break;
             case ApiTopicNew:
                 Api.#onNewPost(e);

@@ -48,11 +48,11 @@ export default class CakoApp {
         this.state = { page: page };
         history.replaceState(this.state, "");
 
-        // if (this.state.page == "all") {
-        //     this.infiniteScroll = new InfiniteScroll({ noFetch: true });
-        // } else {
-        //     this.infiniteScroll = new InfiniteScroll();
-        // }
+        if (this.state.page == "all") {
+            this.infiniteScroll = new InfiniteScroll({ noFetch: true });
+        } else {
+            this.infiniteScroll = new InfiniteScroll();
+        }
 
         this.#setupEventHandlers();
     }

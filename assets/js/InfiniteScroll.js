@@ -3,7 +3,7 @@ import Html from "./Html";
 
 /** Service for managing and restoring scroll position on cako.io index */
 export default class InfiniteScroll {
-    api = new Api({ page: 2 });
+    api = new Api();
 
     /** Current index scroll position managed by InfiniteScroll. */
     indexScrollPosition = 0;
@@ -116,6 +116,8 @@ export default class InfiniteScroll {
             this.isUpdatingPosts = true;
             this.hasMorePosts = true;
             this.loadingPostsElem.style.display = "block";
+
+            const posts = this.api.getIndex();
 
             while (this.hasMorePosts) {
                 try {
