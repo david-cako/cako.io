@@ -59,7 +59,7 @@ export default class Api {
             }
         });
 
-        Api.#indexStreams.push({ stream: s });
+        Api.#indexStreams.push({ stream: s, writer: s.writable.getWriter() });
 
         return s;
     }
@@ -86,7 +86,7 @@ export default class Api {
             }
         });
 
-        Api.#postStreams.push({ stream: s, streamId: id });
+        Api.#postStreams.push({ stream: s, writer: s.writable.getWriter(), streamId: id });
 
         return s;
     }
@@ -108,6 +108,18 @@ export default class Api {
                 }));
             }
         });
+
+        Api.#postStreams.push({ stream: s, writer: s.writable.getWriter(), streamId: id });
+
+        return s;
+    }
+
+    static getNewPosts() {
+        const id = crypto.randomUUID();
+
+        const s = new TransformStream();
+
+        Api.#newPostStreams.push({ stream: s, writer: s.writable.getWriter(), streamId: id });
 
         return s;
     }
@@ -139,27 +151,32 @@ export default class Api {
     }
 
     static #onIndex(e) {
-        Api.index = Api.index.push(e.post);
+        if (e.post) {
+            Api.index = Api.index.push(e.post);
+        }
 
         for (const s of Api.#indexStreams) {
-            const w = s.writable.getWriter();
-            w.write(index);
-            w.close();
+            if (e.post) {
+                s.writer.write(index);
+            } else {
+                s.writer.close();
+            }
         }
     }
 
     static #onPost(e) {
-        if (!(e.post.slug in Api.posts)) {
+        const s = Api.#postStreams.find(s => s.subscriberId == e.subscriberId);
+        if (!s) {
+            throw new Error("Post subscriber id not found: ", e.subscriberId);
+        }
+
+        if (!e.post) {
+            s.writer.close();
+            const idx = Api.#postStreams.indexOf(s);
+            Api.#postStreams.splice(idx, 1);
+        } else if (!(e.post.slug in Api.posts)) {
             Api.posts[p.slug] = e.post;
-
-            const s = Api.#postStreams.find(s => s.subscriberId == subscriberId);
-            if (!s) {
-                throw new Error("Post subscriber id not found: ", subscriberId);
-            }
-
-            const w = s.writable.getWriter();
-            w.write(post);
-            w.close();
+            s.writer.write(post);
         }
     }
 
@@ -170,9 +187,7 @@ export default class Api {
         Api.posts[p.slug] = post;
 
         for (const s of Api.#newPostStreams) {
-            const w = s.writable.getWriter();
-            w.write(post);
-            w.close();
+            s.writer.write(post);
         }
     }
 
