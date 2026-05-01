@@ -108,7 +108,7 @@ export default class Api {
 
         const existingKeys = Object.keys(Api.posts);
         for (const k in existingKeys) {
-            existing.push(Api.posts[slug]);
+            existing.push(k);
         }
 
         const g = new AsyncGenerator(existing);
