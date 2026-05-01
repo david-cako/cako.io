@@ -90,12 +90,11 @@ export default class InfiniteScroll {
         window.addEventListener("pageshow", this.#loadScrollPosition);
 
         if (!this.noFetch) {
+            await Api.isOpen();
             this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedIndexScrollPosition });
             this.getAndAppendNewPosts();
         }
     }
-
-
 
     /** Get and insert all posts, resolving on completion or 
      * when optional resolveAt position has loaded. */

@@ -58,6 +58,7 @@ export default class Search {
 
         Menu.onStateChange((shown) => {
             if (shown) {
+                await Api.isOpen();
                 this.getPosts();
             }
         });

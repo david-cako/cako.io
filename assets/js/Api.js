@@ -9,6 +9,9 @@ export default class Api {
     /** WebSocket connection. */
     static conn;
 
+    /** Promise that will resolve on open. */
+    static openPromise;
+
     /** Ordered index of posts. */
     static index = [];
     /** Set true while getting index. */
@@ -48,7 +51,7 @@ export default class Api {
         return Api.totalPosts == undefined || Api.totalPosts > Api.index.length
     }
 
-    static initialize() {
+    static async initialize() {
         if (!Api.conn) {
             Api.#open();
         }
@@ -60,6 +63,8 @@ export default class Api {
         if (!window.Api) {
             window.Api = this;
         }
+
+        await this.openPromise.promise;
     }
 
     /** Returns generator yielding existing index posts immediately and
@@ -158,6 +163,13 @@ export default class Api {
         })
     }
 
+    static isOpen() {
+        if (!this.openPromise) {
+            throw new Error("Api connection does not exist.")
+        }
+        return await this.openPromise.promise;
+    }
+
     static #getIndex() {
         console.log("getindex")
         Api.conn.send(JSON.stringify({
@@ -174,6 +186,8 @@ export default class Api {
     }
 
     static #open() {
+        this.openPromise = AsyncGenerator.promiseWithResolvers();
+
         Api.conn = new WebSocket("wss://" + document.location.host + "/ws");
 
         Api.conn.onopen = Api.#onOpen;
@@ -182,7 +196,7 @@ export default class Api {
     }
 
     static #onOpen() {
-        console.log("onopen")
+        this.openPromise.resolve();
         if (!Api.gettingIndex && !Api.hasFinishedGettingIndex) {
             Api.#getIndex();
         }
@@ -294,6 +308,12 @@ export default class Api {
             Api.#newPostGenerators = [];
         }
 
+        Api.conn = undefined;
+        Api.gettingIndex = false;
+        Api.gettingFeatures = false;
+
         console.log("WebSocket closed.", e);
+
+        await Api.initialize();
     }
 }
