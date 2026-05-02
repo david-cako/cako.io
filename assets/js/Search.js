@@ -7,12 +7,6 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
 ];
 
 export default class Search {
-    /** Dynamically populated with posts from API. */
-    posts = [];
-    /**  Promise resolving when all posts are loaded from API. */
-    postsLoadingComplete;
-    /** Array of functions subscribed to API post results.  */
-    postCallbacks = [];
     /** Retry count for posts request. */
     maxRetries = 10;
     /** Updates from this.search() after successful query. */
@@ -59,20 +53,10 @@ export default class Search {
         Menu.onStateChange(async (shown) => {
             if (shown) {
                 await Api.isOpen();
-                this.getPosts();
+                // Preload all posts.
+                Api.getAllPosts();
             }
         });
-    }
-
-    async getPosts() {
-        const posts = await Api.getAllPosts();
-
-        this.postsLoadingComplete = (async () => {
-            for await (const p of posts.generator()) {
-                this.posts.push(p);
-                this.callPostCallbacks(p);
-            }
-        })();
     }
 
     /** Match for title, content, and date on posts */
@@ -92,14 +76,14 @@ export default class Search {
             posts = this.posts.slice();
         }
 
-        let results = [];
+        let posts = Api.getAllPosts();
 
-        const callback = (posts) => {
+        for await (const p of posts.generator()) {
             if (this.currentQuery !== query) {
                 return;
             }
 
-            const r = Search.search(posts, query);
+            const r = Search.search([p], query);
 
             results = results.concat(r);
             results = Search.sortResults(results);
@@ -107,12 +91,6 @@ export default class Search {
             this.showResults(results);
             Search.updateStatus({ searching: true })
         }
-
-        callback(posts);
-
-        this.onPost((p) => callback([p]));
-        await this.postsLoadingComplete;
-        this.offPost((p) => callback([p]));
 
         if (this.currentQuery !== query) {
             return;
@@ -268,22 +246,6 @@ export default class Search {
             if (firstResult) {
                 firstResult.focus();
             }
-        }
-    }
-
-    /** Add callback for new posts received from API. */
-    onPost(fn) {
-        this.postCallbacks.push(fn);
-    }
-
-    /** Remove callback for new posts received from API. */
-    offPost(fn) {
-        this.postCallbacks = this.postCallbacks.filter(c => c != fn);
-    }
-
-    callPostCallbacks(post) {
-        for (const fn of this.postCallbacks) {
-            fn(post);
         }
     }
 

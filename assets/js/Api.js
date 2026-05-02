@@ -12,8 +12,6 @@ export default class Api {
     static conn;
     /** Promise that will resolve on open. */
     static openPromise = AsyncGenerator.promiseWithResolvers();
-    /** True if connection has opened once. */
-    static didOpen;
 
     /** Listeners for WebSocket open. */
     static openListeners = [];
@@ -158,7 +156,7 @@ export default class Api {
     }
 
     static #getIndex() {
-        console.log("getindex")
+        Api.index = [];
         Api.conn.send(JSON.stringify({
             topic: ApiTopicIndex
         }));
@@ -182,7 +180,6 @@ export default class Api {
 
     static #onOpen() {
         Api.openPromise.resolve();
-        this.didOpen = true;
 
         if (!Api.gettingIndex && !Api.hasFinishedGettingIndex) {
             Api.#getIndex();
@@ -278,20 +275,21 @@ export default class Api {
     }
 
     static async #onClose(e) {
+        const error = new Error("WebSocket closed", e);
         for (const g of Api.#indexGenerators) {
-            g.reject("WebSocket closed.", e);
+            g.reject(error);
             Api.#indexGenerators = [];
         }
         for (const g of Api.#postGenerators) {
-            g.reject("WebSocket closed.", e);
+            g.reject(error);
             Api.#postGenerators = [];
         }
         for (const g of Api.#allPostGenerators) {
-            g.reject("WebSocket closed.", e);
+            g.reject(error);
             Api.#allPostGenerators = [];
         }
         for (const g of Api.#newPostGenerators) {
-            g.reject("WebSocket closed.", e);
+            g.reject(error);
             Api.#newPostGenerators = [];
         }
 
@@ -299,7 +297,7 @@ export default class Api {
         Api.gettingIndex = false;
         Api.gettingFeatures = false;
 
-        console.log("WebSocket closed.", e);
+        console.error(error);
 
         if (Api.retry < Api.maxRetries) {
             Api.retry++;
