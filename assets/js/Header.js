@@ -40,7 +40,8 @@ class Header {
         })
     }
 
-    /** ??? Fixes opacity stuck after navigating to new page when scrolled just 100px. */
+    /** ??? Fixes opacity stuck after navigating to new page when scrolled just 100px,
+     * and fixes animation range after appending posts to feed. */
     static resetAnimation() {
         Header.header.style.animation = "none";
 

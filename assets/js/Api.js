@@ -47,13 +47,13 @@ export default class Api {
     /** True after all posts have been retrieved. */
     static hasFinishedGettingAllPosts = false;
 
-    /** Array of objects containing generators for Api.index. */
+    /** Array of AsyncGenerators for Api.index. */
     static #indexGenerators = [];
-    /** Array of objects containing generators for Api.posts. */
+    /** Array of AsyncGenerators for multiple posts. */
     static #postGenerators = [];
-    /** Array of objects containing generators for all posts. */
+    /** Array of AsyncGenerators for all posts. */
     static #allPostGenerators = [];
-    /** Array of objects containing generators for new posts. */
+    /** Array of AsyncGenerators for new posts. */
     static #newPostGenerators = [];
 
     static get #indexHasMorePosts() {
@@ -83,6 +83,27 @@ export default class Api {
         return g;
     }
 
+    static async getPost(slug) {
+        let id = crypto.randomUUID();
+
+
+        if (slug in Api.posts) {
+            return Api.posts[slug];
+        } else {
+            console.log("remote getpost: ", slug)
+            const g = new AsyncGenerator();
+            Api.conn.send(JSON.stringify({
+                topic: ApiTopicPosts,
+                slugs: [slug],
+                topicId: id
+            }));
+
+            Api.#postGenerators.push({ generator: g, topicId: id });
+
+            return await g.next.promise;
+        }
+    }
+
     /** Returns generator yielding available posts for slugs immediately and
      * sends request for rest of posts to be yielded on receipt. */
     static getPosts(slugs) {
@@ -101,13 +122,17 @@ export default class Api {
 
         const g = new AsyncGenerator(existing);
 
-        Api.conn.send(JSON.stringify({
-            topic: ApiTopicPosts,
-            slugs: requestSlugs,
-            topicId: id
-        }));
+        if (requestSlugs.length > 0) {
+            Api.conn.send(JSON.stringify({
+                topic: ApiTopicPosts,
+                slugs: requestSlugs,
+                topicId: id
+            }));
 
-        Api.#postGenerators.push({ generator: g, topicId: id });
+            Api.#postGenerators.push({ generator: g, topicId: id });
+        } else {
+            g.generator.resolve(null);
+        }
 
         return g;
     }
@@ -133,7 +158,7 @@ export default class Api {
         }
 
         if (this.hasFinishedGettingAllPosts) {
-            g.resolve(null);
+            g.generator.resolve(null);
         } else {
             Api.#allPostGenerators.push({ generator: g });
         }
@@ -212,7 +237,7 @@ export default class Api {
 
         const g = Api.#postGenerators.find(g => g.topicId == data.topicId);
         if (!g) {
-            throw new Error("Post subscriber id not found: ", data.topicId);
+            throw new Error("Post topicId id not found: ", data.topicId);
         }
 
         g.generator.resolve(data.post);
@@ -277,19 +302,19 @@ export default class Api {
     static async #onClose(e) {
         const error = new Error("WebSocket closed", e);
         for (const g of Api.#indexGenerators) {
-            g.reject(error);
+            g.generator.reject(error);
             Api.#indexGenerators = [];
         }
         for (const g of Api.#postGenerators) {
-            g.reject(error);
+            g.generator.reject(error);
             Api.#postGenerators = [];
         }
         for (const g of Api.#allPostGenerators) {
-            g.reject(error);
+            g.generator.reject(error);
             Api.#allPostGenerators = [];
         }
         for (const g of Api.#newPostGenerators) {
-            g.reject(error);
+            g.generator.reject(error);
             Api.#newPostGenerators = [];
         }
 

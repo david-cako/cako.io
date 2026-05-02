@@ -90,9 +90,13 @@ export default class InfiniteScroll {
         window.addEventListener("pageshow", this.#loadScrollPosition);
 
         if (!this.noFetch) {
-            await Api.isOpen();
-            this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedIndexScrollPosition });
-            this.getAndAppendNewPosts();
+            try {
+                await Api.isOpen();
+                this.savedPosHasLoaded = this.getAndAppendPosts({ resolveAt: this.savedIndexScrollPosition });
+                this.getAndAppendNewPosts();
+            } catch (e) {
+                console.error("InfiniteScroll: ", e);
+            }
         }
     }
 
@@ -131,6 +135,8 @@ export default class InfiniteScroll {
 
             this.loadingPostsElem.style.display = "none";
             this.isUpdatingPosts = false;
+
+            window.Header.resetAnimation();
 
             resolve();
             isResolved = true;

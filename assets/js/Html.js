@@ -10,6 +10,10 @@ export default class Html {
     static copyrightDate = document.querySelector(".copyright-date");
     static postNav = document.getElementById("post-nav");
 
+    static get posts() {
+        return Html.postFeed.querySelectorAll(".cako-post");
+    }
+
     static generateSearchPreview(result) {
         if (result.strong === undefined || result.strong.in !== "html") {
             return ``
@@ -91,7 +95,7 @@ export default class Html {
 
         const postLinkElem = document.importNode(Html.postLinkTemplate.content, true);
 
-        postLinkElem.firstElementChild.dataset.postId = post.slug;
+        postLinkElem.firstElementChild.dataset.postSlug = post.slug;
 
         let aElem = postLinkElem.querySelector("a");
         aElem.href = `/${post.slug}/`
@@ -172,29 +176,38 @@ export default class Html {
         return Html.postFeed.querySelector(`[href="/${post.slug}/"]`) !== null;
     }
 
+    static elementIsVisible(e, { offset } = { offset: 0 }) {
+        var rect = e.getBoundingClientRect();
+
+        return (
+            rect.top >= (0 - offset) &&
+            rect.bottom <= (window.innerHeight + offset)
+        );
+    }
+
     /** Replace double spaces with en-space to fix wrapping. */
     static replaceSpaces(htmlText) {
         return htmlText.replace(/ \u00A0/g, "&ensp;");
     }
 
-    static getIdForPostLink(postLink) {
+    static getSlugForPostLink(postLink) {
         const post = postLink.closest('.cako-post');
         if (!post) {
             throw new Error("No cako-post element found.")
         }
 
-        let id;
-        if (post.dataset.postId) {
-            id = post.dataset.postId;
+        let slug;
+        if (post.dataset.postSlug) {
+            slug = post.dataset.postSlug;
         } else if (postLink.href) {
             // Necessary for Features links!
             const url = URL.parse(postLink.href);
-            id = url.pathname.replaceAll("/", "");
+            slug = url.pathname.replaceAll("/", "");
         } else {
-            throw new Error("Missing post id or href in post link!");
+            throw new Error("Missing post slug or href in post link!");
         }
 
-        return id;
+        return slug;
     }
 
     static setPostContent(post = null) {
@@ -226,3 +239,7 @@ export default class Html {
         }
     }
 }
+
+(() => {
+    window.Html = Html;
+})();

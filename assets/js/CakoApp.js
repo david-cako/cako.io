@@ -7,7 +7,6 @@ import Html from "./Html.js";
 export default class CakoApp {
     search;
     infiniteScroll;
-    api;
 
     /** Current application state. */
     state;
@@ -16,6 +15,9 @@ export default class CakoApp {
     /** True when accessing hosted site with API available.
      * Otherwise, we are accessing a static archive and should not override events. */
     isLiveSite;
+
+    /** Distance from viewport to load a post when scrolling. */
+    loadPostOffset = 500;
 
     static siteNavLink = document.getElementById("cako-site-nav-link");
     static indexInner = document.getElementById("index-inner");
@@ -55,7 +57,32 @@ export default class CakoApp {
             this.infiniteScroll = new InfiniteScroll();
         }
 
-        this.#setupEventHandlers();
+        console.log(Html.posts);
+
+        this.initialize();
+    }
+
+    /** Only capture events on live site, not on static sites from cako cli. */
+    async initialize() {
+        window.addEventListener("unhandledrejection", this.onUnhandledPromiseRejection);
+        document.addEventListener("keydown", this.onKeyDown);
+
+        try {
+            await Api.isOpen();
+            this.isLiveSite = true;
+            console.log("Live site initialized.");
+
+            document.addEventListener("click", this.onClick);
+            document.addEventListener("scroll", this.onScroll)
+            window.addEventListener("popstate", this.onPopState);
+
+            this.search.onSearchShown(this.onSearchShown);
+
+            this.getVisiblePosts();
+        } catch (e) {
+            this.isLiveSite = false;
+            console.log("Static site initialized.");
+        }
     }
 
     async navigateToState(state) {
@@ -92,9 +119,9 @@ export default class CakoApp {
         postLink.focus({ preventScroll: true });
 
         if (this.isLiveSite) {
-            const id = Html.getIdForPostLink(postLink);
-            await this.navigateToState({ page: id });
-            history.pushState(this.state, "", `/${id}/`);
+            const slug = Html.getSlugForPostLink(postLink);
+            await this.navigateToState({ page: slug });
+            history.pushState(this.state, "", `/${slug}/`);
         } else {
             postLink.click();
         }
@@ -117,6 +144,15 @@ export default class CakoApp {
     async popSearchBackgroundState() {
         if (this.searchBackgroundState) {
             return this.navigateToState(this.searchBackgroundState);
+        }
+    }
+
+    getVisiblePosts() {
+        for (const p of Html.posts) {
+            if (Html.elementIsVisible(p, { offset: this.loadPostOffset })) {
+                const slug = Html.getSlugForPostLink(p);
+                Api.getPost(slug);
+            }
         }
     }
 
@@ -170,6 +206,10 @@ export default class CakoApp {
                 Menu.close();
             }
         }
+    }
+
+    onScroll = (e) => {
+        this.getVisiblePosts();
     }
 
     onKeyDown = async (e) => {
@@ -251,12 +291,12 @@ export default class CakoApp {
         document.title = "cako.io";
     }
 
-    async #navigateToPost(id) {
-        if (!id) {
-            throw new Error("Missing id in call to #navigateToPost(id)");
+    async #navigateToPost(slug) {
+        if (!slug) {
+            throw new Error("Missing slug in call to #navigateToPost(slug)");
         }
 
-        const post = await Api.getPost(id);
+        const post = await Api.getPost(slug);
 
         document.body.classList = "post-template";
 
@@ -283,26 +323,6 @@ export default class CakoApp {
 
     async #navigateToSearch() {
         document.body.classList.add("search-shown");
-    }
-
-    /** Only capture events on live site, not on static sites from cako cli. */
-    async #setupEventHandlers() {
-        window.addEventListener("unhandledrejection", this.onUnhandledPromiseRejection);
-        document.addEventListener("keydown", this.onKeyDown);
-
-        try {
-            await Api.isOpen();
-            this.isLiveSite = true;
-            console.log("Live site initialized.");
-
-            document.addEventListener("click", this.onClick);
-            window.addEventListener("popstate", this.onPopState);
-
-            this.search.onSearchShown(this.onSearchShown);
-        } catch (e) {
-            this.isLiveSite = false;
-            console.log("Static site initialized.");
-        }
     }
 }
 

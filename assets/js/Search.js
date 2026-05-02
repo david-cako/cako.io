@@ -52,11 +52,19 @@ export default class Search {
 
         Menu.onStateChange(async (shown) => {
             if (shown) {
-                await Api.isOpen();
-                // Preload all posts.
-                Api.getAllPosts();
+                this.initialize();
             }
         });
+    }
+
+    async initialize() {
+        try {
+            await Api.isOpen();
+            // Preload all posts.
+            Api.getAllPosts();
+        } catch (e) {
+            console.error("Search: ", e);
+        }
     }
 
     /** Match for title, content, and date on posts */
@@ -73,10 +81,8 @@ export default class Search {
             && !containsNumber(query)) {
             posts = this.previousResults;
         } else {
-            posts = this.posts.slice();
+            posts = Api.getAllPosts();
         }
-
-        let posts = Api.getAllPosts();
 
         for await (const p of posts.generator()) {
             if (this.currentQuery !== query) {
