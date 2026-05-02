@@ -56,7 +56,7 @@ export default class Search {
         });
         document.addEventListener("scroll", this.onScroll);
 
-        Menu.onStateChange((shown) => {
+        Menu.onStateChange(async (shown) => {
             if (shown) {
                 await Api.isOpen();
                 this.getPosts();

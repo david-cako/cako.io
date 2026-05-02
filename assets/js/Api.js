@@ -1,5 +1,7 @@
 import AsyncGenerator from "./AsyncGenerator.js";
 
+const WEBSOCKETS_URL = "wss://" + document.location.host + "/ws";
+
 const ApiTopicIndex = "Index";
 const ApiTopicPosts = "Posts";
 const ApiTopicAllPosts = "AllPosts";
@@ -8,9 +10,18 @@ const ApiTopicNew = "New";
 export default class Api {
     /** WebSocket connection. */
     static conn;
-
     /** Promise that will resolve on open. */
-    static openPromise;
+    static openPromise = AsyncGenerator.promiseWithResolvers();
+    /** True if connection has opened once. */
+    static didOpen;
+
+    /** Listeners for WebSocket open. */
+    static openListeners = [];
+
+    /** Retries for initial connection. */
+    static retry = 0;
+    /** Max retries for initial connection. */
+    static maxRetries = 5;
 
     /** Ordered index of posts. */
     static index = [];
@@ -63,8 +74,6 @@ export default class Api {
         if (!window.Api) {
             window.Api = this;
         }
-
-        await this.openPromise.promise;
     }
 
     /** Returns generator yielding existing index posts immediately and
@@ -144,30 +153,8 @@ export default class Api {
         return g;
     }
 
-    static hasApi() {
-        return new Promise((resolve, reject) => {
-            if (Api.conn.readyState === WebSocket.OPEN) {
-                resolve();
-                return;
-            }
-
-            const listener = () => {
-                resolve();
-            }
-            Api.conn.addEventListener("open", listener);
-
-            setTimeout(() => {
-                Api.conn.removeEventListener("open", listener);
-                reject();
-            }, 5000)
-        })
-    }
-
-    static isOpen() {
-        if (!this.openPromise) {
-            throw new Error("Api connection does not exist.")
-        }
-        return await this.openPromise.promise;
+    static async isOpen() {
+        return await Api.openPromise.promise;
     }
 
     static #getIndex() {
@@ -186,9 +173,7 @@ export default class Api {
     }
 
     static #open() {
-        this.openPromise = AsyncGenerator.promiseWithResolvers();
-
-        Api.conn = new WebSocket("wss://" + document.location.host + "/ws");
+        Api.conn = new WebSocket(WEBSOCKETS_URL);
 
         Api.conn.onopen = Api.#onOpen;
         Api.conn.onmessage = Api.#onMessage;
@@ -196,7 +181,9 @@ export default class Api {
     }
 
     static #onOpen() {
-        this.openPromise.resolve();
+        Api.openPromise.resolve();
+        this.didOpen = true;
+
         if (!Api.gettingIndex && !Api.hasFinishedGettingIndex) {
             Api.#getIndex();
         }
@@ -290,7 +277,7 @@ export default class Api {
         }
     }
 
-    static #onClose(e) {
+    static async #onClose(e) {
         for (const g of Api.#indexGenerators) {
             g.reject("WebSocket closed.", e);
             Api.#indexGenerators = [];
@@ -314,6 +301,12 @@ export default class Api {
 
         console.log("WebSocket closed.", e);
 
-        await Api.initialize();
+        if (Api.retry < Api.maxRetries) {
+            Api.retry++;
+            Api.initialize();
+        } else {
+            Api.openPromise.reject(new Error(`Max retries: ${Api.retry}`));
+            console.error(`Max retries: ${Api.retry}`);
+        }
     }
 }

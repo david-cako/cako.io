@@ -291,7 +291,7 @@ export default class CakoApp {
         document.addEventListener("keydown", this.onKeyDown);
 
         try {
-            await Api.hasApi();
+            await Api.isOpen();
             this.isLiveSite = true;
             console.log("Live site initialized.");
 
