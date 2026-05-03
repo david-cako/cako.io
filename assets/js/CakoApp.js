@@ -98,7 +98,7 @@ export default class CakoApp {
         }
     }
 
-    async navigateToState(state, { push } = { push: true }) {
+    async navigateToState(state, { push } = { push: false }) {
         if (state.page) {
             // Save scroll position before changing state.
             this.infiniteScroll.saveNavigationScrollPosition(this.state.page);
