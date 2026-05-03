@@ -87,9 +87,9 @@ export default class CakoApp {
 
             this.search.onSearchShown(this.onSearchShown);
 
-            this.getVisiblePosts();
-
-            if (this.pageIsPost) {
+            if (this.state.page == HomePage) {
+                this.getVisiblePosts();
+            } else if (this.pageIsPost) {
                 this.getPreviousAndNext();
             }
         } catch (e) {
@@ -316,6 +316,8 @@ export default class CakoApp {
         Html.setCopyrightDate();
 
         document.title = "cako.io";
+
+        this.getVisiblePosts();
     }
 
     async #navigateToPost(slug) {
