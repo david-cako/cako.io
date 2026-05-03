@@ -23,7 +23,7 @@ export default class AsyncGenerator {
         let value;
         while ((value = await this.next.promise)) {
             this.queue.pop();
-            if (this.queue.length == 0) {
+            if (this.queue.length === 0) {
                 this.queue.unshift(AsyncGenerator.promiseWithResolvers());
             }
 

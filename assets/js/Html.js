@@ -103,10 +103,10 @@ export default class Html {
         if (navLink) {
             aElem.classList.add("post-nav-link");
 
-            if (navLink == "left") {
+            if (navLink === "left") {
                 postLinkElem.firstElementChild.classList.add("left");
                 aElem.classList.add("left");
-            } else if (navLink == "right") {
+            } else if (navLink === "right") {
                 postLinkElem.firstElementChild.classList.add("right");
                 aElem.classList.add("right");
             }

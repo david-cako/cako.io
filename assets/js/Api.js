@@ -57,7 +57,7 @@ export default class Api {
     static #newPostGenerators = [];
 
     static get #indexHasMorePosts() {
-        return Api.totalPosts == undefined || Api.totalPosts > Api.index.length
+        return Api.totalPosts === undefined || Api.totalPosts > Api.index.length
     }
 
     static async initialize() {
@@ -178,7 +178,7 @@ export default class Api {
 
     static getPrevious(slug, count) {
         const idx = Api.index.indexOf(slug);
-        if (idx == -1) {
+        if (idx === -1) {
             throw new Error("Slug not found in index.")
         }
 
@@ -196,7 +196,7 @@ export default class Api {
 
     static getNext(slug, count) {
         const idx = Api.index.indexOf(slug);
-        if (idx == -1) {
+        if (idx === -1) {
             throw new Error("Slug not found in index.")
         }
 
@@ -266,12 +266,12 @@ export default class Api {
     }
 
     static #onPost(data) {
-        if (data.topicId == "features") {
+        if (data.topicId === "features") {
             Api.features.resolve(data.post);
             return;
         }
 
-        const g = Api.#postGenerators.find(g => g.topicId == data.topicId);
+        const g = Api.#postGenerators.find(g => g.topicId === data.topicId);
         if (!g) {
             throw new Error("Post topicId id not found: ", data.topicId);
         }

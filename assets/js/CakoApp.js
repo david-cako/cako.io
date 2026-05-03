@@ -28,9 +28,9 @@ export default class CakoApp {
     static emailAddress = document.getElementById("email-address");
 
     get pageIsPost() {
-        return this.state.page != HomePage
-            && this.state.page != FeaturesPage
-            && this.state.page != SearchPage
+        return this.state.page !== HomePage
+            && this.state.page !== FeaturesPage
+            && this.state.page !== SearchPage
     }
 
     static get navLinkLeft() {
@@ -51,7 +51,7 @@ export default class CakoApp {
         this.search = new Search();
 
         let page
-        if (location.pathname == "/") {
+        if (location.pathname === "/") {
             page = HomePage;
         } else {
             page = location.pathname.replaceAll("/", "");
@@ -60,7 +60,7 @@ export default class CakoApp {
         this.state = { page: page };
         history.replaceState(this.state, "");
 
-        if (this.state.page == AllPage) {
+        if (this.state.page === AllPage) {
             this.infiniteScroll = new InfiniteScroll({ noFetch: true });
         } else {
             this.infiniteScroll = new InfiniteScroll();
@@ -87,7 +87,7 @@ export default class CakoApp {
 
             this.search.onSearchShown(this.onSearchShown);
 
-            if (this.state.page == HomePage) {
+            if (this.state.page === HomePage) {
                 this.getVisiblePosts();
             } else if (this.pageIsPost) {
                 this.getPreviousAndNext();
@@ -128,7 +128,7 @@ export default class CakoApp {
 
             if (push) {
                 let url;
-                if (state.page == HomePage) {
+                if (state.page === HomePage) {
                     url = "/"
                 } else {
                     url = `/${state.page}/`
@@ -244,7 +244,7 @@ export default class CakoApp {
             e.metaKey || e.shiftKey;
 
         // cmd/ctrl + shift + f to open search
-        if (e.key.toLowerCase() == "f" && (e.ctrlKey || e.metaKey) && e.shiftKey) {
+        if (e.key.toLowerCase() === "f" && (e.ctrlKey || e.metaKey) && e.shiftKey) {
             e.preventDefault();
 
             Menu.toggle();
@@ -257,7 +257,7 @@ export default class CakoApp {
         }
 
         // escape closes search and menu
-        if (e.key == "Escape") {
+        if (e.key === "Escape") {
             if (this.searchBackgroundState) {
                 e.preventDefault();
                 await this.popSearchBackgroundState();
@@ -272,12 +272,12 @@ export default class CakoApp {
 
         // arrow keys navigate between posts when search is not active
         if (!Search.shown && !modifier) {
-            if (e.key == "ArrowLeft") {
+            if (e.key === "ArrowLeft") {
                 e.preventDefault();
                 if (CakoApp.navLinkLeft) {
                     await this.navigateToPostLink(CakoApp.navLinkLeft);
                 }
-            } else if (e.key == "ArrowRight") {
+            } else if (e.key === "ArrowRight") {
                 e.preventDefault();
                 if (CakoApp.navLinkRight) {
                     await this.navigateToPostLink(CakoApp.navLinkRight)
@@ -300,7 +300,7 @@ export default class CakoApp {
     }
 
     onMenuStateChange = (shown) => {
-        if (this.state.page == SearchPage && shown == false) {
+        if (this.state.page === SearchPage && shown === false) {
             this.popSearchBackgroundState();
         }
     }

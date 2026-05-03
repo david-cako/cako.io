@@ -158,21 +158,21 @@ export default class InfiniteScroll {
     }
 
     saveNavigationScrollPosition(page) {
-        if (page == "/") {
+        if (page === "/") {
             this.navigationScrollPositions["/"] = window.scrollY;
-        } else if (page == "features") {
+        } else if (page === "features") {
             this.navigationScrollPositions["features"] = window.scrollY;
         }
     }
 
     restoreNavigationScrollPosition(page) {
-        if (page == "/") {
+        if (page === "/") {
             const pos = this.navigationScrollPositions["/"];
 
             if (pos !== null) {
                 window.scroll(0, pos);
             }
-        } else if (page == "features") {
+        } else if (page === "features") {
             const pos = this.navigationScrollPositions["features"];
 
             if (pos !== null) {
@@ -212,7 +212,7 @@ export default class InfiniteScroll {
             return;
         }
 
-        if (window.CakoApp && window.CakoApp.state.page == "/") {
+        if (window.CakoApp && window.CakoApp.state.page === "/") {
             this.indexScrollPosition = window.scrollY;
             let time = Date.now();
 
@@ -229,7 +229,7 @@ export default class InfiniteScroll {
 
         const shouldRestoreScrollPosition =
             this.savedIndexScrollPosition !== null && this.savedIndexScrollPosIsFresh &&
-            window.CakoApp && window.CakoApp.state.page == "/" && !userHasScrolled;
+            window.CakoApp && window.CakoApp.state.page === "/" && !userHasScrolled;
 
         if (shouldRestoreScrollPosition) {
             this.#restoreIndexScrollPosition();

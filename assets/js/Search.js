@@ -209,12 +209,12 @@ export default class Search {
 
         // if search shown and up or down pressed, prevent scrolling
         if (Search.shown && !hasModifier &&
-            (e.key == "ArrowUp" || e.key == "ArrowDown")) {
+            (e.key === "ArrowUp" || e.key === "ArrowDown")) {
             e.preventDefault();
         }
 
         // if enter, attempt to navigate to first result
-        if (e.key == "Enter") {
+        if (e.key === "Enter") {
             if (this.focusedResult) {
                 this.focusedResult.click();
             } else if (firstResult) {
@@ -225,7 +225,7 @@ export default class Search {
         if (this.focusedResult) {
             const current = this.focusedResult;
 
-            if (e.key == "ArrowUp" && !hasModifier) {
+            if (e.key === "ArrowUp" && !hasModifier) {
                 if (current && current.parentElement
                     && current.parentElement.previousElementSibling) {
                     const prev = current.parentElement.previousElementSibling;
@@ -237,7 +237,7 @@ export default class Search {
                     // currently at the top, focus back to search
                     Search.focus();
                 }
-            } else if (e.key == "ArrowDown" && !hasModifier) {
+            } else if (e.key === "ArrowDown" && !hasModifier) {
                 if (current && current.parentElement &&
                     current.parentElement.nextElementSibling) {
                     const next = current.parentElement.nextElementSibling;
@@ -247,7 +247,7 @@ export default class Search {
                     }
                 }
             }
-        } else if (e.key == "ArrowDown" && !hasModifier) {
+        } else if (e.key === "ArrowDown" && !hasModifier) {
             // down pressed, no result focused yet
             if (firstResult) {
                 firstResult.focus();
@@ -260,7 +260,7 @@ export default class Search {
     }
 
     offSearchShown(fn) {
-        this.searchShownCallbacks = this.searchShownCallbacks.filter(c => c != fn);
+        this.searchShownCallbacks = this.searchShownCallbacks.filter(c => c !== fn);
     }
 
     callSearchShownCallbacks() {
@@ -429,7 +429,7 @@ export default class Search {
     static getStrongTextMatch(matches, post, query) {
         const previewLength = 42;
 
-        const htmlMatches = matches.filter(m => m.in == "html");
+        const htmlMatches = matches.filter(m => m.in === "html");
         const titleWords = post.title.toLowerCase().split(" ");
         const tokens = tokenizeString(query, true);
 
@@ -476,7 +476,7 @@ export default class Search {
                         && (word.toLowerCase().indexOf(m.token) !== -1 ||
                             Search.isNumericMatch(m.token, word) ||
                             normalizeString(word, true).indexOf(m.token) !== -1)
-                        && htmlMatchIdxs.findIndex(m => m.idx == i) === -1
+                        && htmlMatchIdxs.findIndex(m => m.idx === i) === -1
                     ) {
                         htmlMatchIdxs.push({ idx: i, word: word, token: m.token });
                     }
