@@ -4,10 +4,14 @@ import InfiniteScroll from "./InfiniteScroll.js";
 import Api from "./Api.js";
 import Html from "./Html.js";
 
+const HomePage = "/";
+const FeaturesPage = "features";
+const SearchPage = "search";
+const AllPage = "all";
+
 export default class CakoApp {
     search;
     infiniteScroll;
-
     /** Current application state. */
     state;
     /** Background state saved to return to after hiding search. */
@@ -15,7 +19,6 @@ export default class CakoApp {
     /** True when accessing hosted site with API available.
      * Otherwise, we are accessing a static archive and should not override events. */
     isLiveSite;
-
     /** Distance from viewport to load a post when scrolling. */
     loadPostOffset = 500;
 
@@ -23,6 +26,12 @@ export default class CakoApp {
     static indexInner = document.getElementById("index-inner");
     static postInner = document.getElementById("post-inner");
     static emailAddress = document.getElementById("email-address");
+
+    get pageIsPost() {
+        return this.state.page != HomePage
+            && this.state.page != FeaturesPage
+            && this.state.page != SearchPage
+    }
 
     static get navLinkLeft() {
         return document.querySelector(".post-nav-link.left");
@@ -43,7 +52,7 @@ export default class CakoApp {
 
         let page
         if (location.pathname == "/") {
-            page = "/"
+            page = HomePage;
         } else {
             page = location.pathname.replaceAll("/", "");
         }
@@ -51,7 +60,7 @@ export default class CakoApp {
         this.state = { page: page };
         history.replaceState(this.state, "");
 
-        if (this.state.page == "all") {
+        if (this.state.page == AllPage) {
             this.infiniteScroll = new InfiniteScroll({ noFetch: true });
         } else {
             this.infiniteScroll = new InfiniteScroll();
@@ -79,25 +88,29 @@ export default class CakoApp {
             this.search.onSearchShown(this.onSearchShown);
 
             this.getVisiblePosts();
+
+            if (this.pageIsPost) {
+                this.getPreviousAndNext();
+            }
         } catch (e) {
             this.isLiveSite = false;
             console.log("Static site initialized.");
         }
     }
 
-    async navigateToState(state) {
+    async navigateToState(state, { push } = { push: true }) {
         if (state.page) {
             // Save scroll position before changing state.
             this.infiniteScroll.saveNavigationScrollPosition(this.state.page);
 
             switch (state.page) {
-                case "/":
+                case HomePage:
                     await this.#navigateToIndex();
                     break;
-                case "features":
+                case FeaturesPage:
                     await this.#navigateToFeatures();
                     break;
-                case "search":
+                case SearchPage:
                     await this.#navigateToSearch();
                     break;
                 default:
@@ -105,13 +118,23 @@ export default class CakoApp {
                     break;
             }
 
-            if (state.page !== "search") {
+            if (state.page !== SearchPage) {
                 this.hideSearch();
             }
 
             this.state = state;
 
             this.infiniteScroll.restoreNavigationScrollPosition(this.state.page);
+
+            if (push) {
+                let url;
+                if (state.page == HomePage) {
+                    url = "/"
+                } else {
+                    url = `/${state.page}/`
+                }
+                history.pushState(state, "", url);
+            }
         }
     }
 
@@ -120,8 +143,7 @@ export default class CakoApp {
 
         if (this.isLiveSite) {
             const slug = Html.getSlugForPostLink(postLink);
-            await this.navigateToState({ page: slug });
-            history.pushState(this.state, "", `/${slug}/`);
+            await this.navigateToState({ page: slug }, { push: true });
         } else {
             postLink.click();
         }
@@ -156,6 +178,15 @@ export default class CakoApp {
         }
     }
 
+    getPreviousAndNext() {
+        if (!this.pageIsPost) {
+            throw new Error("getPreviousAndNext() called with no post shown.");
+        }
+
+        Api.getPrevious(this.state.page, 10);
+        Api.getNext(this.state.page, 10);
+    }
+
     onClick = async (e) => {
         const headerElem = e.target.closest("#cako-site-nav-link");
         if (headerElem) {
@@ -167,9 +198,7 @@ export default class CakoApp {
                 CakoApp.siteNavLink.blur()
             }, 200);
 
-            await this.navigateToState({ page: "/" });
-
-            history.pushState(this.state, "", "/");
+            await this.navigateToState({ page: HomePage }, { push: true });
             return;
         }
 
@@ -192,9 +221,7 @@ export default class CakoApp {
         if (featuresLinkElem) {
             e.preventDefault();
 
-            await this.navigateToState({ page: "features" });
-
-            history.pushState(this.state, "", "/features/");
+            await this.navigateToState({ page: FeaturesPage }, { push: true });
             return;
         }
 
@@ -269,11 +296,11 @@ export default class CakoApp {
 
     onSearchShown = () => {
         this.searchBackgroundState = Object.assign({}, this.state);
-        this.navigateToState({ page: "search" });
+        this.navigateToState({ page: SearchPage });
     }
 
     onMenuStateChange = (shown) => {
-        if (this.state.page == "search" && shown == false) {
+        if (this.state.page == SearchPage && shown == false) {
             this.popSearchBackgroundState();
         }
     }
@@ -309,8 +336,7 @@ export default class CakoApp {
         window.scrollTo({ top: 0 });
         window.Header.resetAnimation();
 
-        Api.getPrevious(slug, 10);
-        Api.getNext(slug, 10);
+        this.getPreviousAndNext();
     }
 
     async #navigateToFeatures() {
