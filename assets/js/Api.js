@@ -176,6 +176,42 @@ export default class Api {
         return g;
     }
 
+    static getPrevious(slug, count) {
+        const idx = Api.index.indexOf(slug);
+        if (idx == -1) {
+            throw new Error("Slug not found in index.")
+        }
+
+        const start = (idx - count) >= 0
+            ? (idx - count)
+            : 0;
+
+        const end = idx;
+
+        const posts = Api.index.slice(start, end)
+            .map(p => p.slug);
+
+        return Api.getPosts(posts)
+    }
+
+    static getNext(slug, count) {
+        const idx = Api.index.indexOf(slug);
+        if (idx == -1) {
+            throw new Error("Slug not found in index.")
+        }
+
+        const start = idx;
+
+        const end = (idx + count) <= Api.index.length
+            ? (idx + count)
+            : Api.index.length;
+
+        const posts = Api.index.slice(start, end)
+            .map(p => p.slug);
+
+        return Api.getPosts(posts)
+    }
+
     static async isOpen() {
         return await Api.openPromise.promise;
     }

@@ -308,6 +308,9 @@ export default class CakoApp {
 
         window.scrollTo({ top: 0 });
         window.Header.resetAnimation();
+
+        Api.getPrevious(slug, 10);
+        Api.getNext(slug, 10);
     }
 
     async #navigateToFeatures() {
