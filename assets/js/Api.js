@@ -78,7 +78,12 @@ export default class Api {
      * further index posts on receipt. */
     static getIndex() {
         const g = new AsyncGenerator([...Api.index]);
-        Api.#indexGenerators.push({ generator: g });
+
+        if (Api.hasFinishedGettingIndex) {
+            g.resolve(null)
+        } else {
+            Api.#indexGenerators.push({ generator: g });
+        }
 
         return g;
     }

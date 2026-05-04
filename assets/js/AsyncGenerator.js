@@ -31,8 +31,6 @@ export default class AsyncGenerator {
 
             yield value;
         }
-
-        this.done.resolve();
     }
 
     resolve(data) {
@@ -48,6 +46,10 @@ export default class AsyncGenerator {
             p.resolve(data);
         } else {
             next.resolve(data);
+        }
+
+        if (data === null) {
+            this.done.resolve();
         }
     }
 
