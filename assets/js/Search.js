@@ -1,6 +1,7 @@
 import Api from "./Api.js";
 import Menu from "./Menu.js";
 import Html from "./Html.js";
+import AsyncGenerator from "./AsyncGenerator.js";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -16,7 +17,7 @@ export default class Search {
     /** Position in document from when search is hidden. */
     contentScrollPosition;
     inputThrottleTimeout;
-    inputThrottleTime = 100;
+    inputThrottleTime = 300;
 
     /** Array of callbacks to be called when search is shown. */
     searchShownCallbacks = [];
@@ -70,6 +71,7 @@ export default class Search {
     /** Match for title, content, and date on posts */
     async search(query) {
         let posts;
+        let results = [];
 
         /** If query contains previous query, search from previous results,
          * unless it contains a number.
@@ -79,12 +81,18 @@ export default class Search {
         if (this.previousQuery && this.previousResults
             && normalizeString(query, true).indexOf(this.previousQuery) !== -1
             && !containsNumber(query)) {
-            posts = this.previousResults;
+            posts = new AsyncGenerator(this.previousResults);
+            posts.resolve(null);
         } else {
             posts = Api.getAllPosts();
         }
 
+        var i = 0;
+
+        Search.updateStatus({ searching: true })
+
         for await (const p of posts.generator()) {
+            i++
             if (this.currentQuery !== query) {
                 return;
             }
@@ -92,11 +100,15 @@ export default class Search {
             const r = Search.search([p], query);
 
             results = results.concat(r);
-            results = Search.sortResults(results);
 
-            this.showResults(results);
-            Search.updateStatus({ searching: true })
+            if (i % 100 === 0) {
+                results = Search.sortResults(results);
+                this.showResults(results);
+            }
         }
+
+        results = Search.sortResults(results);
+        this.showResults(results);
 
         if (this.currentQuery !== query) {
             return;
@@ -123,7 +135,7 @@ export default class Search {
 
 
     showResults(results) {
-        Search.searchResults.innerHTML = "";
+        Search.searchResults.innerHTML = ""
 
         for (const result of results) {
             const resultElem = Html.generatePostLink(result.post, {
@@ -172,33 +184,35 @@ export default class Search {
 
         Search.clearIcon.style.display = "block";
 
-        if (!Search.shown) {
-            this.showSearch();
-        }
+        if (value.length >= 3) {
+            if (!Search.shown) {
+                this.showSearch();
+            }
 
-        Search.searchResults.innerHTML = "";
+            Search.searchResults.innerHTML = "";
 
-        let results;
+            let results;
 
-        try {
-            results = await this.search(value);
-        } catch (e) {
-            Search.updateStatus({ error: e });
-            console.log(e);
-            throw e;
-        }
+            try {
+                results = await this.search(value);
+            } catch (e) {
+                Search.updateStatus({ error: e });
+                console.log(e);
+                throw e;
+            }
 
-        // Search returned without results because currentQuery has changed
-        if (results === undefined) {
-            return;
-        }
+            // Search returned without results because currentQuery has changed
+            if (results === undefined) {
+                return;
+            }
 
-        if (Search.shown) {
-            Search.updateStatus({ results: results });
+            if (Search.shown) {
+                Search.updateStatus({ results: results });
 
-            window.scrollTo({ top: 0 });
+                window.scrollTo({ top: 0 });
 
-            this.previousQuery = normalizeString(value, true);
+                this.previousQuery = normalizeString(value, true);
+            }
         }
     }
 

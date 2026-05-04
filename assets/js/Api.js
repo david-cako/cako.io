@@ -149,9 +149,9 @@ export default class Api {
     static getAllPosts() {
         let existing = [];
 
-        const existingKeys = Object.keys(Api.posts);
-        for (const k in existingKeys) {
-            existing.push(k);
+        const existingSlugs = Object.keys(Api.posts);
+        for (const k of existingSlugs) {
+            existing.push(Api.posts[k]);
         }
 
         const g = new AsyncGenerator(existing);
@@ -159,7 +159,7 @@ export default class Api {
         if (!this.gettingAllPosts && !this.hasFinishedGettingAllPosts) {
             Api.conn.send(JSON.stringify({
                 topic: ApiTopicAllPosts,
-                exclude: existing
+                exclude: existingSlugs
             }));
         }
 
