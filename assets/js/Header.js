@@ -13,16 +13,20 @@ class Header {
     }
 
     static init() {
-        if (!Header.browserSupportsCssScrollAnimations) {
-            Header.updateHeaderOpacity();
+        Header.updateHeaderOpacity();
 
-            window.addEventListener('scroll', Header.updateHeaderOpacity);
+        window.addEventListener('scroll', Header.updateHeaderOpacity);
 
-            // header navigation saved to top of home page for InfiniteScroll's state restore
-            Header.headerLink.addEventListener('click', () => {
-                localStorage.setItem("contentScrollPosition", 0);
-            });
-        }
+        // header navigation saved to top of home page for InfiniteScroll's state restore
+        Header.headerLink.addEventListener('click', () => {
+            localStorage.setItem("contentScrollPosition", 0);
+        });
+    }
+
+    static getOpacity() {
+        return window.scrollY > Header.maxScroll
+            ? 0
+            : 1 - (window.scrollY / Header.maxScroll);
     }
 
     static updateHeaderOpacity() {
@@ -31,9 +35,7 @@ class Header {
                 return;
             }
 
-            const newOpacity = window.scrollY > Header.maxScroll
-                ? 0
-                : 1 - (window.scrollY / Header.maxScroll);
+            const newOpacity = Header.getOpacity();
 
             Header.header.style.opacity = newOpacity;
             Header.lastOpacity = newOpacity;
@@ -43,11 +45,7 @@ class Header {
     /** ??? Fixes opacity stuck after navigating to new page when scrolled just 100px,
      * and fixes animation range after appending posts to feed. */
     static resetAnimation() {
-        Header.header.style.animation = "none";
 
-        setTimeout(() => {
-            Header.header.style.animation = "";
-        }, 10);
     }
 }
 

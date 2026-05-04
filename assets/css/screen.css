@@ -525,15 +525,6 @@ code.hljs {
     display: inline-block;
 }
 
-@supports (animation-timeline: scroll()) and (animation-range: 0px 35px) {
-    #cako-header-text {
-        animation: opacity;
-        animation-timeline: scroll();
-        animation-range: 0px 35px;
-        animation-fill-mode: forwards;
-    }
-}
-
 #last-name-c {
     color: #36daff;
 }
