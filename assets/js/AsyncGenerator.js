@@ -1,6 +1,7 @@
 export default class AsyncGenerator {
     initial;
     queue;
+    done;
 
     get next() {
         if (this.queue.length === 0) {
@@ -13,6 +14,7 @@ export default class AsyncGenerator {
     constructor(initial = []) {
         this.initial = initial;
         this.queue = [AsyncGenerator.promiseWithResolvers()];
+        this.done = AsyncGenerator.promiseWithResolvers();
     }
 
     async * generator() {
@@ -29,6 +31,8 @@ export default class AsyncGenerator {
 
             yield value;
         }
+
+        this.done.resolve();
     }
 
     resolve(data) {
@@ -45,6 +49,18 @@ export default class AsyncGenerator {
         } else {
             next.resolve(data);
         }
+    }
+
+    reject(data) {
+        const next = this.next;
+        if (!next) {
+            throw new Error("Rejecting zero-length queue!");
+        }
+
+        next.reject(data);
+        next.isRejected = true;
+
+        this.done.reject();
     }
 
     static promiseWithResolvers() {

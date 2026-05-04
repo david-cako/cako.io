@@ -112,7 +112,7 @@ export default class Api {
         let existing = [];
         let requestSlugs = [];
 
-        for (const slug in slugs) {
+        for (const slug of slugs) {
             if (slug in Api.posts) {
                 existing.push(Api.posts[slug]);
             } else {
@@ -123,6 +123,7 @@ export default class Api {
         const g = new AsyncGenerator(existing);
 
         if (requestSlugs.length > 0) {
+            console.log("remote: ", requestSlugs)
             Api.conn.send(JSON.stringify({
                 topic: ApiTopicPosts,
                 slugs: requestSlugs,
@@ -131,7 +132,7 @@ export default class Api {
 
             Api.#postGenerators.push({ generator: g, topicId: id });
         } else {
-            g.generator.resolve(null);
+            g.resolve(null);
         }
 
         return g;
@@ -158,7 +159,7 @@ export default class Api {
         }
 
         if (this.hasFinishedGettingAllPosts) {
-            g.generator.resolve(null);
+            g.resolve(null);
         } else {
             Api.#allPostGenerators.push({ generator: g });
         }
@@ -176,35 +177,44 @@ export default class Api {
         return g;
     }
 
-    static getPrevious(slug, count) {
-        const idx = Api.index.indexOf(slug);
+    static getPrevNextIndex(slug, { next } = { next: false }) {
+        const idx = Api.index.findIndex(s => s.slug === slug);
         if (idx === -1) {
             throw new Error("Slug not found in index.")
         }
 
-        const start = (idx - count) >= 0
-            ? (idx - count)
-            : 0;
+        if (next) {
+            if ((idx - 1) < 0) {
+                return null
+            }
 
-        const end = idx;
+            return Api.index[idx - 1];
+        } else {
+            if ((idx + 1) >= Api.index.length) {
+                return null
+            }
 
-        const posts = Api.index.slice(start, end)
-            .map(p => p.slug);
-
-        return Api.getPosts(posts)
+            return Api.index[idx + 1];
+        }
     }
 
-    static getNext(slug, count) {
-        const idx = Api.index.indexOf(slug);
+    static getPrevNext(slug, count, { next } = { next: false }) {
+        const idx = Api.index.findIndex(s => s.slug === slug);
         if (idx === -1) {
             throw new Error("Slug not found in index.")
         }
 
-        const start = idx;
+        const start = next
+            ? idx
+            : (idx - count) >= 0
+                ? (idx - count)
+                : 0;
 
-        const end = (idx + count) <= Api.index.length
-            ? (idx + count)
-            : Api.index.length;
+        const end = next
+            ? (idx + count) <= Api.index.length
+                ? (idx + count)
+                : Api.index.length
+            : idx;
 
         const posts = Api.index.slice(start, end)
             .map(p => p.slug);

@@ -66,8 +66,6 @@ export default class CakoApp {
             this.infiniteScroll = new InfiniteScroll();
         }
 
-        console.log(Html.posts);
-
         this.initialize();
     }
 
@@ -95,6 +93,7 @@ export default class CakoApp {
         } catch (e) {
             this.isLiveSite = false;
             console.log("Static site initialized.");
+            throw e;
         }
     }
 
@@ -102,6 +101,8 @@ export default class CakoApp {
         if (state.page) {
             // Save scroll position before changing state.
             this.infiniteScroll.saveNavigationScrollPosition(this.state.page);
+
+            this.state = state;
 
             switch (state.page) {
                 case HomePage:
@@ -121,8 +122,6 @@ export default class CakoApp {
             if (state.page !== SearchPage) {
                 this.hideSearch();
             }
-
-            this.state = state;
 
             this.infiniteScroll.restoreNavigationScrollPosition(this.state.page);
 
@@ -178,13 +177,15 @@ export default class CakoApp {
         }
     }
 
-    getPreviousAndNext() {
+    async getPreviousAndNext() {
         if (!this.pageIsPost) {
             throw new Error("getPreviousAndNext() called with no post shown.");
         }
 
-        Api.getPrevious(this.state.page, 10);
-        Api.getNext(this.state.page, 10);
+        await Api.getIndex().done.promise;
+
+        Api.getPrevNext(this.state.page, 10);
+        Api.getPrevNext(this.state.page, 10, { next: true });
     }
 
     onClick = async (e) => {
@@ -236,7 +237,9 @@ export default class CakoApp {
     }
 
     onScroll = (e) => {
-        this.getVisiblePosts();
+        if (this.state.page === HomePage) {
+            this.getVisiblePosts();
+        }
     }
 
     onKeyDown = async (e) => {
@@ -329,9 +332,12 @@ export default class CakoApp {
 
         document.body.classList = "post-template";
 
+        const prev = Api.getPrevNextIndex(slug);
+        const next = Api.getPrevNextIndex(slug, { next: true });
+
         Html.setPostContent(post);
         Html.setCopyrightDate(post);
-        Html.setPostNav(post);
+        Html.setPostNav(prev, next);
 
         document.title = post.title;
 

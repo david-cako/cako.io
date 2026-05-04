@@ -227,15 +227,15 @@ export default class Html {
         }
     }
 
-    static setPostNav(post) {
+    static setPostNav(prev, next) {
         Html.postNav.innerHTML = "";
-        if (post.prev) {
-            Html.postNav.append(Html.generatePostLink(post.prev, { navLink: "left" }));
+        if (prev) {
+            Html.postNav.append(Html.generatePostLink(prev, { navLink: "left" }));
         } else {
             Html.postNav.append(document.createElement("div"));
         }
-        if (post.next) {
-            Html.postNav.append(Html.generatePostLink(post.next, { navLink: "right" }));
+        if (next) {
+            Html.postNav.append(Html.generatePostLink(next, { navLink: "right" }));
         }
     }
 }
