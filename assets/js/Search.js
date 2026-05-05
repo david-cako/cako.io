@@ -17,7 +17,7 @@ export default class Search {
     /** Position in document from when search is hidden. */
     contentScrollPosition;
     inputThrottleTimeout;
-    inputThrottleTime = 250;
+    inputThrottleTime = 100;
 
     /** Array of callbacks to be called when search is shown. */
     searchShownCallbacks = [];
@@ -87,28 +87,20 @@ export default class Search {
             posts = Api.getAllPosts();
         }
 
-        var i = 0;
-
         Search.updateStatus({ searching: true })
 
         for await (const p of posts.generator()) {
-            i++
             if (this.currentQuery !== query) {
                 return;
             }
 
-            const r = Search.search([p], query);
+            const r = Search.search(p, query);
 
-            results = results.concat(r);
-
-            if (i % 100 === 0) {
-                results = Search.sortResults(results);
-                this.showResults(results);
+            if (r) {
+                results.push(r);
+                this.showResult(r);
             }
         }
-
-        results = Search.sortResults(results);
-        this.showResults(results);
 
         if (this.currentQuery !== query) {
             return;
@@ -134,16 +126,24 @@ export default class Search {
     }
 
 
-    showResults(results) {
-        Search.searchResults.innerHTML = ""
+    showResult(result) {
+        const resultElem = Html.generatePostLink(result.post, {
+            searchResult: result
+        });
 
-        for (const result of results) {
-            const resultElem = Html.generatePostLink(result.post, {
-                searchResult: result
-            });
+        const existing = Search.searchResults.children;
 
-            Search.searchResults.append(resultElem);
+        for (const e of existing) {
+            const rank = result.strong
+                ? result.strong.rank
+                : 0;
+            if (rank > e.dataset.rank) {
+                Search.searchResults.insertBefore(resultElem, e)
+                return
+            }
         }
+
+        Search.searchResults.append(resultElem);
     }
 
     /** Clears search input and results. */
@@ -283,39 +283,36 @@ export default class Search {
         }
     }
 
-    static search(posts, query) {
-        const results = [];
+    static search(post, query) {
+        let result;
+        let matches = [];
 
         const tokens = tokenizeString(query, true);
 
-        for (const post of posts) {
-            let matches = [];
-
-            for (const t of tokens) {
-                if (Search.getTitleMatch(t, post)) {
-                    matches.push({ in: "title", token: t });
-                } else if (Search.getDateMatch(t, post)) {
-                    matches.push({ in: "date" });
-                } else if (Search.getHtmlMatch(t, post)) {
-                    matches.push({ in: "html", token: t });
-                }
-            }
-
-            if (matches.filter(m => m.in === "date").length >= tokens.length) {
-                results.push({
-                    post: post,
-                    strong: {
-                        in: "date",
-                        rank: 3
-                    }
-                });
-            } else if (matches.length > 0 && matches.length / tokens.length >= .6) {
-                const strong = Search.getStrongTextMatch(matches, post, query);
-                results.push({ post: post, strong: strong });
+        for (const t of tokens) {
+            if (Search.getTitleMatch(t, post)) {
+                matches.push({ in: "title", token: t });
+            } else if (Search.getDateMatch(t, post)) {
+                matches.push({ in: "date" });
+            } else if (Search.getHtmlMatch(t, post)) {
+                matches.push({ in: "html", token: t });
             }
         }
 
-        return results;
+        if (matches.filter(m => m.in === "date").length >= tokens.length) {
+            result = ({
+                post: post,
+                strong: {
+                    in: "date",
+                    rank: 3
+                }
+            });
+        } else if (matches.length > 0 && matches.length / tokens.length >= .6) {
+            const strong = Search.getStrongTextMatch(matches, post, query);
+            result = ({ post: post, strong: strong });
+        }
+
+        return result;
     }
 
     static focus() {

@@ -157,6 +157,7 @@ export default class Api {
         const g = new AsyncGenerator(existing);
 
         if (!this.gettingAllPosts && !this.hasFinishedGettingAllPosts) {
+            console.log("remote get all posts")
             Api.conn.send(JSON.stringify({
                 topic: ApiTopicAllPosts,
                 exclude: existingSlugs

@@ -119,9 +119,11 @@ export default class Html {
         dateElem.setAttribute("datetime", datetime);
         dateElem.innerText = `${date} ${monthName} ${year}`;
 
-        if (searchResult !== undefined) {
-            if (searchResult.strong !== undefined &&
-                searchResult.strong.in === "html") {
+        if (searchResult) {
+            postLinkElem.firstElementChild.dataset.rank = searchResult.strong
+                ? searchResult.strong.rank
+                : 0;
+            if (searchResult.strong && searchResult.strong.in === "html") {
                 const body = Html.generateSearchPreview(searchResult);
 
                 postLinkElem.firstElementChild.append(body);
