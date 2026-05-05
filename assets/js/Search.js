@@ -17,7 +17,7 @@ export default class Search {
     /** Position in document from when search is hidden. */
     contentScrollPosition;
     inputThrottleTimeout;
-    inputThrottleTime = 300;
+    inputThrottleTime = 250;
 
     /** Array of callbacks to be called when search is shown. */
     searchShownCallbacks = [];
