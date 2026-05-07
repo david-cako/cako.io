@@ -160,7 +160,7 @@ export default class Api {
             console.log("remote get all posts")
             Api.conn.send(JSON.stringify({
                 topic: ApiTopicAllPosts,
-                exclude: existingSlugs
+                excludeSlugs: existingSlugs
             }));
         }
 
