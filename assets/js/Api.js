@@ -21,15 +21,17 @@ export default class Api {
     /** Max retries for initial connection. */
     static maxRetries = 5;
 
-    /** Ordered index of posts. */
-    static index = [];
+    /** IndexedDB. */
+    static db;
+    /** Open request for db. */
+    static dbOpenRequest;
+    static dbIsInitialized;
+
     /** Set true while getting index. */
     static gettingIndex = false;
     /** True after index been successfully retrieved. **/
     static hasFinishedGettingIndex = false;
 
-    /** Object containing full post values for slug keys. */
-    static posts = {};
     /** Total post count. */
     static totalPosts;
 
@@ -72,12 +74,23 @@ export default class Api {
         if (!window.Api) {
             window.Api = this;
         }
+
+        if (!Api.db && !Api.dbOpenRequest) {
+            Api.dbOpenRequest = indexedDB.open("cako.io");
+            Api.dbOpenRequest.onsuccess = Api.onDbOpenSuccess;
+            Api.dbOpenRequest.onerror = Api.onDbOpenError
+            Api.dbOpenRequest.onupgradeneeded = Api.onDbUpgradeNeeded;
+        }
+
+        document.addEventListener("visibilitychange", Api.onVisibilityChange);
     }
 
     /** Returns generator yielding existing index posts immediately and
      * further index posts on receipt. */
-    static getIndex() {
-        const g = new AsyncGenerator([...Api.index]);
+    static async getIndex() {
+        const posts = await Api.getAllPostsFromDb();
+
+        const g = new AsyncGenerator([...posts]);
 
         if (Api.hasFinishedGettingIndex) {
             g.resolve(null)
@@ -89,12 +102,13 @@ export default class Api {
     }
 
     static async getPost(slug) {
-        let id = crypto.randomUUID();
+        const post = await Api.getPostFromDb(slug);
 
-
-        if (slug in Api.posts) {
-            return Api.posts[slug];
+        if (post && !Api.shouldGetUpdatedPost(post)) {
+            return post;
         } else {
+            let id = crypto.randomUUID();
+
             console.log("remote getpost: ", slug)
             const g = new AsyncGenerator();
             Api.conn.send(JSON.stringify({
@@ -112,14 +126,15 @@ export default class Api {
     /** Returns generator yielding available posts for slugs immediately and
      * sends request for rest of posts to be yielded on receipt. */
     static getPosts(slugs) {
-        const id = crypto.randomUUID();
+        const posts = await Api.getPostsFromDb(slugs);
 
         let existing = [];
         let requestSlugs = [];
 
         for (const slug of slugs) {
-            if (slug in Api.posts) {
-                existing.push(Api.posts[slug]);
+            const p = posts.find(p => p.slug === slug);
+            if (p && !Api.shouldGetUpdatedPost(p)) {
+                existing.push(p);
             } else {
                 requestSlugs.push(slug);
             }
@@ -128,6 +143,8 @@ export default class Api {
         const g = new AsyncGenerator(existing);
 
         if (requestSlugs.length > 0) {
+            const id = crypto.randomUUID();
+
             console.log("remote: ", requestSlugs)
             Api.conn.send(JSON.stringify({
                 topic: ApiTopicPosts,
@@ -147,12 +164,9 @@ export default class Api {
      * If not yet in flight, sends request for rest of posts, and
      * upon receipt, yields rest of posts. */
     static getAllPosts() {
-        let existing = [];
+        let existing = Api.getAllPostsFromDb();
 
-        const existingSlugs = Object.keys(Api.posts);
-        for (const k of existingSlugs) {
-            existing.push(Api.posts[k]);
-        }
+        const existingSlugs = existing.map(p => p.slug)
 
         const g = new AsyncGenerator(existing);
 
@@ -184,7 +198,9 @@ export default class Api {
     }
 
     static getPrevNextIndex(slug, { next } = { next: false }) {
-        const idx = Api.index.findIndex(s => s.slug === slug);
+        const posts = await Api.getAllPostsFromDb();
+
+        const idx = posts.findIndex(s => s.slug === slug);
         if (idx === -1) {
             throw new Error("Slug not found in index.")
         }
@@ -194,18 +210,20 @@ export default class Api {
                 return null
             }
 
-            return Api.index[idx - 1];
+            return posts[idx - 1];
         } else {
-            if ((idx + 1) >= Api.index.length) {
+            if ((idx + 1) >= posts.length) {
                 return null
             }
 
-            return Api.index[idx + 1];
+            return posts[idx + 1];
         }
     }
 
     static getPrevNext(slug, count, { next } = { next: false }) {
-        const idx = Api.index.findIndex(s => s.slug === slug);
+        const posts = await Api.getAllPostsFromDb();
+
+        const idx = posts.findIndex(s => s.slug === slug);
         if (idx === -1) {
             throw new Error("Slug not found in index.")
         }
@@ -217,23 +235,161 @@ export default class Api {
                 : 0;
 
         const end = next
-            ? (idx + count) <= Api.index.length
+            ? (idx + count) <= posts.length
                 ? (idx + count)
-                : Api.index.length
+                : posts.length
             : idx;
 
-        const posts = Api.index.slice(start, end)
+        const slugs = posts.slice(start, end)
             .map(p => p.slug);
 
-        return Api.getPosts(posts)
+        return Api.getPosts(slugs)
     }
 
     static async isOpen() {
         return await Api.openPromise.promise;
     }
 
+    static getPostFromDb(slug) {
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(["post"]);
+            const objectStore = transaction.objectStore("post");
+            const request = objectStore.get(slug);
+
+            request.onsuccess = (e) => {
+                resolve(e.target.result);
+            }
+            request.onerror = (e) => {
+                reject(e);
+            }
+        });
+    }
+
+    static newDbPostsRequest() {
+        const transaction = db.transaction(["post"]);
+        const objectStore = transaction.objectStore("post");
+        const index = objectStore.index("published_at");
+        const request = index.openCursor();
+
+        return request;
+    }
+
+    static getPostsFromDb(slugs) {
+        return new Promise((resolve, reject) => {
+            const request = Api.newDbPostsRequest();
+
+            var posts = [];
+
+            request.onsuccess = (e) => {
+                const cursor = e.target.result;
+                if (cursor) {
+                    if (slugs.indexOf(cursor.slug) !== -1) {
+                        posts.push(e.target.result);
+                    }
+                    cursor.continue();
+                } else {
+                    resolve(posts);
+                }
+            }
+            request.onerror = (e) => {
+                reject("Error opening all posts cursor: ", e);
+            }
+        });
+    }
+
+    static getAllPostsFromDb() {
+        return new Promise((resolve, reject) => {
+            const request = Api.newDbPostsRequest();
+
+            var posts = [];
+
+            request.onsuccess = (e) => {
+                const cursor = e.target.result;
+                if (cursor) {
+                    posts.push(cursor);
+                    cursor.continue();
+                } else {
+                    resolve(posts);
+                }
+            }
+            request.onerror = (e) => {
+                reject("Error opening all posts cursor: ", e);
+            }
+        });
+    }
+
+    static upsertPostInDb(post) {
+        return new Promise((resolve, reject) => {
+            const objectStore = db
+                .transaction(["posts"], "readwrite")
+                .objectStore("posts");
+            const request = objectStore.get(post.slug);
+            request.onsuccess = (e) => {
+                const p = e.target.result;
+
+                p.title = post.title;
+                p.updated_at = post.updated_at;
+
+                if (post.html) {
+                    p.html = post.html;
+                    p.local_html_updated_at = post.local_html_updated_at;
+                }
+
+                const requestUpdate = objectStore.put(data);
+                requestUpdate.onsuccess = (event) => {
+                    resolve(post);
+                };
+                requestUpdate.onerror = (e) => {
+                    reject("Error updating post: ", e);
+                };
+            };
+            request.onerror = (event) => {
+                reject("Error getting post: ", e);
+            };
+        });
+    }
+
+    static shouldGetUpdatedPost(post) {
+        if ((!post.local_html_updated_at || (post.updated_at > post.local_html_updated_at))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static onDbOpenSuccess = (e) => {
+        Api.db = e.target.result;
+        Api.dbOpenRequest = undefined;
+    }
+
+    static onDbOpenError = (e) => {
+        console.error("Error opening database.", e);
+        Api.db = undefined;
+        Api.dbOpenRequest = undefined;
+    }
+
+    static onDbUpgradeNeeded = (e) => {
+        const db = e.target.result;
+
+        const objectStore = db.createObjectStore("posts", { keyPath: "slug" });
+        objectStore.createIndex("title", "title", { unique: false });
+        objectStore.createIndex("published_at", "published_at", { unique: false });
+        objectStore.createIndex("updated_at", "updated_at", { unique: false });
+        objectStore.createIndex("local_html_updated_at", "local_html_updated_at", { unique: false });
+        objectStore.createIndex("html", "html", { unique: false });
+
+        Api.dbIsInitialized = true;
+    }
+
+    static onVisibilityChange = (e) => {
+        if (!document.hidden) {
+            if (!Api.conn || Api.conn.readyState == WebSocket.CLOSED) {
+                Api.initialize();
+            }
+        }
+    }
+
     static #getIndex() {
-        Api.index = [];
         Api.conn.send(JSON.stringify({
             topic: ApiTopicIndex
         }));
@@ -273,7 +429,9 @@ export default class Api {
         }
 
         if (data.post) {
-            Api.index.push(data.post);
+            const transaction = db.transaction(["index"], "readwrite");
+            const objectStore = transaction.objectStore("index");
+            objectStore.add(data.post);
         } else {
             Api.gettingIndex = false;
             Api.hasFinishedGettingIndex = true;
@@ -295,9 +453,7 @@ export default class Api {
         g.generator.resolve(data.post);
 
         if (data.post) {
-            if (!(data.post.slug in Api.posts)) {
-                Api.posts[data.post.slug] = data.post;
-            }
+            Api.upsertPostInDb(data.post);
         } else {
             const idx = Api.#postGenerators.indexOf(s);
             Api.#postGenerators.splice(idx, 1);
@@ -310,9 +466,7 @@ export default class Api {
         }
 
         if (data.post) {
-            if (!(data.post.slug in Api.posts)) {
-                Api.posts[data.post.slug] = data.post;
-            }
+            Api.upsertPostInDb(data.post);
         } else {
             this.isGettingAllPosts = false;
             this.hasFinishedGettingAllPosts = true;
@@ -321,10 +475,7 @@ export default class Api {
     }
 
     static #onNewPost(data) {
-        const len = Api.index.unshift(data.post);
-        Api.totalPosts = len;
-
-        Api.posts[p.slug] = data.post;
+        Api.upsertPostInDb(data.post);
 
         for (const g of Api.#newPostGenerators) {
             g.generator.resolve(data.post);
