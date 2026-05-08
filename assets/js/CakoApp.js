@@ -8,6 +8,7 @@ const HomePage = "/";
 const FeaturesPage = "features";
 const SearchPage = "search";
 const AllPage = "all";
+const PhantomPage = "phantom";
 
 export default class CakoApp {
     search;
@@ -31,6 +32,7 @@ export default class CakoApp {
         return this.state.page !== HomePage
             && this.state.page !== FeaturesPage
             && this.state.page !== SearchPage
+            && this.state.page !== PhantomPage
     }
 
     static get navLinkLeft() {
@@ -313,6 +315,9 @@ export default class CakoApp {
 
     async #navigateToIndex() {
         document.body.classList = "home-template";
+        if (window.PHANTOM) {
+            document.body.classList.add("admin-page");
+        }
 
         Html.setPostContent();
         Html.setCopyrightDate();
@@ -330,6 +335,9 @@ export default class CakoApp {
         const post = await Api.getPost(slug);
 
         document.body.classList = "post-template";
+        if (window.PHANTOM) {
+            document.body.classList.add("admin-page");
+        }
 
         document.title = post.title;
 
@@ -351,6 +359,9 @@ export default class CakoApp {
         const features = await Api.features.promise;
 
         document.body.classList = "page-template";
+        if (window.PHANTOM) {
+            document.body.classList.add("admin-page");
+        }
 
         Html.setPostContent(features);
         Html.setCopyrightDate(features);
