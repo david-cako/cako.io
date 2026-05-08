@@ -1,6 +1,6 @@
 import AsyncGenerator from "./AsyncGenerator.js";
 
-const WEBSOCKETS_URL = "wss://" + document.location.host + "/ws";
+const WEBSOCKETS_URL = "wss://" + document.location.host + "/ws/";
 
 const ApiTopicIndex = "Index";
 const ApiTopicPosts = "Posts";
@@ -25,12 +25,12 @@ export default class Api {
     static db;
     /** Open request for db. */
     static dbOpenRequest;
-    static dbIsInitialized;
+    static dbPromise = AsyncGenerator.promiseWithResolvers();
 
     /** Set true while getting index. */
     static gettingIndex = false;
-    /** True after index been successfully retrieved. **/
-    static hasFinishedGettingIndex = false;
+    /** Resolves when index is ready. */
+    static indexPromise = AsyncGenerator.promiseWithResolvers();
 
     /** Total post count. */
     static totalPosts;
@@ -92,7 +92,7 @@ export default class Api {
 
         const g = new AsyncGenerator([...posts]);
 
-        if (Api.hasFinishedGettingIndex) {
+        if (Api.indexPromise.isResolved) {
             g.resolve(null)
         } else {
             Api.#indexGenerators.push({ generator: g });
@@ -125,7 +125,7 @@ export default class Api {
 
     /** Returns generator yielding available posts for slugs immediately and
      * sends request for rest of posts to be yielded on receipt. */
-    static getPosts(slugs) {
+    static async getPosts(slugs) {
         const posts = await Api.getPostsFromDb(slugs);
 
         let existing = [];
@@ -163,8 +163,8 @@ export default class Api {
     /** Returns generator yielding available posts for slugs immediately. 
      * If not yet in flight, sends request for rest of posts, and
      * upon receipt, yields rest of posts. */
-    static getAllPosts() {
-        let existing = Api.getAllPostsFromDb();
+    static async getAllPosts() {
+        let existing = await Api.getAllPostsFromDb();
 
         const existingSlugs = existing.map(p => p.slug)
 
@@ -197,7 +197,10 @@ export default class Api {
         return g;
     }
 
-    static getPrevNextIndex(slug, { next } = { next: false }) {
+
+    static async getPrevNextIndex(slug, { next } = { next: false }) {
+        await Api.indexPromise.promise;
+
         const posts = await Api.getAllPostsFromDb();
 
         const idx = posts.findIndex(s => s.slug === slug);
@@ -220,7 +223,9 @@ export default class Api {
         }
     }
 
-    static getPrevNext(slug, count, { next } = { next: false }) {
+    static async getPrevNext(slug, count, { next } = { next: false }) {
+        await Api.indexPromise.promise;
+
         const posts = await Api.getAllPostsFromDb();
 
         const idx = posts.findIndex(s => s.slug === slug);
@@ -243,7 +248,7 @@ export default class Api {
         const slugs = posts.slice(start, end)
             .map(p => p.slug);
 
-        return Api.getPosts(slugs)
+        return Api.getPosts(slugs);
     }
 
     static async isOpen() {
@@ -251,23 +256,30 @@ export default class Api {
     }
 
     static getPostFromDb(slug) {
-        return new Promise((resolve, reject) => {
-            const transaction = db.transaction(["post"]);
-            const objectStore = transaction.objectStore("post");
-            const request = objectStore.get(slug);
+        return new Promise(async (resolve, reject) => {
+            try {
+                await Api.dbPromise.promise;
 
-            request.onsuccess = (e) => {
-                resolve(e.target.result);
-            }
-            request.onerror = (e) => {
+                const transaction = Api.db.transaction(["posts"]);
+                const objectStore = transaction.objectStore("posts");
+                const request = objectStore.get(slug);
+
+                request.onsuccess = (e) => {
+                    resolve(e.target.result);
+                }
+                request.onerror = (e) => {
+                    reject(e);
+                }
+            } catch (e) {
                 reject(e);
             }
         });
     }
 
-    static newDbPostsRequest() {
-        const transaction = db.transaction(["post"]);
-        const objectStore = transaction.objectStore("post");
+    static async newDbPostsRequest() {
+        await Api.dbPromise.promise;
+        const transaction = Api.db.transaction(["posts"]);
+        const objectStore = transaction.objectStore("posts");
         const index = objectStore.index("published_at");
         const request = index.openCursor();
 
@@ -275,82 +287,107 @@ export default class Api {
     }
 
     static getPostsFromDb(slugs) {
-        return new Promise((resolve, reject) => {
-            const request = Api.newDbPostsRequest();
+        return new Promise(async (resolve, reject) => {
+            try {
+                const request = await Api.newDbPostsRequest();
 
-            var posts = [];
+                var posts = [];
 
-            request.onsuccess = (e) => {
-                const cursor = e.target.result;
-                if (cursor) {
-                    if (slugs.indexOf(cursor.slug) !== -1) {
-                        posts.push(e.target.result);
+                request.onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        const post = cursor.value;
+                        if (slugs.indexOf(post.slug) !== -1) {
+                            posts.push(post);
+                        }
+                        cursor.continue();
+                    } else {
+                        resolve(posts);
                     }
-                    cursor.continue();
-                } else {
-                    resolve(posts);
                 }
-            }
-            request.onerror = (e) => {
-                reject("Error opening all posts cursor: ", e);
+                request.onerror = (e) => {
+                    reject("Error opening all posts cursor: ", e);
+                }
+            } catch (e) {
+                reject(e);
+                return;
             }
         });
     }
 
     static getAllPostsFromDb() {
-        return new Promise((resolve, reject) => {
-            const request = Api.newDbPostsRequest();
+        return new Promise(async (resolve, reject) => {
+            try {
+                const request = await Api.newDbPostsRequest();
 
-            var posts = [];
+                var posts = [];
 
-            request.onsuccess = (e) => {
-                const cursor = e.target.result;
-                if (cursor) {
-                    posts.push(cursor);
-                    cursor.continue();
-                } else {
-                    resolve(posts);
+                request.onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        posts.push(cursor.value);
+                        cursor.continue();
+                    } else {
+                        resolve(posts);
+                    }
                 }
-            }
-            request.onerror = (e) => {
-                reject("Error opening all posts cursor: ", e);
+                request.onerror = (e) => {
+                    reject("Error opening all posts cursor: ", e);
+                }
+            } catch (e) {
+                reject(e);
+                return;
             }
         });
     }
 
     static upsertPostInDb(post) {
-        return new Promise((resolve, reject) => {
-            const objectStore = db
-                .transaction(["posts"], "readwrite")
-                .objectStore("posts");
-            const request = objectStore.get(post.slug);
-            request.onsuccess = (e) => {
-                const p = e.target.result;
+        return new Promise(async (resolve, reject) => {
+            try {
+                await Api.dbPromise.promise;
 
-                p.title = post.title;
-                p.updated_at = post.updated_at;
+                const objectStore = Api.db
+                    .transaction(["posts"], "readwrite")
+                    .objectStore("posts");
+                const request = objectStore.get(post.slug);
+                request.onsuccess = (e) => {
+                    const p = e.target.result || { slug: post.slug };
 
-                if (post.html) {
-                    p.html = post.html;
-                    p.local_html_updated_at = post.local_html_updated_at;
-                }
+                    if (post.title) {
+                        p.title = post.title;
+                    }
+                    if (post.published_at) {
+                        p.published_at = new Date(post.published_at);
+                    }
+                    if (post.updated_at) {
+                        p.updated_at = new Date(post.updated_at);
+                    }
+                    if (post.html) {
+                        p.html = post.html;
+                        p.local_html_updated_at = new Date();
+                    }
 
-                const requestUpdate = objectStore.put(data);
-                requestUpdate.onsuccess = (event) => {
-                    resolve(post);
+                    const requestUpdate = objectStore.put(p);
+                    requestUpdate.onsuccess = (event) => {
+                        resolve(post);
+                    };
+                    requestUpdate.onerror = (e) => {
+                        reject("Error updating post: ", e);
+                    };
                 };
-                requestUpdate.onerror = (e) => {
-                    reject("Error updating post: ", e);
+                request.onerror = (event) => {
+                    reject("Error getting post: ", e);
                 };
-            };
-            request.onerror = (event) => {
-                reject("Error getting post: ", e);
-            };
+            } catch (e) {
+                reject(e);
+                return;
+            }
         });
     }
 
     static shouldGetUpdatedPost(post) {
-        if ((!post.local_html_updated_at || (post.updated_at > post.local_html_updated_at))) {
+        if (!post.html || !post.local_html_updated_at ||
+            (post.updated_at > post.local_html_updated_at)) {
             return true;
         } else {
             return false;
@@ -360,6 +397,10 @@ export default class Api {
     static onDbOpenSuccess = (e) => {
         Api.db = e.target.result;
         Api.dbOpenRequest = undefined;
+
+        console.log("db open");
+
+        Api.dbPromise.resolve(null);
     }
 
     static onDbOpenError = (e) => {
@@ -371,14 +412,14 @@ export default class Api {
     static onDbUpgradeNeeded = (e) => {
         const db = e.target.result;
 
+        console.log("db upgrade");
+
         const objectStore = db.createObjectStore("posts", { keyPath: "slug" });
         objectStore.createIndex("title", "title", { unique: false });
         objectStore.createIndex("published_at", "published_at", { unique: false });
         objectStore.createIndex("updated_at", "updated_at", { unique: false });
         objectStore.createIndex("local_html_updated_at", "local_html_updated_at", { unique: false });
         objectStore.createIndex("html", "html", { unique: false });
-
-        Api.dbIsInitialized = true;
     }
 
     static onVisibilityChange = (e) => {
@@ -413,8 +454,9 @@ export default class Api {
 
     static #onOpen() {
         Api.openPromise.resolve();
+        console.log("WebSocket open.")
 
-        if (!Api.gettingIndex && !Api.hasFinishedGettingIndex) {
+        if (!Api.gettingIndex && !Api.indexPromise.isResolved) {
             Api.#getIndex();
         }
 
@@ -423,23 +465,21 @@ export default class Api {
         }
     }
 
-    static #onIndex(data) {
+    static async #onIndex(data) {
         for (const g of Api.#indexGenerators) {
             g.generator.resolve(data.post);
         }
 
         if (data.post) {
-            const transaction = db.transaction(["index"], "readwrite");
-            const objectStore = transaction.objectStore("index");
-            objectStore.add(data.post);
+            await Api.upsertPostInDb(data.post);
         } else {
             Api.gettingIndex = false;
-            Api.hasFinishedGettingIndex = true;
+            Api.indexPromise.resolve();
             Api.#indexGenerators = [];
         }
     }
 
-    static #onPost(data) {
+    static async #onPost(data) {
         if (data.topicId === "features") {
             Api.features.resolve(data.post);
             return;
@@ -453,20 +493,20 @@ export default class Api {
         g.generator.resolve(data.post);
 
         if (data.post) {
-            Api.upsertPostInDb(data.post);
+            await Api.upsertPostInDb(data.post);
         } else {
             const idx = Api.#postGenerators.indexOf(s);
             Api.#postGenerators.splice(idx, 1);
         }
     }
 
-    static #onAllPosts(data) {
+    static async #onAllPosts(data) {
         for (const g of Api.#allPostGenerators) {
             g.generator.resolve(data.post);
         }
 
         if (data.post) {
-            Api.upsertPostInDb(data.post);
+            await Api.upsertPostInDb(data.post);
         } else {
             this.isGettingAllPosts = false;
             this.hasFinishedGettingAllPosts = true;
@@ -474,28 +514,28 @@ export default class Api {
         }
     }
 
-    static #onNewPost(data) {
-        Api.upsertPostInDb(data.post);
+    static async #onNewPost(data) {
+        await Api.upsertPostInDb(data.post);
 
         for (const g of Api.#newPostGenerators) {
             g.generator.resolve(data.post);
         }
     }
 
-    static #onMessage(e) {
+    static async #onMessage(e) {
         const data = JSON.parse(e.data);
         switch (data.topic) {
             case ApiTopicIndex:
-                Api.#onIndex(data);
+                await Api.#onIndex(data);
                 break;
             case ApiTopicPosts:
-                Api.#onPost(data);
+                await Api.#onPost(data);
                 break;
             case ApiTopicAllPosts:
-                Api.#onAllPosts(data);
+                await Api.#onAllPosts(data);
                 break;
             case ApiTopicNew:
-                Api.#onNewPost(data);
+                await Api.#onNewPost(data);
                 break;
             default:
                 throw new Error("Unknown message topic.", e.topic);

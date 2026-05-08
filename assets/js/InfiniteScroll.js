@@ -109,7 +109,7 @@ export default class InfiniteScroll {
             this.isUpdatingPosts = true;
             this.loadingPostsElem.style.display = "block";
 
-            const posts = Api.getIndex();
+            const posts = await Api.getIndex();
 
             try {
                 for await (const p of posts.generator()) {

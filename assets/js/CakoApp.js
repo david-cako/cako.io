@@ -182,10 +182,9 @@ export default class CakoApp {
             throw new Error("getPreviousAndNext() called with no post shown.");
         }
 
-        await Api.getIndex().done.promise;
 
-        Api.getPrevNext(this.state.page, 10);
-        Api.getPrevNext(this.state.page, 10, { next: true });
+        await Api.getPrevNext(this.state.page, 10);
+        await Api.getPrevNext(this.state.page, 10, { next: true });
     }
 
     onClick = async (e) => {
@@ -332,19 +331,20 @@ export default class CakoApp {
 
         document.body.classList = "post-template";
 
-        const prev = Api.getPrevNextIndex(slug);
-        const next = Api.getPrevNextIndex(slug, { next: true });
+        document.title = post.title;
 
         Html.setPostContent(post);
         Html.setCopyrightDate(post);
-        Html.setPostNav(prev, next);
 
-        document.title = post.title;
+        const prev = await Api.getPrevNextIndex(slug);
+        const next = await Api.getPrevNextIndex(slug, { next: true });
+
+        Html.setPostNav(prev, next);
 
         window.scrollTo({ top: 0 });
         window.Header.resetAnimation();
 
-        this.getPreviousAndNext();
+        await this.getPreviousAndNext();
     }
 
     async #navigateToFeatures() {

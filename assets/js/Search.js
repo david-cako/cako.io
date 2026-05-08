@@ -62,7 +62,7 @@ export default class Search {
         try {
             await Api.isOpen();
             // Preload all posts.
-            Api.getAllPosts();
+            await Api.getAllPosts();
         } catch (e) {
             console.error("Search: ", e);
         }
@@ -84,7 +84,7 @@ export default class Search {
             posts = new AsyncGenerator(this.previousResults);
             posts.resolve(null);
         } else {
-            posts = Api.getAllPosts();
+            posts = await Api.getAllPosts();
         }
 
         Search.updateStatus({ searching: true })
