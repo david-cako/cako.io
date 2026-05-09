@@ -4,11 +4,10 @@ import InfiniteScroll from "./InfiniteScroll.js";
 import Api from "./Api.js";
 import Html from "./Html.js";
 
-const HomePage = "/";
-const FeaturesPage = "features";
-const SearchPage = "search";
-const AllPage = "all";
-const PhantomPage = "phantom";
+export const HomePage = "/";
+export const FeaturesPage = "features";
+export const SearchPage = "search";
+export const AllPage = "all";
 
 export default class CakoApp {
     search;
@@ -32,7 +31,6 @@ export default class CakoApp {
         return this.state.page !== HomePage
             && this.state.page !== FeaturesPage
             && this.state.page !== SearchPage
-            && this.state.page !== PhantomPage
     }
 
     static get navLinkLeft() {
@@ -43,7 +41,7 @@ export default class CakoApp {
     }
 
     constructor() {
-        window.CakoApp = this;
+        window.app = this;
 
         Api.initialize();
 
@@ -56,7 +54,8 @@ export default class CakoApp {
         if (location.pathname === "/") {
             page = HomePage;
         } else {
-            page = location.pathname.replaceAll("/", "");
+            const split = location.pathname.split("/");
+            page = split[split.length - 2];
         }
 
         this.state = { page: page };
@@ -108,16 +107,16 @@ export default class CakoApp {
 
             switch (state.page) {
                 case HomePage:
-                    await this.#navigateToIndex();
+                    await this.navigateToIndex();
                     break;
                 case FeaturesPage:
-                    await this.#navigateToFeatures();
+                    await this.navigateToFeatures();
                     break;
                 case SearchPage:
-                    await this.#navigateToSearch();
+                    await this.navigateToSearch();
                     break;
                 default:
-                    await this.#navigateToPost(state.page);
+                    await this.navigateToPost(state.page);
                     break;
             }
 
@@ -313,11 +312,8 @@ export default class CakoApp {
         console.error("Unhandled Promise Rejection: " + e.reason.stack);
     }
 
-    async #navigateToIndex() {
+    async navigateToIndex() {
         document.body.classList = "home-template";
-        if (window.PHANTOM) {
-            document.body.classList.add("admin-page");
-        }
 
         Html.setPostContent();
         Html.setCopyrightDate();
@@ -327,7 +323,7 @@ export default class CakoApp {
         this.getVisiblePosts();
     }
 
-    async #navigateToPost(slug) {
+    async navigateToPost(slug) {
         if (!slug) {
             throw new Error("Missing slug in call to #navigateToPost(slug)");
         }
@@ -335,9 +331,6 @@ export default class CakoApp {
         const post = await Api.getPost(slug);
 
         document.body.classList = "post-template";
-        if (window.PHANTOM) {
-            document.body.classList.add("admin-page");
-        }
 
         document.title = post.title;
 
@@ -355,13 +348,10 @@ export default class CakoApp {
         await this.getPreviousAndNext();
     }
 
-    async #navigateToFeatures() {
+    async navigateToFeatures() {
         const features = await Api.features.promise;
 
         document.body.classList = "page-template";
-        if (window.PHANTOM) {
-            document.body.classList.add("admin-page");
-        }
 
         Html.setPostContent(features);
         Html.setCopyrightDate(features);
@@ -369,11 +359,11 @@ export default class CakoApp {
         document.title = "Features";
     }
 
-    async #navigateToSearch() {
+    async navigateToSearch() {
         document.body.classList.add("search-shown");
     }
 }
 
 (() => {
-    new CakoApp();
+    window.CakoApp = CakoApp;
 })();

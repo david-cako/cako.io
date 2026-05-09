@@ -212,7 +212,7 @@ export default class InfiniteScroll {
             return;
         }
 
-        if (window.CakoApp && window.CakoApp.state.page === "/") {
+        if (window.app && window.app.state.page === "/") {
             this.indexScrollPosition = window.scrollY;
             let time = Date.now();
 
@@ -229,7 +229,7 @@ export default class InfiniteScroll {
 
         const shouldRestoreScrollPosition =
             this.savedIndexScrollPosition !== null && this.savedIndexScrollPosIsFresh &&
-            window.CakoApp && window.CakoApp.state.page === "/" && !userHasScrolled;
+            window.app && window.app.state.page === "/" && !userHasScrolled;
 
         if (shouldRestoreScrollPosition) {
             this.#restoreIndexScrollPosition();
