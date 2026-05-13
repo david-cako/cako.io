@@ -337,8 +337,8 @@ export default class CakoApp {
         Html.setPostContent(post);
         Html.setCopyrightDate(post);
 
-        const prev = await Api.getPrevNextIndex(slug);
-        const next = await Api.getPrevNextIndex(slug, { next: true });
+        const prev = await Api.getOnePrevNext(slug);
+        const next = await Api.getOnePrevNext(slug, { next: true });
 
         Html.setPostNav(prev, next);
 

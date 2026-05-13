@@ -197,60 +197,6 @@ export default class Api {
         return g;
     }
 
-
-    static async getPrevNextIndex(slug, { next } = { next: false }) {
-        await Api.indexPromise.promise;
-
-        const posts = await Api.getAllPostsFromDb();
-
-        const idx = posts.findIndex(s => s.slug === slug);
-        if (idx === -1) {
-            throw new Error("Slug not found in index.")
-        }
-
-        if (next) {
-            if ((idx - 1) < 0) {
-                return null
-            }
-
-            return posts[idx - 1];
-        } else {
-            if ((idx + 1) >= posts.length) {
-                return null
-            }
-
-            return posts[idx + 1];
-        }
-    }
-
-    static async getPrevNext(slug, count, { next } = { next: false }) {
-        await Api.indexPromise.promise;
-
-        const posts = await Api.getAllPostsFromDb();
-
-        const idx = posts.findIndex(s => s.slug === slug);
-        if (idx === -1) {
-            throw new Error("Slug not found in index.")
-        }
-
-        const start = next
-            ? idx
-            : (idx - count) >= 0
-                ? (idx - count)
-                : 0;
-
-        const end = next
-            ? (idx + count) <= posts.length
-                ? (idx + count)
-                : posts.length
-            : idx;
-
-        const slugs = posts.slice(start, end)
-            .map(p => p.slug);
-
-        return Api.getPosts(slugs);
-    }
-
     static async isOpen() {
         return await Api.openPromise.promise;
     }
@@ -276,12 +222,12 @@ export default class Api {
         });
     }
 
-    static async newDbPostsRequest() {
+    static async newDbPostsRequest({ next } = { next: false }) {
         await Api.dbPromise.promise;
         const transaction = Api.db.transaction(["posts"]);
         const objectStore = transaction.objectStore("posts");
         const index = objectStore.index("published_at");
-        const request = index.openCursor();
+        const request = index.openCursor(next ? "next" : "prev");
 
         return request;
     }
@@ -339,6 +285,71 @@ export default class Api {
                 return;
             }
         });
+    }
+
+    static async getOnePrevNext(slug, { next } = { next: false }) {
+        return new Promise(async (resolve, reject) => {
+            await Api.indexPromise.promise;
+            try {
+                const request = await Api.newDbPostsRequest({ next });
+
+                var posts;
+                var prev;
+
+                request.onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        if (prev && prev.slug === slug) {
+                            resolve(cursor.value);
+                            return;
+                        }
+                        prev = cursor.value;
+                    } else {
+                        resolve(null);
+                    }
+                }
+            } catch (e) {
+                reject(e);
+                return;
+            }
+        });
+    }
+
+    static async getPrevNext(slug, count, { next } = { next: false }) {
+        return new Promise(async (resolve, reject) => {
+            await Api.indexPromise.promise;
+            try {
+                const request = await Api.newDbPostsRequest({ next });
+
+                var posts = [];
+                var prev;
+                var open = false;
+                var cnt = 0;
+
+                request.onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        if (prev && prev.slug === slug) {
+                            open = true;
+                        }
+                        if (open) {
+                            posts.push(cursor.value);
+                            cnt++;
+                        }
+                        if (cnt >= count) {
+                            resolve(posts);
+                            return;
+                        }
+                        prev = cursor.value;
+                    } else {
+                        resolve(posts);
+                    }
+                }
+            } catch (e) {
+                reject(e);
+                return;
+            }
+        })
     }
 
     static upsertPostInDb(post) {
