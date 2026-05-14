@@ -4,8 +4,11 @@ const WEBSOCKETS_URL = "wss://" + document.location.host + "/ws/";
 
 const ApiTopicIndex = "Index";
 const ApiTopicPosts = "Posts";
-const ApiTopicAllPosts = "AllPosts";
 const ApiTopicNew = "New";
+
+const ApiTopicIdIndex = "index";
+const ApiTopicIdFeatures = "features";
+const ApiTopicIdAllPosts = "all_posts";
 
 export default class Api {
     /** WebSocket connection. */
@@ -38,25 +41,16 @@ export default class Api {
     /** Path to features page. */
     static featuresPath = "/features/"
     /** promiseWithResolvers that will contain features page after API retrieval. */
-    static features;
+    static features = AsyncGenerator.promiseWithResolvers();
     /** True while getting features. */
     static gettingFeatures = false;
-    /** True after features have been retrieved. */
-    static hasFinishedGettingFeatures = false;
 
     /** True while getting all posts. */
     static gettingAllPosts = false;
-    /** True after all posts have been retrieved. */
-    static hasFinishedGettingAllPosts = false;
+    static allPostsPromise = AsyncGenerator.promiseWithResolvers();
 
-    /** Array of AsyncGenerators for Api.index. */
-    static #indexGenerators = [];
-    /** Array of AsyncGenerators for multiple posts. */
-    static #postGenerators = [];
-    /** Array of AsyncGenerators for all posts. */
-    static #allPostGenerators = [];
-    /** Array of AsyncGenerators for new posts. */
-    static #newPostGenerators = [];
+    /** Array of AsyncGenerators for responses. */
+    static #generators = [];
 
     static get #indexHasMorePosts() {
         return Api.totalPosts === undefined || Api.totalPosts > Api.index.length
@@ -65,10 +59,6 @@ export default class Api {
     static async initialize() {
         if (!Api.conn) {
             Api.#open();
-        }
-
-        if (!Api.features) {
-            Api.features = AsyncGenerator.promiseWithResolvers();
         }
 
         if (!window.Api) {
@@ -95,7 +85,7 @@ export default class Api {
         if (Api.indexPromise.isResolved) {
             g.resolve(null)
         } else {
-            Api.#indexGenerators.push({ generator: g });
+            Api.#generators.push({ generator: g, topic: ApiTopicIndex });
         }
 
         return g;
@@ -117,7 +107,7 @@ export default class Api {
                 topicId: id
             }));
 
-            Api.#postGenerators.push({ generator: g, topicId: id });
+            Api.#generators.push({ generator: g, topic: ApiTopicPosts, topicId: id });
 
             return await g.next.promise;
         }
@@ -152,7 +142,7 @@ export default class Api {
                 topicId: id
             }));
 
-            Api.#postGenerators.push({ generator: g, topicId: id });
+            Api.#generators.push({ generator: g, Topic: ApiTopicPosts, topicId: id });
         } else {
             g.resolve(null);
         }
@@ -170,18 +160,18 @@ export default class Api {
 
         const g = new AsyncGenerator(existing);
 
-        if (!this.gettingAllPosts && !this.hasFinishedGettingAllPosts) {
+        if (!this.gettingAllPosts && !this.allPostsPromise.isResolved) {
             console.log("remote get all posts")
             Api.conn.send(JSON.stringify({
-                topic: ApiTopicAllPosts,
+                topic: ApiTopicPosts,
                 excludeSlugs: existingSlugs
             }));
+
+            Api.#generators.push({ generator: g, topic: ApiTopicPosts, topicId: ApiTopicIdAllPosts });
         }
 
-        if (this.hasFinishedGettingAllPosts) {
+        if (this.allPostsPromise.isResolved) {
             g.resolve(null);
-        } else {
-            Api.#allPostGenerators.push({ generator: g });
         }
 
         return g;
@@ -192,7 +182,7 @@ export default class Api {
         const id = crypto.randomUUID();
         const g = new AsyncGenerator();
 
-        Api.#newPostGenerators.push({ generator: g });
+        Api.#generators.push({ generator: g, topic: ApiTopicNew, topicId: id });
 
         return g;
     }
@@ -443,7 +433,8 @@ export default class Api {
 
     static #getIndex() {
         Api.conn.send(JSON.stringify({
-            topic: ApiTopicIndex
+            topic: ApiTopicIndex,
+            topicId: ApiTopicIdIndex
         }));
     }
 
@@ -451,7 +442,7 @@ export default class Api {
         Api.conn.send(JSON.stringify({
             topic: ApiTopicPosts,
             slugs: ["features"],
-            topicId: "features"
+            topicId: ApiTopicIdFeatures
         }));
     }
 
@@ -471,66 +462,68 @@ export default class Api {
             Api.#getIndex();
         }
 
-        if (!Api.gettingFeatures && !Api.hasFinishedGettingFeatures) {
+        if (!Api.gettingFeatures && !Api.features.isResolved) {
             Api.#getFeatures();
         }
     }
 
-    static async #onIndex(data) {
-        for (const g of Api.#indexGenerators) {
-            g.generator.resolve(data.post);
+    static #resolveGenerators(data) {
+        let generators;
+        if (data.topicId) {
+            generators = Api.#generators.filter(g => g.topicId === data.topicId);
+            if (generators.length < 1) {
+                throw new Error("Generators for topicId id not found: ", data.topicId);
+            }
+        } else {
+            generators = Api.#generators.filter(g => g.topic === ApiTopicPosts);
+            if (generators.length < 1) {
+                throw new Error("Generators for topic id not found: ", data.topicId);
+            }
         }
+
+        for (const g of generators) {
+            g.generator.resolve(data.post);
+
+            if (!data.post) {
+                const idx = Api.#generators.indexOf(g);
+                Api.#generators.splice(idx, 1);
+            }
+        }
+    }
+
+    static async #onIndex(data) {
+        Api.#resolveGenerators(data);
 
         if (data.post) {
             await Api.upsertPostInDb(data.post);
         } else {
             Api.gettingIndex = false;
             Api.indexPromise.resolve();
-            Api.#indexGenerators = [];
         }
     }
 
     static async #onPost(data) {
-        if (data.topicId === "features") {
+        if (data.topicId === ApiTopicIdFeatures) {
             Api.features.resolve(data.post);
+            Api.gettingFeatures = false;
             return;
         }
 
-        const g = Api.#postGenerators.find(g => g.topicId === data.topicId);
-        if (!g) {
-            throw new Error("Post topicId id not found: ", data.topicId);
-        }
-
-        g.generator.resolve(data.post);
+        Api.#resolveGenerators(data);
 
         if (data.post) {
             await Api.upsertPostInDb(data.post);
         } else {
-            const idx = Api.#postGenerators.indexOf(s);
-            Api.#postGenerators.splice(idx, 1);
-        }
-    }
-
-    static async #onAllPosts(data) {
-        for (const g of Api.#allPostGenerators) {
-            g.generator.resolve(data.post);
-        }
-
-        if (data.post) {
-            await Api.upsertPostInDb(data.post);
-        } else {
-            this.isGettingAllPosts = false;
-            this.hasFinishedGettingAllPosts = true;
-            Api.#allPostGenerators = [];
+            if (data.topicId === ApiTopicIdAllPosts) {
+                Api.allPostsPromise.resolve(null);
+                Api.gettingAllPosts = false;
+            }
         }
     }
 
     static async #onNewPost(data) {
+        Api.#resolveGenerators(data);
         await Api.upsertPostInDb(data.post);
-
-        for (const g of Api.#newPostGenerators) {
-            g.generator.resolve(data.post);
-        }
     }
 
     static async #onMessage(e) {
@@ -542,9 +535,6 @@ export default class Api {
             case ApiTopicPosts:
                 await Api.#onPost(data);
                 break;
-            case ApiTopicAllPosts:
-                await Api.#onAllPosts(data);
-                break;
             case ApiTopicNew:
                 await Api.#onNewPost(data);
                 break;
@@ -555,21 +545,9 @@ export default class Api {
 
     static async #onClose(e) {
         const error = new Error("WebSocket closed", e);
-        for (const g of Api.#indexGenerators) {
+        for (const g of Api.#generators) {
             g.generator.reject(error);
-            Api.#indexGenerators = [];
-        }
-        for (const g of Api.#postGenerators) {
-            g.generator.reject(error);
-            Api.#postGenerators = [];
-        }
-        for (const g of Api.#allPostGenerators) {
-            g.generator.reject(error);
-            Api.#allPostGenerators = [];
-        }
-        for (const g of Api.#newPostGenerators) {
-            g.generator.reject(error);
-            Api.#newPostGenerators = [];
+            Api.#generators = [];
         }
 
         Api.conn = undefined;
